@@ -6,6 +6,8 @@ export default function App() {
 		<View style={styles.container}>
 			<Text style={styles.titleText}>
 				Hello <Text style={styles.innerText}>World</Text>!
+			</Text>
+			<Text style={styles.titleText}>
 				Hello <Text style={styles.innerText}>World 2</Text>!
 			</Text>
 			<Text style={styles.baseText}>Some other text</Text>
