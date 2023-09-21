@@ -1,5 +1,5 @@
-import RegisterError from './src/screens/RegisterError/RegisterError'
+import LoginError from './src/screens/LoginError/LoginError'
 
 export default function App() {
-	return <RegisterError />
+	return <LoginError />
 }
