@@ -4,7 +4,7 @@ import TopSideMenu from '../../components/TopSideMenu'
 import AppLoading from 'expo-app-loading';
 import { useFonts, Courgette_400Regular } from '@expo-google-fonts/courgette';
 
-const RegisterError = () => {
+const LoginError = () => {
     const [fontsLoaded] = useFonts({
         Courgette_400Regular,
     });
@@ -59,4 +59,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default RegisterError
+export default LoginError
