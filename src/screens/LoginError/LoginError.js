@@ -15,7 +15,7 @@ const LoginError = () => {
 
     return (
         <View style={styles.topContainer}>
-            <TopSideMenu title='Cadastro' />
+            <TopSideMenu title='Cadastro' icon="arrow-back-outline"/>
             <View style={styles.container}>
                 <Text style={styles.opsText}>Ops!</Text>
                 <View style={styles.optionsContainer}>
@@ -32,6 +32,9 @@ const LoginError = () => {
 }
 
 const styles = StyleSheet.create({
+    topContainer: {
+        flex: 1,
+    },
 	container: {
       backgroundColor: '#fafafa',
       display: 'flex',
