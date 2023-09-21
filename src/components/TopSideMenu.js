@@ -34,6 +34,8 @@ const styles = StyleSheet.create({
 		backgroundColor: '#cfe9e5',
 		gap: 16,
 		alignItems: 'center',
+		shadowColor: "#000",
+		elevation: 5,
 	},
 	text: {
 		fontSize: 20,

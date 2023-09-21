@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
 		width: 232,
 		height: 40,
 		gap: 8,
+    	shadowColor: "#000",
+		elevation: 5,
 	},
 	buttonText: {
 		color: '#434343', // Default text color
