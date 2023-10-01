@@ -17,6 +17,7 @@
 		"no-use-before-define": ["error", { "variables": false }],
 		// "react/props-types": ["error", { "ignore": ["navigation", "navigation.navigate"] }],
 		"react/react-in-jsx-scope": "off",
-		"arrow-body-style": "off"
+		"arrow-body-style": "off",
+		"allowTernary": true
 	}
 }
