@@ -1,7 +1,5 @@
-import Login from './src/screens/Login/Login'
-import Perfil from './src/screens/Perfil/Perfil'
-import LoginError from './src/screens/LoginError/LoginError'
+import PetRegistration from './src/screens/PetRegistration/PetRegistration'
 
 export default function App() {
-	return <Login />
+	return <PetRegistration />
 }
