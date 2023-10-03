@@ -21,8 +21,8 @@ const UserRegister = () => {
 
 	return (
 		<>
+			<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
 			<ScrollView>
-				<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
 				<View style={styles.container}>
 					<Text style={styles.disclaimer}>
 						As Informações preenchidas serão divulgadas apenas para a pessoa com a qual você realizar o processo de adoção e/ou apadrinhamento, após a formalização do processo.
@@ -30,7 +30,7 @@ const UserRegister = () => {
 
 					<View style={styles.inputContainer}>
 
-						<Text style={styles.sectionTitle}>Informações pessoais</Text>
+						<Text style={styles.sectionTitle}>INFORMAÇÕES PESSOAIS</Text>
 
 						<TextInput
 							style={styles.input}
@@ -93,7 +93,7 @@ const UserRegister = () => {
 							keyboardType="numeric"
 						/>
 
-						<Text style={styles.sectionTitle}>Informações de Perfil</Text>
+						<Text style={styles.sectionTitle}>INFORMAÇÕES DE PERFIL</Text>
 
 						<TextInput
 							style={styles.input}
@@ -118,7 +118,7 @@ const UserRegister = () => {
 							placeholder='Confirmação de senha'
 							placeholderTextColor={'#bdbdbd'}
 						/>
-						<Text style={styles.sectionTitle}>Foto de Perfil</Text>
+						<Text style={styles.sectionTitle}>FOTO DE PERFIL</Text>
 					</View>
 
 					<View style={styles.buttonContainer}>
@@ -145,6 +145,7 @@ const styles = StyleSheet.create({
 	},
 	buttonContainer: {
 		marginTop: 52,
+		marginBottom: 24,
 		alignItems: 'center',
 	},
 	aditionalButtonContainer: {
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 0.8,
 		fontFamily: 'Roboto',
 		fontSize: 14,
-		color: '#575756',
+		color: '#575756'
 	},
 	icon: {
 		position: 'absolute',
