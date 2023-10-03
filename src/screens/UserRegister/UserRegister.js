@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { View, StyleSheet, Text, TextInput } from 'react-native'
+import { View, StyleSheet, Text, TextInput, ScrollView } from 'react-native'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
 import { Ionicons } from '@expo/vector-icons'
@@ -21,106 +21,112 @@ const UserRegister = () => {
 
 	return (
 		<>
-			<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
-			<View style={styles.container}>
-				<View style={styles.inputContainer}>
+			<ScrollView>
+				<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
+				<View style={styles.container}>
+					<Text style={styles.disclaimer}>
+						As Informações preenchidas serão divulgadas apenas para a pessoa com a qual você realizar o processo de adoção e/ou apadrinhamento, após a formalização do processo.
+					</Text>
 
-                    <Text style={styles.sectionTitle}>Informações pessoais</Text>
+					<View style={styles.inputContainer}>
 
-					<TextInput
-						style={styles.input}
-                        onChangeText={setFullName}
-						value={fullName}
-						placeholder='Nome completo'
-						placeholderTextColor={'#bdbdbd'}
-					/>
-					{fullName ? (
-						<Ionicons name='checkmark' size={24} color='#589b9b' style={styles.icon} />
-					) : null}
+						<Text style={styles.sectionTitle}>Informações pessoais</Text>
 
-					<TextInput
-						style={styles.input}
-                        onChangeText={setAge}
-                        value={age}
-                        placeholder='Idade'
-                        placeholderTextColor={'#bdbdbd'}
-                        keyboardType="numeric"
-					/>
-                    
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setEmail}
-                        value={email}
-                        placeholder='E-mail'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setFullName}
+							value={fullName}
+							placeholder='Nome completo'
+							placeholderTextColor={'#bdbdbd'}
+						/>
+						{fullName ? (
+							<Ionicons name='checkmark' size={24} color='#589b9b' style={styles.icon} />
+						) : null}
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setUf}
-                        value={uf}
-                        placeholder='Estado'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setAge}
+							value={age}
+							placeholder='Idade'
+							placeholderTextColor={'#bdbdbd'}
+							keyboardType="numeric"
+						/>
+						
+						<TextInput
+							style={styles.input}
+							onChangeText={setEmail}
+							value={email}
+							placeholder='E-mail'
+							placeholderTextColor={'#bdbdbd'}
+						/>
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setCity}
-                        value={city}
-                        placeholder='Cidade'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setUf}
+							value={uf}
+							placeholder='Estado'
+							placeholderTextColor={'#bdbdbd'}
+						/>
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setStreet}
-                        value={street}
-                        placeholder='Endereço'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setCity}
+							value={city}
+							placeholder='Cidade'
+							placeholderTextColor={'#bdbdbd'}
+						/>
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setPhone}
-                        value={phone}
-                        placeholder='Telefone'
-                        placeholderTextColor={'#bdbdbd'}
-                        keyboardType="numeric"
-					/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setStreet}
+							value={street}
+							placeholder='Endereço'
+							placeholderTextColor={'#bdbdbd'}
+						/>
 
-                    <Text style={styles.sectionTitle}>Informações de Perfil</Text>
+						<TextInput
+							style={styles.input}
+							onChangeText={setPhone}
+							value={phone}
+							placeholder='Telefone'
+							placeholderTextColor={'#bdbdbd'}
+							keyboardType="numeric"
+						/>
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setUsername}
-                        value={username}
-                        placeholder='Usuário'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
+						<Text style={styles.sectionTitle}>Informações de Perfil</Text>
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setPassword}
-                        value={password}
-                        placeholder='Senha'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
+						<TextInput
+							style={styles.input}
+							onChangeText={setUsername}
+							value={username}
+							placeholder='Usuário'
+							placeholderTextColor={'#bdbdbd'}
+						/>
 
-                    <TextInput
-						style={styles.input}
-                        onChangeText={setPasswordConfirmation}
-                        value={passwordConfirmation}
-                        placeholder='Confirmação de senha'
-                        placeholderTextColor={'#bdbdbd'}
-					/>
-                    <Text style={styles.sectionTitle}>Foto de Perfil</Text>
+						<TextInput
+							style={styles.input}
+							onChangeText={setPassword}
+							value={password}
+							placeholder='Senha'
+							placeholderTextColor={'#bdbdbd'}
+						/>
+
+						<TextInput
+							style={styles.input}
+							onChangeText={setPasswordConfirmation}
+							value={passwordConfirmation}
+							placeholder='Confirmação de senha'
+							placeholderTextColor={'#bdbdbd'}
+						/>
+						<Text style={styles.sectionTitle}>Foto de Perfil</Text>
+					</View>
+
+					<View style={styles.buttonContainer}>
+						<MainButton text={'Fazer Cadastro'} />
+					</View>
+					<StatusBar style='auto' />
 				</View>
-
-				<View style={styles.buttonContainer}>
-					<MainButton text={'Fazer Cadastro'} />
-				</View>
-				<StatusBar style='auto' />
-			</View>
+			</ScrollView>
 		</>
 	)
 }
@@ -133,7 +139,6 @@ const styles = StyleSheet.create({
 	},
 	inputContainer: {
 		alignItems: 'left',
-		marginTop: 64,
 		gap: 8,
         marginLeft: 16,
         marginRight: 16
@@ -172,8 +177,23 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 12,
         fontFamily: 'Roboto',
-        color: '#589b9b'
-    }
+        color: '#589b9b',
+		marginTop: 28,
+		marginBottom: 32
+    },
+	disclaimer: {
+		fontSize: 14,
+		fontFamily: 'Roboto',
+		color: '#434343',
+		backgroundColor: '#cfe9e5',
+		borderRadius: 4,
+		width: 328,
+		height: 80,
+		textAlign: 'center',
+		marginTop: 16,
+		marginLeft: 16,
+		marginRight: 16
+	}
 })
 
 export default UserRegister
