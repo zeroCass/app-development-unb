@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { View, StyleSheet, Text, TextInput, ScrollView } from 'react-native'
+import { View, StyleSheet, Text, TextInput, ScrollView, Button, Image, Pressable } from 'react-native'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
 import { Ionicons } from '@expo/vector-icons'
-import { Entypo } from '@expo/vector-icons'
+import * as ImagePicker from 'expo-image-picker';
 
 const UserRegister = () => {
 
@@ -18,6 +18,23 @@ const UserRegister = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [passwordConfirmation, setPasswordConfirmation] = useState('')
+	const [image, setImage] = useState(null);
+
+	const pickImage = async () => {
+		// No permissions request is necessary for launching the image library
+		let result = await ImagePicker.launchImageLibraryAsync({
+		  mediaTypes: ImagePicker.MediaTypeOptions.All,
+		  allowsEditing: true,
+		  aspect: [4, 3],
+		  quality: 1,
+		});
+	
+		delete result.cancelled;
+	
+		if (!result.canceled) {
+		  setImage(result.assets[0].uri);
+		}
+	};
 
 	return (
 		<>
@@ -119,6 +136,31 @@ const UserRegister = () => {
 							placeholderTextColor={'#bdbdbd'}
 						/>
 						<Text style={styles.sectionTitle}>FOTO DE PERFIL</Text>
+
+						<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
+							{/* <Pressable style={styles.imageButton} onPress={pickImage}>
+								<Ionicons name='add-circle-outline' size={24} color='#757575' style={styles.icon} />
+								<Text style={styles.imageUploadText}>{"Adicionar foto"}</Text>
+							</Pressable>
+							{image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />} */}
+
+							{image ? 
+							<>
+								<Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+								<Pressable style={styles.imageButton2} onPress={pickImage}>
+									<Ionicons name='add-circle-outline' size={24} color='#757575' style={styles.icon} />
+									<Text style={styles.imageUploadText}>{"Adicionar foto"}</Text>
+								</Pressable>
+							</>
+							: 
+							<Pressable style={styles.imageButton} onPress={pickImage}>
+								<Ionicons name='add-circle-outline' size={24} color='#757575' style={styles.icon} />
+								<Text style={styles.imageUploadText}>{"Adicionar foto"}</Text>
+							</Pressable>
+							}
+
+						</View>
 					</View>
 
 					<View style={styles.buttonContainer}>
@@ -194,6 +236,41 @@ const styles = StyleSheet.create({
 		marginTop: 16,
 		marginLeft: 16,
 		marginRight: 16
+	},
+	icon: {
+		marginTop: 44,
+		marginLeft: 16,
+		marginRight: 16,
+		alignSelf: 'center',
+	},
+	imageButton: {
+		width: 128,
+		height: 128,
+		backgroundColor: '#e6e7e7',
+		flex: 1, 
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: "#000",
+		elevation: 5,
+		gap: 8,
+	},
+	imageButton2: {
+		width: 128,
+		height: 64,
+		backgroundColor: '#e6e7e7',
+		flex: 1, 
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: "#000",
+		elevation: 5,
+		gap: 8,
+		marginTop: 16,
+	},
+	imageUploadText: {
+		color: '#757575',
+		fontSize: 14,
+		borderRadius: 2,
+		marginBottom: 48,
 	}
 })
 
