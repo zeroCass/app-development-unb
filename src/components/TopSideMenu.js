@@ -1,11 +1,11 @@
-import { View, Text, Button, StyleSheet, StatusBar } from 'react-native'
-import PropTypes from 'prop-types'
 import { Ionicons } from '@expo/vector-icons'
+import PropTypes from 'prop-types'
+import { StatusBar, StyleSheet, Text, View } from 'react-native'
 
-const TopSideMenu = ({ title, icon }) => {
+const TopSideMenu = ({ title, icon, style = {} }) => {
 	return (
 		<>
-			<View style={styles.container}>
+			<View style={[styles.container, style]}>
 				<Ionicons name={icon} size={28} color='#434343' style={styles.icon} />
 				<Text style={styles.text}>{title}</Text>
 			</View>
@@ -15,6 +15,8 @@ const TopSideMenu = ({ title, icon }) => {
 
 TopSideMenu.propTypes = {
 	title: PropTypes.string.isRequired,
+	icon: PropTypes.string,
+	style: PropTypes.object,
 }
 
 const styles = StyleSheet.create({
@@ -31,7 +33,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#cfe9e5',
 		gap: 16,
 		alignItems: 'center',
-		shadowColor: "#000",
+		shadowColor: '#000',
 		elevation: 5,
 	},
 	text: {

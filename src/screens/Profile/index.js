@@ -1,11 +1,10 @@
-import { StatusBar } from 'expo-status-bar'
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native'
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
-import ShowValue from '../../components/ShowValue'
-import ProfilePhoto from '../../components/ProfilePhoto'
+import ProfilePhoto from './components/ProfilePhoto'
+import ShowValue from './components/ShowValue'
 
-const Perfil = () => {
+const Profile = () => {
 	const userInfo = {
 		name: 'Marília Martins',
 		fullName: 'Marilia Martins de Souza',
@@ -76,4 +75,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default Perfil
+export default Profile
