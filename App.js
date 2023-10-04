@@ -1,7 +1,5 @@
-import Login from './src/screens/Login/Login'
-import Perfil from './src/screens/Perfil/Perfil'
-import LoginError from './src/screens/LoginError/LoginError'
+import Profile from "./src/screens/Profile"
 
 export default function App() {
-	return <Perfil />
+	return <Profile />
 }

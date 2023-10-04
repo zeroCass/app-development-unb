@@ -1,9 +1,9 @@
-import { TouchableOpacity, Text, StyleSheet, View } from 'react-native'
 import PropTypes from 'prop-types'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const MainButton = ({ text, styleButton, styleText, iconComponent }) => {
+const MainButton = ({ text, styleButton, styleText, iconComponent, onPress}) => {
 	return (
-		<TouchableOpacity style={[styles.button, styleButton]}>
+		<TouchableOpacity style={[styles.button, styleButton]} onPress={onPress} >
 			{iconComponent && <View style={styles.iconContainer}>{iconComponent}</View>}
 			<Text style={[styles.buttonText, styleText]}>{text.toUpperCase()}</Text>
 		</TouchableOpacity>
@@ -15,6 +15,7 @@ MainButton.propTypes = {
 	styleButton: PropTypes.object,
 	styleText: PropTypes.object,
 	iconComponent: PropTypes.element,
+	onPress: PropTypes.func,
 }
 
 const styles = StyleSheet.create({
@@ -26,9 +27,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		width: 232,
 		height: 40,
-    shadowColor: "#000",
+		shadowColor: '#000',
 		elevation: 5,
-		gap: 8
+		gap: 8,
 	},
 	buttonText: {
 		color: '#434343', // Default text color
