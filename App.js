@@ -1,5 +1,5 @@
-import PetRegistration from './src/screens/PetRegistration/PetRegistration'
+import Profile from "./src/screens/Profile"
 
 export default function App() {
-	return <PetRegistration />
+	return <Profile />
 }
