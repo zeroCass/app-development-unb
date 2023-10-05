@@ -1,5 +1,11 @@
-import Profile from "./src/screens/Profile"
+import 'react-native-gesture-handler'
+import AuthProvider from './src/context/Auth'
+import Routes from './src/routes'
 
 export default function App() {
-	return <Profile />
+	return (
+		<AuthProvider>
+			<Routes />
+		</AuthProvider>
+	)
 }
