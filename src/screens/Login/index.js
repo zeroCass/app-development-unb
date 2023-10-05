@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { Entypo, Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
-import { View, StyleSheet, TextInput } from 'react-native'
+import { useContext, useState } from 'react'
+import { StyleSheet, TextInput, View } from 'react-native'
 import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
-import { Ionicons } from '@expo/vector-icons'
-import { Entypo } from '@expo/vector-icons'
+import { AuthContext } from '../../context/Auth'
 
 const Login = () => {
+	const { signin: authSignin } = useContext(AuthContext)
 	const [email, setEmail] = useState('')
 	const [isEmailValid, setIsEmailValid] = useState(false)
 	const [isPasswordValid, setIsPasswordValid] = useState(false)
@@ -23,9 +23,12 @@ const Login = () => {
 		setPassword(textPassword)
 	}
 
+	const sigin = () => {
+		authSignin()
+	}
+
 	return (
 		<>
-			<TopSideMenu title='Login' />
 			<View style={styles.container}>
 				<View style={styles.inputContainer}>
 					<TextInput
@@ -55,7 +58,7 @@ const Login = () => {
 					/>
 				</View>
 				<View style={styles.buttonContainer}>
-					<MainButton text={'Entrar'} />
+					<MainButton text={'Entrar'} onPress={sigin} />
 				</View>
 				<View style={styles.aditionalButtonContainer}>
 					<MainButton
