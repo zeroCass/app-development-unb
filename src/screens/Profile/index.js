@@ -1,6 +1,5 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
 import ProfilePhoto from './components/ProfilePhoto'
 import ShowValue from './components/ShowValue'
 
@@ -14,16 +13,14 @@ const Profile = () => {
 		address: 'Rua 203, conjunto B, casa 37',
 		phone: '(61) 98274 - 2947',
 		username: 'mari_martins',
-		history: 'Adotou 1 gato'
-
+		history: 'Adotou 1 gato',
 	}
 
 	return (
 		<>
 			<SafeAreaView>
-				<ScrollView >
+				<ScrollView>
 					<View style={styles.container}>
-						<TopSideMenu title='Meu Perfil' />
 						<ProfilePhoto> </ProfilePhoto>
 						<Text style={styles.titleText}>
 							<Text style={styles.innerText}>{userInfo.name}</Text>
@@ -48,9 +45,7 @@ const Profile = () => {
 						<View style={styles.buttonContainer}>
 							<MainButton text={'Editar Perfil'} />
 						</View>
-
 					</View>
-
 				</ScrollView>
 			</SafeAreaView>
 		</>
@@ -72,7 +67,7 @@ const styles = StyleSheet.create({
 	},
 	baseText: {
 		fontSize: 16,
-	}
+	},
 })
 
 export default Profile

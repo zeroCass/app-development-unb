@@ -9,13 +9,13 @@ const GenericInput = ({
 	textContentType,
 	placeholderTextColor,
 	style,
-    onChangeText,
+	onChangeText,
 }) => {
 	const [input, onChangeInput] = useState('')
-    const handleOnChangeText = (text) => {
-        onChangeInput(text)
-        onChangeText(text)
-    }
+	const handleOnChangeText = (text) => {
+		onChangeInput(text)
+		onChangeText(text)
+	}
 	return (
 		<>
 			{label ? <Text style={[styles.label, labelStyle]}>{label.toUpperCase()}</Text> : null}
@@ -38,7 +38,7 @@ GenericInput.propTypes = {
 	textContentType: PropTypes.string,
 	placeholderTextColor: PropTypes.string,
 	style: PropTypes.object,
-    onChangeText: PropTypes.func.isRequired,
+	onChangeText: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 		color: '#000',
 		fontFamily: 'Roboto',
 		fontSize: 12,
-        marginBottom: 10,
+		marginBottom: 10,
 	},
 	input: {
 		width: 312,

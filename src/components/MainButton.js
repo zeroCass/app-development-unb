@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const MainButton = ({ text, styleButton, styleText, iconComponent, onPress}) => {
+const MainButton = ({ text, styleButton, styleText, iconComponent, onPress }) => {
 	return (
-		<TouchableOpacity style={[styles.button, styleButton]} onPress={onPress} >
+		<TouchableOpacity style={[styles.button, styleButton]} onPress={onPress}>
 			{iconComponent && <View style={styles.iconContainer}>{iconComponent}</View>}
 			<Text style={[styles.buttonText, styleText]}>{text.toUpperCase()}</Text>
 		</TouchableOpacity>
