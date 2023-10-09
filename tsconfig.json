@@ -1,29 +1,60 @@
 {
-    "compilerOptions": {
-      "allowJs": true,
-      "allowSyntheticDefaultImports": true,
-      "esModuleInterop": true,
-      "isolatedModules": true,
-      "jsx": "react-native",
-      "lib": ["esnext"],
-      "types": ["react-native", "jest"],
-      "moduleResolution": "node",
-      "noEmit": true,
-      "strict": true,
-      "target": "esnext",
-      "noImplicitReturns": true,
-      "resolveJsonModule": true,
-      "skipLibCheck": true,
-      "noUncheckedIndexedAccess": true,
-      "forceConsistentCasingInFileNames": true,
-      "noFallthroughCasesInSwitch": true,
-      "noImplicitOverride": true,
-      "allowUnreachableCode": false
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "esnext"
+    ],
+    "jsx": "react-native",
+    "module": "commonjs",
+    "rootDir": "./",
+    "moduleResolution": "Node",
+    "baseUrl": "./",
+    "paths": {
+      "*": [
+        "src/*"
+      ],
+      "tests": [
+        "tests/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@screens/*": [
+        "src/screens/*"
+      ],
+      "@routes/*": [
+        "src/routes/*"
+      ],
+      "@context/*": [
+        "src/context/*"
+      ]
     },
-    "exclude": [
-      "node_modules",
-      "babel.config.js",
-      "metro.config.js",
-      "jest.config.js"
-    ]
-  } 
+    "types": [
+      "react-native",
+      "jest"
+    ],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "allowUnreachableCode": true,
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js"
+  ],
+  "extends": "expo/tsconfig.base"
+}
