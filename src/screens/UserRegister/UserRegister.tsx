@@ -10,10 +10,10 @@ import {
 	Image,
 	Pressable,
 } from 'react-native'
-import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
+import MainButton from '../../components/MainButton'
+import TopSideMenu from '../../components/TopSideMenu'
 
 const UserRegister = () => {
 	const [fullName, setFullName] = useState('')
@@ -26,20 +26,20 @@ const UserRegister = () => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [passwordConfirmation, setPasswordConfirmation] = useState('')
-	const [image, setImage] = useState(null)
+	const [image, setImage] = useState('')
 
 	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
-		let result = await ImagePicker.launchImageLibraryAsync({
+		const result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
 			allowsEditing: true,
 			aspect: [4, 3],
 			quality: 1,
 		})
 
-		delete result.cancelled
+		// delete result.cancelled
 
-		if (!result.canceled) {
+		if (!result.canceled && result.assets[0] !== undefined) {
 			setImage(result.assets[0].uri)
 		}
 	}
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fafafa',
 	},
 	inputContainer: {
-		alignItems: 'left',
+		// alignItems: "left",
 		gap: 8,
 		marginLeft: 16,
 		marginRight: 16,
@@ -223,6 +223,10 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		top: 0,
 		right: 24,
+		marginTop: 44,
+		marginLeft: 16,
+		marginRight: 16,
+		alignSelf: 'center',
 	},
 	titleText: {
 		fontSize: 20,
@@ -252,12 +256,6 @@ const styles = StyleSheet.create({
 		marginTop: 16,
 		marginLeft: 16,
 		marginRight: 16,
-	},
-	icon: {
-		marginTop: 44,
-		marginLeft: 16,
-		marginRight: 16,
-		alignSelf: 'center',
 	},
 	imageButton: {
 		width: 128,

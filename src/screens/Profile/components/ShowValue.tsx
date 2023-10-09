@@ -1,8 +1,14 @@
-import { View, Text, Button, StyleSheet, StatusBar } from 'react-native'
-import PropTypes from 'prop-types'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text, StyleSheet } from 'react-native'
 
-const ShowValue = ({ title, value }) => {
+export type ShowValueProps = {
+	title: string,
+	value?: string
+}
+
+const ShowValue: React.FC<ShowValueProps> = ({
+    title,
+    value
+}) => {
 	return (
 		<>
 			<View style={styles.container}>
@@ -15,10 +21,6 @@ const ShowValue = ({ title, value }) => {
 			</View>
 		</>
 	)
-}
-
-ShowValue.propTypes = {
-	title: PropTypes.string.isRequired,
 }
 
 const styles = StyleSheet.create({

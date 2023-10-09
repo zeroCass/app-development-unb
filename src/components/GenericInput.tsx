@@ -1,18 +1,27 @@
-import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput } from 'react-native'
 
-const GenericInput = ({
+export type Props = {
+	label?: string,
+	labelStyle?: any,
+	placeholder: string,
+	textContentType?: any,
+	placeholderTextColor?: string,
+	style?: any,
+	onChangeText: any
+}
+
+const GenericInput: React.FC<Props> = ({
 	label,
 	labelStyle,
 	placeholder,
-	textContentType,
+	textContentType='none',
 	placeholderTextColor,
 	style,
-	onChangeText,
+	onChangeText
 }) => {
 	const [input, onChangeInput] = useState('')
-	const handleOnChangeText = (text) => {
+	const handleOnChangeText = (text:string) => {
 		onChangeInput(text)
 		onChangeText(text)
 	}
@@ -21,25 +30,15 @@ const GenericInput = ({
 			{label ? <Text style={[styles.label, labelStyle]}>{label.toUpperCase()}</Text> : null}
 			<TextInput
 				style={[styles.input, style]}
-				textContentType={textContentType ? textContentType : 'none'}
+				textContentType={textContentType}
 				placeholder={placeholder}
-				placeholderTextColor={placeholderTextColor ? placeholderTextColor : '#bdbdbd'}
+				placeholderTextColor={placeholderTextColor || '#bdbdbd'}
 				onChangeText={(text) => handleOnChangeText(text)}
 				value={input}
 			/>
 		</>
-	)
-}
-
-GenericInput.propTypes = {
-	label: PropTypes.string,
-	labelStyle: PropTypes.object,
-	placeholder: PropTypes.string.isRequired,
-	textContentType: PropTypes.string,
-	placeholderTextColor: PropTypes.string,
-	style: PropTypes.object,
-	onChangeText: PropTypes.func.isRequired,
-}
+	);
+};
 
 const styles = StyleSheet.create({
 	label: {

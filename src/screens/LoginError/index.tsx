@@ -1,8 +1,8 @@
 import { View, StyleSheet, Text, SafeAreaView } from 'react-native'
-import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
 import AppLoading from 'expo-app-loading'
 import { useFonts, Courgette_400Regular } from '@expo-google-fonts/courgette'
+import MainButton from '../../components/MainButton'
+import TopSideMenu from '../../components/TopSideMenu'
 
 const LoginError = () => {
 	const [fontsLoaded] = useFonts({

@@ -1,8 +1,12 @@
-import { View, Image, Text, Button, StyleSheet, StatusBar } from 'react-native'
-import PropTypes from 'prop-types'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Image, StyleSheet } from 'react-native'
 
-const ProfilePhoto = ({ url }) => {
+export type Props = {
+	url: string
+}
+
+const ProfilePhoto: React.FC<Props> = ({
+    url
+}) => {
 	return (
 		<>
 			<View style={styles.container}>

@@ -2,7 +2,9 @@ import { createContext, useState } from 'react'
 
 export const AuthContext = createContext({})
 
-const AuthProvider = ({ children }) => {
+const AuthProvider = ({
+    children
+}: any) => {
 	const [user, setUser] = useState({ auth: false })
 
 	const signin = () => {
