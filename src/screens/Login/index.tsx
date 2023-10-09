@@ -12,13 +12,13 @@ const Login = () => {
 	const [isPasswordValid, setIsPasswordValid] = useState(false)
 	const [password, setPassword] = useState('')
 
-	const validateEmail = (textEmail) => {
+	const validateEmail = (textEmail: string) => {
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]+$/
 		setIsEmailValid(emailPattern.test(textEmail))
 		setEmail(textEmail)
 	}
 
-	const validatePassword = (textPassword) => {
+	const validatePassword = (textPassword: string) => {
 		textPassword.length >= 6 ? setIsPasswordValid(true) : setIsPasswordValid(false)
 		setPassword(textPassword)
 	}

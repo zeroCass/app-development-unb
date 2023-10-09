@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, ScrollView, StyleSheet, Text, View } from 'react-native'
 import GenericInput from '../../components/GenericInput'
 import MainButton from '../../components/MainButton'
 import Checkbox from './components/Checkbox'
 import RadioButton from './components/RadioButton'
-
 import { AntDesign } from '@expo/vector-icons'
 
-const CommonComponents = ({ onChangeData }) => {
-	const [temperament, setTemperament] = useState([])
+const CommonComponents = ({
+    onChangeData
+}: any) => {
+	const [temperament, setTemperament] = useState(Array())
 	const [specie, setSpecie] = useState('')
 	const [gender, setGender] = useState('')
 	const [size, setSize] = useState('')
@@ -25,7 +26,7 @@ const CommonComponents = ({ onChangeData }) => {
 		})
 	}, [temperament, specie, gender, size, age])
 
-	const handleSetTemperament = (selectedTemperament) => {
+	const handleSetTemperament = (selectedTemperament:string) => {
 		if (temperament.includes(selectedTemperament)) {
 			setTemperament(temperament.filter((item) => item !== selectedTemperament))
 		} else {
@@ -41,7 +42,7 @@ const CommonComponents = ({ onChangeData }) => {
 					<RadioButton
 						value={specie}
 						options={['Cachorro', 'Gato']}
-						onPress={(specie) => setSpecie(specie)}
+						onPress={(specie: string) => setSpecie(specie)}
 					/>
 				</View>
 				<View style={styles.RadioGroup}>
@@ -49,7 +50,7 @@ const CommonComponents = ({ onChangeData }) => {
 					<RadioButton
 						value={gender}
 						options={['Macho', 'Fêmea']}
-						onPress={(gender) => setGender(gender)}
+						onPress={(gender:string) => setGender(gender)}
 					/>
 				</View>
 				<View style={styles.RadioGroup}>
@@ -57,7 +58,7 @@ const CommonComponents = ({ onChangeData }) => {
 					<RadioButton
 						value={size}
 						options={['Pequeno', 'Médio', 'Grande']}
-						onPress={(size) => setSize(size)}
+						onPress={(size: string) => setSize(size)}
 					/>
 				</View>
 				<View style={styles.RadioGroup}>
@@ -65,7 +66,7 @@ const CommonComponents = ({ onChangeData }) => {
 					<RadioButton
 						value={age}
 						options={['Filhote', 'Adulto', 'Idoso']}
-						onPress={(age) => setAge(age)}
+						onPress={(age: string) => setAge(age)}
 					/>
 				</View>
 			</>
@@ -86,7 +87,15 @@ const CommonComponents = ({ onChangeData }) => {
 	)
 }
 
-const UpperButtons = ({ onChangePage, toggleHelp }) => {
+export type UpperButtonsProps = {
+	onChangePage: any,
+	toggleHelp: any
+}
+
+const UpperButtons: React.FC<UpperButtonsProps> = ({ 
+	onChangePage,
+	toggleHelp
+}) => {
 	const [activePage, setActivePage] = useState('Adoção')
 	const [helpIsActive, setHelpIsActive] = useState(false)
 	return (
@@ -129,10 +138,16 @@ const UpperButtons = ({ onChangePage, toggleHelp }) => {
 	)
 }
 
-const HelpSection = ({ onChangeData }) => {
-	const [petNeeds, setPetNeeds] = useState([])
-	const [medicine, setMedicine] = useState([])
-	const [objets, setObjects] = useState([])
+export type HelpSectionProps = {
+	onChangeData: any
+}
+
+const HelpSection: React.FC<HelpSectionProps> = ({
+	onChangeData
+}) => {
+	const [petNeeds, setPetNeeds] = useState(Array())
+	const [medicine, setMedicine] = useState(Array())
+	const [objets, setObjects] = useState(Array())
 
 	useEffect(() => {
 		onChangeData({
@@ -142,7 +157,7 @@ const HelpSection = ({ onChangeData }) => {
 		})
 	}, [petNeeds, medicine, objets])
 
-	const handleSetNeeds = (selectedNeed) => {
+	const handleSetNeeds = (selectedNeed: string) => {
 		if (petNeeds.includes(selectedNeed)) {
 			setPetNeeds(petNeeds.filter((item) => item !== selectedNeed))
 		} else {
@@ -162,12 +177,12 @@ const HelpSection = ({ onChangeData }) => {
 				<Checkbox text={'Medicamento'} onPress={() => handleSetNeeds('Medicamento')} />
 				<GenericInput
 					placeholder={'Nome do medicamento'}
-					onChangeText={(text) => setMedicine(text)}
+					onChangeText={(text: any) => setMedicine(text)}
 				/>
 				<Checkbox text={'Objetos'} onPress={() => handleSetNeeds('Objetos')} />
 				<GenericInput
 					placeholder={'Especifique o(s) objeto(s)'}
-					onChangeText={(text) => setObjects(text)}
+					onChangeText={(text: any) => setObjects(text)}
 				/>
 			</View>
 		</>
@@ -201,8 +216,14 @@ const PhotoComponent = () => {
 	)
 }
 
-const Adoption = ({ onChangeData }) => {
-	const [adoptionRequirements, setAdoptionRequirements] = useState([])
+export type AdoptionProps = {
+	onChangeData: any
+}
+
+const Adoption: React.FC<AdoptionProps> = ({
+	onChangeData
+}) => {
+	const [adoptionRequirements, setAdoptionRequirements] = useState(Array())
 
 	useEffect(() => {
 		onChangeData({
@@ -210,7 +231,7 @@ const Adoption = ({ onChangeData }) => {
 		})
 	}, [adoptionRequirements])
 
-	const handleRequirements = (selectedRequirement) => {
+	const handleRequirements = (selectedRequirement:string) => {
 		if (adoptionRequirements.includes(selectedRequirement)) {
 			setAdoptionRequirements(adoptionRequirements.filter((item) => item !== selectedRequirement))
 		} else {
@@ -237,8 +258,14 @@ const Adoption = ({ onChangeData }) => {
 	)
 }
 
-const Sponsor = ({ onChangeData }) => {
-	const [sponsorRequirements, setSponsorRequirements] = useState([])
+export type SponsorProps = {
+	onChangeData: any
+}
+
+const Sponsor: React.FC<SponsorProps> = ({
+	onChangeData
+}) => {
+	const [sponsorRequirements, setSponsorRequirements] = useState(Array())
 
 	useEffect(() => {
 		onChangeData({
@@ -246,7 +273,7 @@ const Sponsor = ({ onChangeData }) => {
 		})
 	}, [sponsorRequirements])
 
-	const handleRequirements = (selectedRequirement) => {
+	const handleRequirements = (selectedRequirement: string) => {
 		if (sponsorRequirements.includes(selectedRequirement)) {
 			setSponsorRequirements(sponsorRequirements.filter((item) => item !== selectedRequirement))
 		} else {
@@ -297,13 +324,13 @@ const PetRegistration = () => {
 		console.log(data)
 	}
 
-	const handlePageChange = (page) => {
+	const handlePageChange = (page: string) => {
 		setAdoption({})
 		setSponsorData({})
 		setCurrentPage(page)
 	}
 
-	const toggleHelp = (value) => {
+	const toggleHelp = (value: boolean) => {
 		setHelpSectionData({})
 		setHelpIsActive(value)
 	}
@@ -313,7 +340,7 @@ const PetRegistration = () => {
 			<ScrollView style={{ flex: 1 }}>
 				<View style={styles.container}>
 					<Text style={styles.upperText}>Tenho interesse em cadastrar o animal para:</Text>
-					<UpperButtons onChangePage={(page) => handlePageChange(page)} toggleHelp={toggleHelp} />
+					<UpperButtons onChangePage={(page: string) => handlePageChange(page)} toggleHelp={toggleHelp} />
 					<View style={styles.section}>
 						<Text style={styles.title}>{currentPage}</Text>
 						<GenericInput
@@ -321,18 +348,18 @@ const PetRegistration = () => {
 							placeholder={'Nome do Animal'}
 							label={'Nome do Animal'}
 							labelStyle={{ color: '#f7a800' }}
-							onChangeText={(text) => setPetName(text)}
+							onChangeText={(text:string) => setPetName(text)}
 						/>
 					</View>
 					<PhotoComponent />
-					<CommonComponents onChangeData={(newData) => setCommonData(newData)} />
+					<CommonComponents onChangeData={(newData: any) => setCommonData(newData)} />
 					{currentPage === 'Adoção' ? (
-						<Adoption onChangeData={(newData) => setAdoption(newData)} />
+						<Adoption onChangeData={(newData: any) => setAdoption(newData)} />
 					) : (
-						<Sponsor onChangeData={(newData) => setSponsorData(newData)} />
+						<Sponsor onChangeData={(newData: any) => setSponsorData(newData)} />
 					)}
 					{helpIsActive ? (
-						<HelpSection onChangeData={(newData) => setHelpSectionData(newData)} />
+						<HelpSection onChangeData={(newData: any) => setHelpSectionData(newData)} />
 					) : null}
 					<View style={styles.section}>
 						<GenericInput
@@ -340,7 +367,7 @@ const PetRegistration = () => {
 							placeholder={'Compartile a história do Animal'}
 							label={'Sobre o animal'}
 							labelStyle={{ color: '#f7a800' }}
-							onChangeText={(text) => setPetStory(text)}
+							onChangeText={(text: string) => setPetStory(text)}
 						/>
 					</View>
 					<View style={styles.buttonCenter}>
