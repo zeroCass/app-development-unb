@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { StyleSheet, Text, TextInput } from 'react-native'
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput } from 'react-native';
 
 export type Props = {
 	label?: string,
