@@ -9,7 +9,7 @@ import DrawerRoutes from './drawer.routes'
 const Stack = createNativeStackNavigator()
 
 const StackRoutes = () => {
-// @ts-expect-error TS(2339): Property 'user' does not exist on type '{}'.
+
 	const { user } = useContext(AuthContext)
 
 	return (

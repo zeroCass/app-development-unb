@@ -1,16 +1,30 @@
 import { Entypo, Ionicons } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar'
-import { useContext, useState } from 'react'
+import { onAuthStateChanged } from 'firebase/auth'
+import { useContext, useEffect, useState } from 'react'
 import { StyleSheet, TextInput, View } from 'react-native'
 import MainButton from '../../components/MainButton'
 import { AuthContext } from '../../context/Auth'
+import { auth } from '../../services/firebase'
 
-const Login = () => {
-	const { signin: authSignin } = useContext(AuthContext)
+
+
+const Login = ({ navigation }: any ) => {
+	const { signin: authSignin, alreadSignin } = useContext(AuthContext)
 	const [email, setEmail] = useState('')
-	const [isEmailValid, setIsEmailValid] = useState(false)
+	const [isEmailValid, setIsEmailValid] = useState(false) 
 	const [isPasswordValid, setIsPasswordValid] = useState(false)
 	const [password, setPassword] = useState('')
+
+
+	useEffect(() => {
+		const authState = onAuthStateChanged(auth, (user) => {
+			if (user) alreadSignin(user)
+		})
+
+		return authState
+	}, [])
+
 
 	const validateEmail = (textEmail: string) => {
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]+$/
@@ -24,7 +38,7 @@ const Login = () => {
 	}
 
 	const sigin = () => {
-		authSignin()
+		authSignin(email, password)
 	}
 
 	return (
@@ -73,6 +87,15 @@ const Login = () => {
 						styleText={{ color: '#fff' }}
 						iconComponent={<Entypo name='google-' size={20} color='#fff' />}
 					/>
+					<MainButton
+							text={'Não tenho conta'}
+							styleButton={{ backgroundColor: 'none', shadowColor: '#fff' }}
+							styleText={{ color: '#000', textDecorationLine: 'underline', }}
+							onPress={() => navigation.navigate('UserRegister')}
+						/>
+				</View>
+				<View>
+					
 				</View>
 				<StatusBar style='auto' />
 			</View>
