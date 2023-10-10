@@ -6,16 +6,17 @@ import {
 	Text,
 	TextInput,
 	ScrollView,
-	Button,
 	Image,
-	Pressable,
+	Pressable
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
+import firebase from '../../services/firebase'
 
-const UserRegister = () => {
+
+const UserRegister = ({navigation}: any) => {
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -41,6 +42,31 @@ const UserRegister = () => {
 
 		if (!result.canceled && result.assets[0] !== undefined) {
 			setImage(result.assets[0].uri)
+		}
+	}
+
+	const register = () => {
+		if (password !== passwordConfirmation) {
+			console.warn("Senhas não batem")
+			return
+		} else {
+			firebase.auth().createUserWithEmailAndPassword(email, password).then((response: any) => {
+				const uid = response.user.uid
+				const data = {
+					id: uid,
+					email,
+					fullName
+				}
+
+				const usersRef = firebase.firestore().collection('users')
+				usersRef.doc(uid).set(data).then(() => {
+					navigation.navigate('Home', {user: data})
+				}).catch((error: Error) => {
+					console.warn(error.message)
+				});
+			}).catch((error: Error) => {
+				console.warn(error.message)
+			})
 		}
 	}
 
@@ -180,7 +206,7 @@ const UserRegister = () => {
 					</View>
 
 					<View style={styles.buttonContainer}>
-						<MainButton text={'Fazer Cadastro'} />
+						<MainButton text={'Fazer Cadastro'} onPress={register}/>
 					</View>
 					<StatusBar style='auto' />
 				</View>

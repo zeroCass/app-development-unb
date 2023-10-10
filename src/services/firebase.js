@@ -10,5 +10,5 @@ const firebaseConfig = {
     measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID,
 }
 
-const app = initializeApp(firebaseConfig)
-export default app
+const firebase = initializeApp(firebaseConfig)
+export default firebase
