@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
-import firebase from '../../services/firebase'
+import { auth, createUserWithEmailAndPassword } from '../../services/firebase'
 
 
 const UserRegister = ({navigation}: any) => {
@@ -50,23 +50,18 @@ const UserRegister = ({navigation}: any) => {
 			console.warn("Senhas não batem")
 			return
 		} else {
-			firebase.auth().createUserWithEmailAndPassword(email, password).then((response: any) => {
-				const uid = response.user.uid
-				const data = {
-					id: uid,
-					email,
-					fullName
-				}
-
-				const usersRef = firebase.firestore().collection('users')
-				usersRef.doc(uid).set(data).then(() => {
-					navigation.navigate('Home', {user: data})
-				}).catch((error: Error) => {
-					console.warn(error.message)
+			createUserWithEmailAndPassword(auth, email, password)
+				.then((userCredential) => {
+					// Signed up 
+					const user = userCredential.user;
+					// TODO: persist user data
+					navigation.navigate('Home', {})
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.warn(errorMessage);
 				});
-			}).catch((error: Error) => {
-				console.warn(error.message)
-			})
 		}
 	}
 
