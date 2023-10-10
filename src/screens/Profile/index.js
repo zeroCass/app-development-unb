@@ -42,7 +42,7 @@ const Profile = () => {
 
 						<ShowValue title='Histórico' value={userInfo.history} />
 
-						<View style={styles.buttonContainer}>
+						<View style={styles}>
 							<MainButton text={'Editar Perfil'} />
 						</View>
 					</View>
