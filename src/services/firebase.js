@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
 
 const firebaseConfig = {
     apiKey: process.env.EXPO_PUBLIC_API_KEY,
@@ -10,5 +11,10 @@ const firebaseConfig = {
     measurementId: process.env.EXPO_PUBLIC_MEASUREMENT_ID,
 }
 
-const firebase = initializeApp(firebaseConfig)
-export default firebase
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+
+export {
+    app,
+    auth
+}

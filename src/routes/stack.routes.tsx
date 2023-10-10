@@ -9,6 +9,7 @@ import DrawerRoutes from './drawer.routes'
 const Stack = createNativeStackNavigator()
 
 const StackRoutes = () => {
+
 	const { user } = useContext(AuthContext)
 
 	return (
