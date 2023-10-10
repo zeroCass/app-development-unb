@@ -42,7 +42,7 @@ const Profile = () => {
 
 						<ShowValue title='Histórico' value={userInfo.history} />
 
-						<View style={styles}>
+						<View style={styles.buttonContainer}>
 							<MainButton text={'Editar Perfil'} />
 						</View>
 					</View>
@@ -68,6 +68,9 @@ const styles = StyleSheet.create({
 	baseText: {
 		fontSize: 16,
 	},
+	buttonContainer: {
+		marginBottom: 20
+	}
 })
 
 export default Profile

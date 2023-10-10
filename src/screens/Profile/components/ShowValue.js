@@ -23,7 +23,7 @@ ShowValue.propTypes = {
 
 const styles = StyleSheet.create({
 	componente: {
-		padding: 2
+		padding: 4
 	},
 	container: {
 		flex: 1,
