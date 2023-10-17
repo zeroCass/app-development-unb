@@ -21,7 +21,7 @@ const Profile = () => {
 			<SafeAreaView>
 				<ScrollView>
 					<View style={styles.container}>
-						<ProfilePhoto> </ProfilePhoto>
+						<ProfilePhoto url='./src'></ProfilePhoto>
 						<Text style={styles.titleText}>
 							<Text style={styles.innerText}>{userInfo.name}</Text>
 						</Text>
@@ -68,6 +68,9 @@ const styles = StyleSheet.create({
 	baseText: {
 		fontSize: 16,
 	},
+	buttonContainer: {
+		marginBottom: 20
+	}
 })
 
 export default Profile

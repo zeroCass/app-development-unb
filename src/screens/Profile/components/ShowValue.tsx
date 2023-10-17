@@ -44,6 +44,9 @@ const styles = StyleSheet.create({
 		color: '#757575',
 		textAlign: 'center',
 	},
+	componente: {
+		padding: 4
+	},
 })
 
 export default ShowValue
