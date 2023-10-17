@@ -1,15 +1,28 @@
 import { MaterialIcons } from '@expo/vector-icons'
 import PropTypes from 'prop-types'
+import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const RadioButton = ({ options, onPress, value, style }) => {
-	const handleChangeValue = (value) => {
+export type RadioButtonProps = {
+	options: string[],
+	onPress: any,
+	value: string,
+	style?: any,
+}
+
+const RadioButton: React.FC<RadioButtonProps> = ({
+    options,
+    onPress,
+    value,
+    style
+}) => {
+	const handleChangeValue = (value: any) => {
 		onPress(value)
 	}
 
 	return (
 		<View style={[styles.container, style]}>
-			{options.map((option) => (
+			{options.map((option:string) => (
 				<TouchableOpacity key={option} onPress={() => handleChangeValue(option)}>
 					<View style={{ flexDirection: 'row' }}>
 						<View>
@@ -25,13 +38,6 @@ const RadioButton = ({ options, onPress, value, style }) => {
 			))}
 		</View>
 	)
-}
-
-RadioButton.propTypes = {
-	options: PropTypes.array.isRequired,
-	onPress: PropTypes.func.isRequired,
-	value: PropTypes.string.isRequired,
-	style: PropTypes.object,
 }
 
 const styles = StyleSheet.create({

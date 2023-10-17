@@ -3,7 +3,10 @@ import PropTypes from 'prop-types'
 import { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const Checkbox = ({ text, onPress }) => {
+const Checkbox = ({
+    text,
+    onPress
+}: any) => {
 	const [status, setStatus] = useState(false)
 
 	const toggleCheckbox = () => {

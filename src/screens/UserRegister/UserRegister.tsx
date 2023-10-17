@@ -6,16 +6,16 @@ import {
 	Text,
 	TextInput,
 	ScrollView,
-	Button,
 	Image,
-	Pressable,
+	Pressable
 } from 'react-native'
-import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
+import MainButton from '../../components/MainButton'
+import TopSideMenu from '../../components/TopSideMenu'
+import { auth, createUserWithEmailAndPassword } from '../../services/firebase'
 
-const UserRegister = () => {
+const UserRegister = ({navigation}: any) => {
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -26,24 +26,43 @@ const UserRegister = () => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [passwordConfirmation, setPasswordConfirmation] = useState('')
-	const [image, setImage] = useState(null)
+	const [image, setImage] = useState('')
 
 	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
-		let result = await ImagePicker.launchImageLibraryAsync({
+		const result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
 			allowsEditing: true,
 			aspect: [4, 3],
 			quality: 1,
 		})
 
-		delete result.cancelled
+		// delete result.cancelled
 
-		if (!result.canceled) {
+		if (!result.canceled && result.assets[0] !== undefined) {
 			setImage(result.assets[0].uri)
 		}
 	}
 
+	const register = () => {
+		if (password !== passwordConfirmation) {
+			console.warn("Senhas não batem")
+			return
+		} else {
+			createUserWithEmailAndPassword(auth, email, password)
+				.then((userCredential) => {
+					// Signed up 
+					const user = userCredential.user;
+					// TODO: persist user data
+					navigation.navigate('Home', {})
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.warn(errorMessage);
+				});
+		}
+	}
 	return (
 		<>
 			<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
@@ -180,7 +199,7 @@ const UserRegister = () => {
 					</View>
 
 					<View style={styles.buttonContainer}>
-						<MainButton text={'Fazer Cadastro'} />
+						<MainButton text={'Fazer Cadastro'} onPress={register}/>
 					</View>
 					<StatusBar style='auto' />
 				</View>
@@ -196,7 +215,7 @@ const styles = StyleSheet.create({
 		backgroundColor: '#fafafa',
 	},
 	inputContainer: {
-		alignItems: 'left',
+		// alignItems: "left",
 		gap: 8,
 		marginLeft: 16,
 		marginRight: 16,
@@ -223,6 +242,10 @@ const styles = StyleSheet.create({
 		position: 'absolute',
 		top: 0,
 		right: 24,
+		marginTop: 44,
+		marginLeft: 16,
+		marginRight: 16,
+		alignSelf: 'center',
 	},
 	titleText: {
 		fontSize: 20,
@@ -252,12 +275,6 @@ const styles = StyleSheet.create({
 		marginTop: 16,
 		marginLeft: 16,
 		marginRight: 16,
-	},
-	icon: {
-		marginTop: 44,
-		marginLeft: 16,
-		marginRight: 16,
-		alignSelf: 'center',
 	},
 	imageButton: {
 		width: 128,
