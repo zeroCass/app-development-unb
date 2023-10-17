@@ -25,7 +25,6 @@ const Login = ({ navigation }: any ) => {
 		return authState
 	}, [])
 
-
 	const validateEmail = (textEmail: string) => {
 		const emailPattern = /^[^\s@]+@[^\s@]+\.[a-z]+$/
 		setIsEmailValid(emailPattern.test(textEmail))
@@ -94,9 +93,8 @@ const Login = ({ navigation }: any ) => {
 							onPress={() => navigation.navigate('UserRegister')}
 						/>
 				</View>
-				<View>
-					
-				</View>
+<!-- 				<View>
+				</View> -->
 				<StatusBar style='auto' />
 			</View>
 		</>

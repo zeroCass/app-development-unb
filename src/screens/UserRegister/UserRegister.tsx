@@ -15,7 +15,6 @@ import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
 import { auth, createUserWithEmailAndPassword } from '../../services/firebase'
 
-
 const UserRegister = ({navigation}: any) => {
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
@@ -64,7 +63,6 @@ const UserRegister = ({navigation}: any) => {
 				});
 		}
 	}
-
 	return (
 		<>
 			<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />

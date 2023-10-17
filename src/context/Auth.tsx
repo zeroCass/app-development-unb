@@ -24,7 +24,6 @@ const AuthProvider = ({
     children
 }: any) => {
 	const [user, setUser] = useState<User>({ auth: false })
-
 	const signin = (email: string, password: string) => {
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredentials) => {
