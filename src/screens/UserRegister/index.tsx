@@ -64,7 +64,7 @@ const UserRegister = ({navigation}: any) => {
 				const errorMessage = result.error.message;
 				console.warn(errorMessage);
 			} else {
-				navigation.navigate('Home', {})
+				navigation.navigate('Login', {})
 			};
 		}
 	}
