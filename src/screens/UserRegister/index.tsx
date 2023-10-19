@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import {
 	Image,
 	Pressable,
@@ -14,8 +14,10 @@ import {
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
 import { registerUser } from './services'
+import { AuthContext } from '../../context/Auth'
 
 const UserRegister = ({navigation}: any) => {
+	const { signin: authSignin } = useContext(AuthContext)
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -57,14 +59,11 @@ const UserRegister = ({navigation}: any) => {
 				city,
 				uf
 			});
-			
-			console.log(result)
-
 			if (result.type == "error") {
 				const errorMessage = result.error.message;
 				console.warn(errorMessage);
 			} else {
-				navigation.navigate('Login', {})
+				authSignin(email, password)
 			};
 		}
 	}
