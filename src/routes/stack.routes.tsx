@@ -13,7 +13,7 @@ const StackRoutes = () => {
 
 	return (
 		<Stack.Navigator initialRouteName='Login'>
-			{!user.auth ? (
+			{!user.signed ? (
 				<Stack.Group>
 					<Stack.Screen
 						name='Login'

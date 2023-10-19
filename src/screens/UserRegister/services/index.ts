@@ -1,6 +1,6 @@
-import { addDoc, collection } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { db, auth } from '../../../services/firebase'
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from '../../../services/firebase';
 import { IRegisterUser } from "../interfaces";
 
 export const registerUser: any = (userData: IRegisterUser) => {
@@ -8,22 +8,22 @@ export const registerUser: any = (userData: IRegisterUser) => {
 				.then((userCredential) => {
 					const user_uid = userCredential.user.uid;
 
-					addDoc(
-						collection(db, "users"), 
+					setDoc(
+						doc(db, "users", user_uid), 
 						{
 							age: userData.age,
 							city: userData.city,
 							email: userData.email,
-							firebase_auth_uid: user_uid,
 							full_name: userData.fullName,
 							phone: userData.phone,
 							state: userData.uf,
 							username: userData.username
 						}
 					);
-                    return { type: "success" }				  
+                    // return { type: "success" }	isso aqui causa erro de undefined na pagina userRegister	  
 				})
 				.catch((error) => {
-                    return {type: "error", error: error }
+					console.warn(`registerUser error: ${error}`)
+                    // return { type: "error", error: error } isso aqui causa erro de undefined na pagina userRegister	
 				});
 }

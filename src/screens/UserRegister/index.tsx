@@ -1,16 +1,16 @@
-import { useState } from 'react'
+import { Ionicons } from '@expo/vector-icons'
+import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
+import { useState } from 'react'
 import {
-	View,
+	Image,
+	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
-	ScrollView,
-	Image,
-	Pressable
+	View
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import * as ImagePicker from 'expo-image-picker'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
 import { registerUser } from './services'
@@ -57,13 +57,16 @@ const UserRegister = ({navigation}: any) => {
 				city,
 				uf
 			});
-			if (result.type == "error") {
-				const errorCode = result.error.code;
-				const errorMessage = result.error.message;
-				console.warn(errorMessage);
-			} else {
-				navigation.navigate('Home', {})
-			};
+			console.warn(result) // undefined, result não existe
+			
+			// if (result.type == "error") {
+			// 	const errorCode = result.error.code;
+			// 	const errorMessage = result.error.message;
+			// 	console.warn(errorMessage);
+			// } 
+			// else {
+			// 	navigation.navigate('Home', {})  !!! isso aqui nao eh necessario, mas sera necessario dar um jeito de fazer handle de erross
+			// };
 		}
 	}
 	return (
