@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from 'firebase/auth'
 import { 
     EXPO_PUBLIC_API_KEY,
     EXPO_PUBLIC_AUTH_DOMAIN,
@@ -22,9 +23,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
+const db = getFirestore(app)
 
 export {
-    app,
+    db,
     auth,
-    createUserWithEmailAndPassword
 }

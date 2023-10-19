@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
-import { auth, createUserWithEmailAndPassword } from '../../services/firebase'
+import { registerUser } from './services'
 
 const UserRegister = ({navigation}: any) => {
 	const [fullName, setFullName] = useState('')
@@ -37,8 +37,6 @@ const UserRegister = ({navigation}: any) => {
 			quality: 1,
 		})
 
-		// delete result.cancelled
-
 		if (!result.canceled && result.assets[0] !== undefined) {
 			setImage(result.assets[0].uri)
 		}
@@ -49,18 +47,23 @@ const UserRegister = ({navigation}: any) => {
 			console.warn("Senhas não batem")
 			return
 		} else {
-			createUserWithEmailAndPassword(auth, email, password)
-				.then((userCredential) => {
-					// Signed up 
-					const user = userCredential.user;
-					// TODO: persist user data
-					navigation.navigate('Home', {})
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.warn(errorMessage);
-				});
+			const result = registerUser({
+				fullName,
+				username,
+				email,
+				password,
+				age,
+				phone,
+				city,
+				uf
+			});
+			if (result.type == "error") {
+				const errorCode = result.error.code;
+				const errorMessage = result.error.message;
+				console.warn(errorMessage);
+			} else {
+				navigation.navigate('Home', {})
+			};
 		}
 	}
 	return (
