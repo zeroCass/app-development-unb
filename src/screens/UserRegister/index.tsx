@@ -42,12 +42,12 @@ const UserRegister = ({navigation}: any) => {
 		}
 	}
 
-	const register = () => {
+	const register = async () => {
 		if (password !== passwordConfirmation) {
 			console.warn("Senhas não batem")
 			return
 		} else {
-			const result = registerUser({
+			const result = await registerUser({
 				fullName,
 				username,
 				email,
@@ -57,16 +57,15 @@ const UserRegister = ({navigation}: any) => {
 				city,
 				uf
 			});
-			console.warn(result) // undefined, result não existe
 			
-			// if (result.type == "error") {
-			// 	const errorCode = result.error.code;
-			// 	const errorMessage = result.error.message;
-			// 	console.warn(errorMessage);
-			// } 
-			// else {
-			// 	navigation.navigate('Home', {})  !!! isso aqui nao eh necessario, mas sera necessario dar um jeito de fazer handle de erross
-			// };
+			console.log(result)
+
+			if (result.type == "error") {
+				const errorMessage = result.error.message;
+				console.warn(errorMessage);
+			} else {
+				navigation.navigate('Home', {})
+			};
 		}
 	}
 	return (
