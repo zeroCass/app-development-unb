@@ -1,14 +1,13 @@
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, addDoc, collection } from "firebase/firestore";
+import { doc, setDoc, collection } from "firebase/firestore";
 import { auth, db } from '../../../services/firebase';
 import { IRegisterUser } from "../interfaces";
 
 export const registerUser:any = async (userData: IRegisterUser) => {
 	try {
 		const authResult = await createUserWithEmailAndPassword(auth, userData.email, userData.password)
-		const dbCollection = collection(db, "users");
-		await addDoc(
-			collection(db, "users"), 
+		await setDoc(
+			doc(db, "users", authResult.user.uid), 
 			{
 				age: userData.age,
 				city: userData.city,
@@ -16,8 +15,7 @@ export const registerUser:any = async (userData: IRegisterUser) => {
 				full_name: userData.fullName,
 				phone: userData.phone,
 				state: userData.uf,
-				username: userData.username,
-				auth_id: authResult.user.uid
+				username: userData.username
 			}
 		)
 		return { type: "success" }
