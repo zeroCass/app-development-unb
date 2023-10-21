@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { AuthContext } from '../context/Auth'
 
 import Login from '../screens/Login'
-import UserRegister from '../screens/UserRegister/UserRegister'
+import UserRegister from '../screens/UserRegister'
 import DrawerRoutes from './drawer.routes'
 
 const Stack = createNativeStackNavigator()
@@ -13,7 +13,7 @@ const StackRoutes = () => {
 
 	return (
 		<Stack.Navigator initialRouteName='Login'>
-			{!user.auth ? (
+			{!user.signed ? (
 				<Stack.Group>
 					<Stack.Screen
 						name='Login'

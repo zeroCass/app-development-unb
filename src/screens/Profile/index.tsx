@@ -1,9 +1,13 @@
+import { useContext } from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import MainButton from '../../components/MainButton'
+import { AuthContext } from '../../context/Auth'
 import ProfilePhoto from './components/ProfilePhoto'
 import ShowValue from './components/ShowValue'
 
 const Profile = () => {
+	const { user } = useContext(AuthContext)
+
 	const userInfo = {
 		name: 'Marília Martins',
 		fullName: 'Marilia Martins de Souza',
@@ -23,10 +27,10 @@ const Profile = () => {
 					<View style={styles.container}>
 						<ProfilePhoto url='./src'></ProfilePhoto>
 						<Text style={styles.titleText}>
-							<Text style={styles.innerText}>{userInfo.name}</Text>
+							<Text style={styles.innerText}>{user.full_name}</Text>
 						</Text>
 
-						<ShowValue title='NOME COMPLETO' value={userInfo.fullName} />
+						<ShowValue title='NOME COMPLETO' value={user.full_name} />
 
 						<ShowValue title='IDADE' value={userInfo.age} />
 

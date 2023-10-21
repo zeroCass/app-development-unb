@@ -1,53 +1,66 @@
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { createContext, useState } from 'react'
-import { auth } from '../services/firebase'
+import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc } from "firebase/firestore"
+import { createContext, useEffect, useState } from 'react'
+import { auth, db } from '../services/firebase'
 
 type User = {
-	auth: boolean
+	full_name?: string 
+	signed: boolean
 }
 
 type AuthContextType = {
 	user: User,
 	signin: (email: string, password: string) => void,
 	signout: () => void,
-	alreadSignin: (user: any) => void,
 }
 
 export const AuthContext = createContext<AuthContextType>({
-	user: {auth: false},
+	user: {signed: false},
 	signin: () => {},
 	signout: () => {},
-	alreadSignin: () => {},
 })
 
 const AuthProvider = ({
     children
 }: any) => {
-	const [user, setUser] = useState<User>({ auth: false })
+	const [user, setUser] = useState<User>({ signed: false })
+
+	useEffect(() => {
+		const authState = onAuthStateChanged(auth, (user) => {
+			// if user exists, then fetch data from the database
+			if (user) {
+				const user_uid = user.uid
+				getDoc(doc(db, "users", user_uid))
+					.then(fetched_data => {
+						const user_data = fetched_data.data()
+						setUser({ ...user_data, signed: true })
+					})
+					.catch(error => console.warn(error))
+			}
+		})
+
+		return authState
+	}, [])
+
 	const signin = (email: string, password: string) => {
 		signInWithEmailAndPassword(auth, email, password)
-			.then((userCredentials) => {
-				const userResponse = userCredentials.user
-				console.log(userResponse)
-				setUser({ ...userResponse, auth: true })
-			})
 			.catch((error) => console.log(error.code, error.message))
 	}
 
 	const signout = () => {
 		auth.signOut()
 			.then(() => {
-				setUser({ auth: false })
+				setUser({ signed: false })
 			})
 			.catch((error) => console.warn(error.message))
 		
 	}
 
-	const alreadSignin = (user: any) => {
-		setUser({ ...user, auth: true })
-	}
 
-	return <AuthContext.Provider value={{ user, signin, signout, alreadSignin }}>{children}</AuthContext.Provider>
+
+
+
+	return <AuthContext.Provider value={{ user, signin, signout }}>{children}</AuthContext.Provider>
 }
 
 export default AuthProvider

@@ -1,21 +1,23 @@
-import { useState } from 'react'
+import { Ionicons } from '@expo/vector-icons'
+import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
+import { useContext, useState } from 'react'
 import {
-	View,
+	Image,
+	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
-	ScrollView,
-	Image,
-	Pressable
+	View
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import * as ImagePicker from 'expo-image-picker'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
-import { auth, createUserWithEmailAndPassword } from '../../services/firebase'
+import { registerUser } from './services'
+import { AuthContext } from '../../context/Auth'
 
 const UserRegister = ({navigation}: any) => {
+	const { signin: authSignin } = useContext(AuthContext)
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -37,30 +39,32 @@ const UserRegister = ({navigation}: any) => {
 			quality: 1,
 		})
 
-		// delete result.cancelled
-
 		if (!result.canceled && result.assets[0] !== undefined) {
 			setImage(result.assets[0].uri)
 		}
 	}
 
-	const register = () => {
+	const register = async () => {
 		if (password !== passwordConfirmation) {
 			console.warn("Senhas não batem")
 			return
 		} else {
-			createUserWithEmailAndPassword(auth, email, password)
-				.then((userCredential) => {
-					// Signed up 
-					const user = userCredential.user;
-					// TODO: persist user data
-					navigation.navigate('Home', {})
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.warn(errorMessage);
-				});
+			const result = await registerUser({
+				fullName,
+				username,
+				email,
+				password,
+				age,
+				phone,
+				city,
+				uf
+			});
+			if (result.type == "error") {
+				const errorMessage = result.error.message;
+				console.warn(errorMessage);
+			} else {
+				authSignin(email, password)
+			};
 		}
 	}
 	return (
