@@ -56,8 +56,9 @@ const UserRegister = ({navigation}: any) => {
 				password,
 				age,
 				phone,
+				uf,
 				city,
-				uf
+				street
 			});
 			if (result.type == "error") {
 				const errorMessage = result.error.message;

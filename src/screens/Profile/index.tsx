@@ -8,17 +8,17 @@ import ShowValue from './components/ShowValue'
 const Profile = () => {
 	const { user } = useContext(AuthContext)
 
-	const userInfo = {
-		name: 'Marília Martins',
-		fullName: 'Marilia Martins de Souza',
-		age: '27 anos',
-		email: 'marilia_martins@gmail.com',
-		location: 'Sobradinho - Distrito Federal',
-		address: 'Rua 203, conjunto B, casa 37',
-		phone: '(61) 98274 - 2947',
-		username: 'mari_martins',
-		history: 'Adotou 1 gato',
-	}
+	// const userInfo = {
+	// 	name: 'Marília Martins',
+	// 	fullName: 'Marilia Martins de Souza',
+	// 	age: '27 anos',
+	// 	email: 'marilia_martins@gmail.com',
+	// 	location: 'Sobradinho - Distrito Federal',
+	// 	address: 'Rua 203, conjunto B, casa 37',
+	// 	phone: '(61) 98274 - 2947',
+	// 	username: 'mari_martins',
+	// }
+	const mockHistory = 'Adotou 1 gato'
 
 	return (
 		<>
@@ -32,19 +32,19 @@ const Profile = () => {
 
 						<ShowValue title='NOME COMPLETO' value={user.full_name} />
 
-						<ShowValue title='IDADE' value={userInfo.age} />
+						<ShowValue title='IDADE' value={String(user.age)} />
 
-						<ShowValue title='EMAIL' value={userInfo.email} />
+						<ShowValue title='EMAIL' value={user.email} />
 
-						<ShowValue title='LOCALIZAÇÃO' value={userInfo.location} />
+						<ShowValue title='LOCALIZAÇÃO' value={user.state + ', ' + user.city} />
 
-						<ShowValue title='ENDEREÇO' value={userInfo.address} />
+						<ShowValue title='ENDEREÇO' value={user.address} />
 
-						<ShowValue title='TELEFONE' value={userInfo.phone} />
+						<ShowValue title='TELEFONE' value={user.phone} />
 
-						<ShowValue title='NOME DE USUÁRIO' value={userInfo.username} />
+						<ShowValue title='NOME DE USUÁRIO' value={user.username} />
 
-						<ShowValue title='Histórico' value={userInfo.history} />
+						<ShowValue title='Histórico' value={mockHistory} />
 
 						<View style={styles.buttonContainer}>
 							<MainButton text={'Editar Perfil'} />

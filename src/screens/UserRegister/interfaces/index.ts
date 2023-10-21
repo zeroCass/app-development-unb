@@ -7,4 +7,5 @@ export interface IRegisterUser {
     phone: string;
     city: string;
     uf: string;
+    street: string;
 }
