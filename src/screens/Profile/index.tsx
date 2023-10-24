@@ -7,17 +7,6 @@ import ShowValue from './components/ShowValue'
 
 const Profile = () => {
 	const { user } = useContext(AuthContext)
-
-	// const userInfo = {
-	// 	name: 'Marília Martins',
-	// 	fullName: 'Marilia Martins de Souza',
-	// 	age: '27 anos',
-	// 	email: 'marilia_martins@gmail.com',
-	// 	location: 'Sobradinho - Distrito Federal',
-	// 	address: 'Rua 203, conjunto B, casa 37',
-	// 	phone: '(61) 98274 - 2947',
-	// 	username: 'mari_martins',
-	// }
 	const mockHistory = 'Adotou 1 gato'
 
 	return (
