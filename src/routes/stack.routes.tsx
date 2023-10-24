@@ -5,11 +5,20 @@ import { AuthContext } from '../context/Auth'
 import Login from '../screens/Login'
 import UserRegister from '../screens/UserRegister'
 import DrawerRoutes from './drawer.routes'
+import { View, ActivityIndicator } from 'react-native'
 
 const Stack = createNativeStackNavigator()
 
 const StackRoutes = () => {
-	const { user } = useContext(AuthContext)
+	const { user, loading} = useContext(AuthContext)
+
+	if (loading) {
+		return (
+			<View>
+				<ActivityIndicator size="large" color="#666" />
+			</View>
+		)
+	}
 
 	return (
 		<Stack.Navigator initialRouteName='Login'>

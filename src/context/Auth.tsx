@@ -19,18 +19,21 @@ type AuthContextType = {
 	user: User,
 	signin: (email: string, password: string) => void,
 	signout: () => void,
+	loading: boolean
 }
 
 export const AuthContext = createContext<AuthContextType>({
 	user: {signed: false},
 	signin: () => {},
 	signout: () => {},
+	loading: true
 })
 
 const AuthProvider = ({
     children
 }: any) => {
-	const [user, setUser] = useState<User>({ signed: false })
+	const [user, setUser] = useState<User>({ signed: false });
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const authState = onAuthStateChanged(auth, (user) => {
@@ -45,7 +48,7 @@ const AuthProvider = ({
 					.catch(error => console.warn(error))
 			}
 		})
-
+		setLoading(false);
 		return authState
 	}, [])
 
@@ -63,7 +66,7 @@ const AuthProvider = ({
 		
 	}
 
-	return <AuthContext.Provider value={{ user, signin, signout }}>{children}</AuthContext.Provider>
+	return <AuthContext.Provider value={{ user, signin, signout, loading }}>{children}</AuthContext.Provider>
 }
 
 export default AuthProvider

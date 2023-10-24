@@ -3,7 +3,6 @@ import { useContext } from 'react'
 import { AuthContext } from '../context/Auth'
 
 const CustomDrawerContent = (props: any) => {
-    // @ts-expect-error TS(2339): Property 'signout' does not exist on type '{}'.
     const { signout } = useContext(AuthContext)
     return (
         <DrawerContentScrollView {...props} >
