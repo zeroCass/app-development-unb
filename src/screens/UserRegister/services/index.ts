@@ -9,13 +9,14 @@ export const registerUser:any = async (userData: IRegisterUser) => {
 		await setDoc(
 			doc(db, "users", authResult.user.uid), 
 			{
-				age: userData.age,
-				city: userData.city,
-				email: userData.email,
 				full_name: userData.fullName,
+				username: userData.username,
+				email: userData.email,
+				age: userData.age,
 				phone: userData.phone,
 				state: userData.uf,
-				username: userData.username
+				city: userData.city,
+				address: userData.street,
 			}
 		)
 		return { type: "success" }

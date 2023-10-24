@@ -4,7 +4,14 @@ import { createContext, useEffect, useState } from 'react'
 import { auth, db } from '../services/firebase'
 
 type User = {
-	full_name?: string 
+	full_name?: string
+	username?: string 
+	age?: number
+	email?: string
+	phone?: string
+	city?: string
+	state?: string
+	address?: string
 	signed: boolean
 }
 
@@ -55,10 +62,6 @@ const AuthProvider = ({
 			.catch((error) => console.warn(error.message))
 		
 	}
-
-
-
-
 
 	return <AuthContext.Provider value={{ user, signin, signout }}>{children}</AuthContext.Provider>
 }
