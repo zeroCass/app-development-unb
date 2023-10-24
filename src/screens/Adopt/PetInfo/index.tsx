@@ -1,7 +1,7 @@
 import { Text, View } from "react-native"
 
 const PetInfo = ({ route }: any) => {
-    const pet = route.params
+    const pet = route.params.pet
     return (
         <View>
             <Text>Foto do Anibal</Text>

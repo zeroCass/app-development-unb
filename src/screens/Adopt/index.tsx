@@ -21,7 +21,7 @@ const pets = [
         location: "Vila do Chaves"
     },
     {
-        id: 3,
+        id: 4,
         name: "Leia",
         gender: "Female",
         location: "Some Place of Galaxy"
@@ -35,9 +35,11 @@ const Adopt = ({ navigation }: any) => {
             data={pets}
             renderItem={({ item }: { item: any }) => (
                 <TouchableOpacity onPress={() => navigation.navigate("PetInfo", {
-                        name: item.name,
-                        gender: item.gender,
-                        location: item.location,
+                        pet: {
+                            name: item.name,
+                            gender: item.gender,
+                            location: item.location,
+                        }
                 })}>
                     <View style={{ backgroundColor: "red", margin: 10 }}>
                         <Text>Nome do Pet: {item.name}</Text>
