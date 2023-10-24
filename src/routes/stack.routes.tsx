@@ -2,19 +2,19 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useContext } from 'react'
 import { AuthContext } from '../context/Auth'
 
+import { ActivityIndicator, View } from 'react-native'
 import Login from '../screens/Login'
 import UserRegister from '../screens/UserRegister'
 import DrawerRoutes from './drawer.routes'
-import { View, ActivityIndicator } from 'react-native'
 
 const Stack = createNativeStackNavigator()
 
 const StackRoutes = () => {
 	const { user, loading} = useContext(AuthContext)
-
+	console.warn(loading)
 	if (loading) {
 		return (
-			<View>
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
 				<ActivityIndicator size="large" color="#666" />
 			</View>
 		)

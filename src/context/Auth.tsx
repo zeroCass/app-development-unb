@@ -33,7 +33,7 @@ const AuthProvider = ({
     children
 }: any) => {
 	const [user, setUser] = useState<User>({ signed: false });
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		const authState = onAuthStateChanged(auth, (user) => {
@@ -46,24 +46,27 @@ const AuthProvider = ({
 						setUser({ ...user_data, signed: true })
 					})
 					.catch(error => console.warn(error))
+					.finally(() => setLoading(false))
 			}
 		})
-		setLoading(false);
 		return authState
 	}, [])
 
 	const signin = (email: string, password: string) => {
+		setLoading(true)
 		signInWithEmailAndPassword(auth, email, password)
 			.catch((error) => console.log(error.code, error.message))
+			.finally(() => setLoading(false))
 	}
 
 	const signout = () => {
+		setLoading(true)
 		auth.signOut()
 			.then(() => {
 				setUser({ signed: false })
 			})
 			.catch((error) => console.warn(error.message))
-		
+			.finally(() => setLoading(false))
 	}
 
 	return <AuthContext.Provider value={{ user, signin, signout, loading }}>{children}</AuthContext.Provider>
