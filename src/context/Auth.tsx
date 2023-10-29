@@ -12,6 +12,7 @@ type User = {
 	city?: string
 	state?: string
 	address?: string
+	user_uid?: string
 	signed: boolean
 }
 
@@ -40,7 +41,7 @@ const AuthProvider = ({
 				getDoc(doc(db, "users", user_uid))
 					.then(fetched_data => {
 						const user_data = fetched_data.data()
-						setUser({ ...user_data, signed: true })
+						setUser({ ...user_data, user_uid: user_uid, signed: true })
 					})
 					.catch(error => console.warn(error))
 			}
