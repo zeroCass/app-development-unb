@@ -13,11 +13,10 @@ import {
 } from 'react-native'
 import MainButton from '../../components/MainButton'
 import TopSideMenu from '../../components/TopSideMenu'
-import { registerUser } from './services'
 import { AuthContext } from '../../context/Auth'
 
-const UserRegister = ({navigation}: any) => {
-	const { signin: authSignin } = useContext(AuthContext)
+const UserRegister = () => {
+	const { signup } = useContext(AuthContext)
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -44,25 +43,25 @@ const UserRegister = ({navigation}: any) => {
 		}
 	}
 
-	const register = async () => {
+	const register = () => {
 		if (password !== passwordConfirmation) {
 			console.warn("Senhas não batem")
 			return
 		} else {
-			const result = await registerUser({
-				fullName,
-				username,
-				email,
-				password,
-				age,
-				phone,
-				uf,
-				city,
-				street
-			});
-			if (result.type == "error") {
-				const errorMessage = result.error.message;
-				console.warn(errorMessage);
+			try{
+				signup({
+					fullName,
+					username,
+					email,
+					password,
+					age: Number(age),
+					phone,
+					city,
+					uf,
+					street
+				})
+			} catch (error) {
+				console.warn(error)
 			}
 		}
 	}

@@ -1,7 +1,9 @@
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, getDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc } from "firebase/firestore"
 import { createContext, useEffect, useState } from 'react'
 import { auth, db } from '../services/firebase'
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { IRegisterUser } from 'screens/UserRegister/interfaces'
 
 type User = {
 	full_name?: string
@@ -19,6 +21,7 @@ type AuthContextType = {
 	user: User,
 	signin: (email: string, password: string) => void,
 	signout: () => void,
+	signup: (userData: IRegisterUser) => void,
 	loading: boolean
 }
 
@@ -26,6 +29,7 @@ export const AuthContext = createContext<AuthContextType>({
 	user: {signed: false},
 	signin: () => {},
 	signout: () => {},
+	signup: () => {},
 	loading: true
 })
 
@@ -67,7 +71,25 @@ const AuthProvider = ({
 			.catch((error) => console.warn(error.message))
 	}
 
-	return <AuthContext.Provider value={{ user, signin, signout, loading }}>{children}</AuthContext.Provider>
+	const signup = async (userData: IRegisterUser) => {
+		setLoading(true)
+		const authResult = await createUserWithEmailAndPassword(auth, userData.email, userData.password)
+		setDoc(
+			doc(db, "users", authResult.user.uid), 
+			{
+				full_name: userData.fullName,
+				username: userData.username,
+				email: userData.email,
+				age: userData.age,
+				phone: userData.phone,
+				state: userData.uf,
+				city: userData.city,
+				address: userData.street,
+			}
+		)
+	}
+
+	return <AuthContext.Provider value={{ user, signin, signout, signup, loading }}>{children}</AuthContext.Provider>
 }
 
 export default AuthProvider

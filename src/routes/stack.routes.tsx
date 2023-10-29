@@ -11,7 +11,6 @@ const Stack = createNativeStackNavigator()
 
 const StackRoutes = () => {
 	const { user, loading} = useContext(AuthContext)
-	console.warn(loading)
 	if (loading) {
 		return (
 			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
