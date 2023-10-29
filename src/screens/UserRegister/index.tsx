@@ -63,9 +63,7 @@ const UserRegister = ({navigation}: any) => {
 			if (result.type == "error") {
 				const errorMessage = result.error.message;
 				console.warn(errorMessage);
-			} else {
-				authSignin(email, password)
-			};
+			}
 		}
 	}
 	return (

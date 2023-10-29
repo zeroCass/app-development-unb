@@ -47,6 +47,9 @@ const AuthProvider = ({
 					})
 					.catch(error => console.warn(error))
 					.finally(() => setLoading(false))
+			} else {
+				setUser({ signed: false })
+				setLoading(false)
 			}
 		})
 		return authState
@@ -56,17 +59,12 @@ const AuthProvider = ({
 		setLoading(true)
 		signInWithEmailAndPassword(auth, email, password)
 			.catch((error) => console.log(error.code, error.message))
-			.finally(() => setLoading(false))
 	}
 
 	const signout = () => {
 		setLoading(true)
 		auth.signOut()
-			.then(() => {
-				setUser({ signed: false })
-			})
 			.catch((error) => console.warn(error.message))
-			.finally(() => setLoading(false))
 	}
 
 	return <AuthContext.Provider value={{ user, signin, signout, loading }}>{children}</AuthContext.Provider>
