@@ -5,11 +5,20 @@ import MainButton from '../../components/MainButton'
 import Checkbox from './components/Checkbox'
 import RadioButton from './components/RadioButton'
 import { AntDesign } from '@expo/vector-icons'
+import { registerPet } from './services'
+import { AuthContext } from '../../context/Auth'
+import { useContext } from 'react'
+import { adoptionPreferences } from './interfaces'
 
 const CommonComponents = ({
     onChangeData
 }: any) => {
 	const [temperament, setTemperament] = useState(Array())
+	const [castrated, setCastrated ] = useState(false)
+	const [dewormed, setDewormed ] = useState(false)
+	const [diseases, setDiseases ] = useState('')
+	const [sick, setSick ] = useState(false)
+	const [vaccinated, setVaccinated ] = useState(false)
 	const [specie, setSpecie] = useState('')
 	const [gender, setGender] = useState('')
 	const [size, setSize] = useState('')
@@ -17,14 +26,21 @@ const CommonComponents = ({
 
 	// used to update the state on the father
 	useEffect(() => {
-		onChangeData({
-			temperament,
-			specie,
-			gender,
-			size,
-			age,
-		})
-	}, [temperament, specie, gender, size, age])
+			onChangeData({
+				temperament,
+				castrated,
+				dewormed,
+				diseases,
+				sick,
+				vaccinated,
+				specie,
+				gender,
+				size,
+				age,
+			})
+		}, [temperament, castrated, dewormed, diseases, sick, vaccinated,
+			specie, gender, size, age]
+	)
 
 	const handleSetTemperament = (selectedTemperament:string) => {
 		if (temperament.includes(selectedTemperament)) {
@@ -81,6 +97,22 @@ const CommonComponents = ({
 					<Checkbox text={'Guarda'} onPress={() => handleSetTemperament('Guarda')} />
 					<Checkbox text={'Amoroso'} onPress={() => handleSetTemperament('Amoroso')} />
 					<Checkbox text={'Preguiçoso'} onPress={() => handleSetTemperament('Preguiçoso')} />
+				</View>
+			</>
+			<>
+				<Text style={styles.subTitle}>SAÚDE</Text>
+				<View style={styles.checkGroup}>
+					<Checkbox text={'Vacinado'} onPress={() => setVaccinated(!vaccinated)} />
+					<Checkbox text={'Vermifugado'} onPress={() => setDewormed(!dewormed)} />
+				</View>
+				<View style={styles.checkGroup}>
+					<Checkbox text={'Castrado'} onPress={() => setCastrated(!castrated)} />
+					<Checkbox text={'Doente'} onPress={() => setSick(!sick)} />
+					<GenericInput
+						style={{ marginBottom: 16 }}
+						placeholder={'Doenças'}
+						onChangeText={(text:string) => setDiseases(text)}
+					/>
 				</View>
 			</>
 		</>
@@ -223,36 +255,46 @@ export type AdoptionProps = {
 const Adoption: React.FC<AdoptionProps> = ({
 	onChangeData
 }) => {
-	const [adoptionRequirements, setAdoptionRequirements] = useState(Array())
+	const [term, setTerm] = useState(false)
+	const [photos, setPhotos] = useState(false)
+	const [visit, setVisit] = useState(false)
+	const [oneMonth, setOneMonth] = useState(false)
+	const [threeMonths, setThreeMonths] = useState(false)
+	const [sixMonths, setSixMonths] = useState(false)
+	const [postAdoptionVisit, setPostAdoptionVisit] = useState(false)
 
 	useEffect(() => {
 		onChangeData({
-			adoptionRequirements,
+			adoptionTerm: term,
+			housePhotos: photos,
+			testVisit: visit,
+			followUpVisits: {
+				oneMonth: oneMonth,
+				threeMonths: threeMonths,
+				sixMonths: sixMonths
+			}
 		})
-	}, [adoptionRequirements])
-
-	const handleRequirements = (selectedRequirement:string) => {
-		if (adoptionRequirements.includes(selectedRequirement)) {
-			setAdoptionRequirements(adoptionRequirements.filter((item) => item !== selectedRequirement))
-		} else {
-			setAdoptionRequirements([...adoptionRequirements, selectedRequirement])
-		}
-	}
+	}, [term, photos, visit, oneMonth, threeMonths, sixMonths])
 
 	return (
 		<>
 			<Text style={styles.subTitle}>EXIGÊNCIAS PARA ADOÇÃO</Text>
 			<View style={styles.checkGroupVertical}>
-				<Checkbox text={'Termo de adoção'} onPress={() => handleRequirements('Termo de adoção')} />
-				<Checkbox text={'Fotos da casa'} onPress={() => handleRequirements('Fotos da casa')} />
+				<Checkbox text={'Termo de adoção'} onPress={() => setTerm(!term)} />
+				<Checkbox text={'Fotos da casa'} onPress={() => setPhotos(!photos)} />
 				<Checkbox
 					text={'Visita prévia do animal'}
-					onPress={() => handleRequirements('Visita prévia do animal')}
+					onPress={() => setVisit(!visit)}
 				/>
 				<Checkbox
 					text={'Acompanhamento pós adoção'}
-					onPress={() => handleRequirements('Acompanhamento pós adoção')}
+					onPress={() => setPostAdoptionVisit(!postAdoptionVisit)}
 				/>
+				<View style={styles.subCheckGroupVertical}>
+					<Checkbox text={'1 mês'} onPress={() => setOneMonth(!oneMonth)} />
+					<Checkbox text={'3 meses'} onPress={() => setThreeMonths(!threeMonths)} />
+					<Checkbox text={'6 meses'} onPress={() => setSixMonths(!sixMonths)} />
+				</View>
 			</View>
 		</>
 	)
@@ -303,29 +345,55 @@ const Sponsor: React.FC<SponsorProps> = ({
 }
 
 const PetRegistration = () => {
+	const { user } = useContext(AuthContext);
 	const [petName, setPetName] = useState('')
 	const [petStory, setPetStory] = useState('')
 	const [currentPage, setCurrentPage] = useState('Adoção')
 	const [helpIsActive, setHelpIsActive] = useState(false)
+	const [adoptionData, setAdoption] = useState({} as adoptionPreferences)
 	const [helpSectionData, setHelpSectionData] = useState({})
-	const [adoptionData, setAdoption] = useState({})
 	const [sponsorData, setSponsorData] = useState({})
-	const [commonData, setCommonData] = useState({})
+	const [commonData, setCommonData] = useState({
+		temperament: [],
+		specie: '',
+		gender: '',
+		size: '',
+		age: '',
+		vaccinated: false,
+		dewormed: false,
+		castrated: false,
+		sick: false,
+		diseases: '',
+	})
 
-	const handleSendData = () => {
-		const data = {
-			petName,
-			petStory,
-			helpSectionData,
-			adoptionData,
-			sponsorData,
-			commonData,
-		}
-		console.log(data)
+	const handleSendData = async () => {
+		const result = await registerPet({
+			about: petStory,
+			age_range: commonData.age,
+			name: petName,
+			photos: [],
+			sex: commonData.gender,
+			size: commonData.size,
+			temper: commonData.temperament,
+			owner: user.user_uid,
+			adoptionPreferences: adoptionData,
+			petHealth: {
+				castrated: commonData.castrated,
+				dewormed: commonData.dewormed,
+				diseases: commonData.diseases,
+				sick: commonData.sick,
+				vaccinated: commonData.vaccinated,
+			},
+		});
+		if (result.type == "error") {
+			console.warn(result.error);
+		} else {
+			console.log('Sucesso!')
+		};
 	}
 
 	const handlePageChange = (page: string) => {
-		setAdoption({})
+		setAdoption({} as adoptionPreferences)
 		setSponsorData({})
 		setCurrentPage(page)
 	}
@@ -424,6 +492,12 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		gap: 16,
 		marginBottom: 28,
+	},
+	subCheckGroupVertical: {
+		flex: 1,
+		flexDirection: 'column',
+		gap: 16,
+		marginLeft: 50,
 	},
 	RadioGroup: {
 		flexDirection: 'column',
