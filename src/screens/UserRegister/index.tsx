@@ -2,21 +2,12 @@ import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import { useContext, useState } from 'react'
-import {
-	Image,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TextInput,
-	View
-} from 'react-native'
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
-import { registerUser } from './services'
 import { AuthContext } from '../../context/Auth'
+import { registerUser } from './services'
 
-const UserRegister = ({navigation}: any) => {
+const UserRegister = () => {
 	const { signin: authSignin } = useContext(AuthContext)
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
@@ -46,7 +37,7 @@ const UserRegister = ({navigation}: any) => {
 
 	const register = async () => {
 		if (password !== passwordConfirmation) {
-			console.warn("Senhas não batem")
+			console.warn('Senhas não batem')
 			return
 		} else {
 			const result = await registerUser({
@@ -57,19 +48,18 @@ const UserRegister = ({navigation}: any) => {
 				age,
 				phone,
 				city,
-				uf
-			});
-			if (result.type == "error") {
-				const errorMessage = result.error.message;
-				console.warn(errorMessage);
+				uf,
+			})
+			if (result.type == 'error') {
+				const errorMessage = result.error.message
+				console.warn(errorMessage)
 			} else {
 				authSignin(email, password)
-			};
+			}
 		}
 	}
 	return (
 		<>
-			<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
 			<ScrollView>
 				<View style={styles.container}>
 					<Text style={styles.disclaimer}>
@@ -203,7 +193,7 @@ const UserRegister = ({navigation}: any) => {
 					</View>
 
 					<View style={styles.buttonContainer}>
-						<MainButton text={'Fazer Cadastro'} onPress={register}/>
+						<MainButton text={'Fazer Cadastro'} onPress={register} />
 					</View>
 					<StatusBar style='auto' />
 				</View>
