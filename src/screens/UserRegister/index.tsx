@@ -35,7 +35,7 @@ const UserRegister = () => {
 		}
 	}
 
-	const register = async () => {
+	const register = () => {
 		if (password !== passwordConfirmation) {
 			console.warn('Senhas não batem')
 			return
