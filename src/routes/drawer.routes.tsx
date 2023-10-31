@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from '@react-navigation/drawer'
 import { useContext } from 'react'
 import { AuthContext } from '../context/Auth'
-
+import { ActivityIndicator, View } from 'react-native'
 import CustomDrawer from '../components/CustomDrawer'
 import Login from '../screens/Login'
 import PetRegistration from '../screens/PetRegistration'
@@ -14,7 +14,15 @@ import type { DrawerContentComponentProps } from '@react-navigation/drawer'
 const Drawer = createDrawerNavigator()
 
 const DrawerRoutes = () => {
-	const { user } = useContext(AuthContext)
+	const { user, loading } = useContext(AuthContext)
+
+	if (loading) {
+		return (
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<ActivityIndicator size="large" color="#666" />
+			</View>
+		)
+	}
 
 	return (
 		<Drawer.Navigator
