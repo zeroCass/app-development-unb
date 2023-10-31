@@ -1,12 +1,10 @@
-import { View, Image, StyleSheet } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 
 export type Props = {
 	url: string
 }
 
-const ProfilePhoto: React.FC<Props> = ({
-    url
-}) => {
+const ProfilePhoto: React.FC<Props> = () => {
 	return (
 		<>
 			<View style={styles.container}>

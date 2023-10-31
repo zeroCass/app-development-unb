@@ -2,21 +2,13 @@ import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import { StatusBar } from 'expo-status-bar'
 import { useContext, useState } from 'react'
-import {
-	Image,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TextInput,
-	View
-} from 'react-native'
+import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import MainButton from '../../components/MainButton'
-import TopSideMenu from '../../components/TopSideMenu'
 import { AuthContext } from '../../context/Auth'
+import { registerUser } from './services'
 
 const UserRegister = () => {
-	const { signup } = useContext(AuthContext)
+	const { signin: authSignin } = useContext(AuthContext)
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -43,31 +35,32 @@ const UserRegister = () => {
 		}
 	}
 
-	const register = () => {
+	const register = async () => {
 		if (password !== passwordConfirmation) {
-			console.warn("Senhas não batem")
+			console.warn('Senhas não batem')
 			return
 		} else {
-			try{
-				signup({
-					fullName,
-					username,
-					email,
-					password,
-					age: Number(age),
-					phone,
-					city,
-					uf,
-					street
-				})
-			} catch (error) {
-				console.warn(error)
+			const result = await registerUser({
+				fullName,
+				username,
+				email,
+				password,
+				age,
+				phone,
+				uf,
+				city,
+				street,
+			})
+			if (result.type == 'error') {
+				const errorMessage = result.error.message
+				console.warn(errorMessage)
+			} else {
+				authSignin(email, password)
 			}
 		}
 	}
 	return (
 		<>
-			<TopSideMenu title='Cadastro Pessoal' icon='reorder-three-outline' />
 			<ScrollView>
 				<View style={styles.container}>
 					<Text style={styles.disclaimer}>
@@ -201,7 +194,7 @@ const UserRegister = () => {
 					</View>
 
 					<View style={styles.buttonContainer}>
-						<MainButton text={'Fazer Cadastro'} onPress={register}/>
+						<MainButton text={'Fazer Cadastro'} onPress={register} />
 					</View>
 					<StatusBar style='auto' />
 				</View>
