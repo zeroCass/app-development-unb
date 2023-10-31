@@ -4,7 +4,15 @@ import { createContext, useEffect, useState } from 'react'
 import { auth, db } from '../services/firebase'
 
 type User = {
-	full_name?: string 
+	full_name?: string
+	username?: string 
+	age?: number
+	email?: string
+	phone?: string
+	city?: string
+	state?: string
+	address?: string
+	user_uid?: string
 	signed: boolean
 }
 
@@ -33,7 +41,7 @@ const AuthProvider = ({
 				getDoc(doc(db, "users", user_uid))
 					.then(fetched_data => {
 						const user_data = fetched_data.data()
-						setUser({ ...user_data, signed: true })
+						setUser({ ...user_data, user_uid: user_uid, signed: true })
 					})
 					.catch(error => console.warn(error))
 			}
@@ -55,10 +63,6 @@ const AuthProvider = ({
 			.catch((error) => console.warn(error.message))
 		
 	}
-
-
-
-
 
 	return <AuthContext.Provider value={{ user, signin, signout }}>{children}</AuthContext.Provider>
 }

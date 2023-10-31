@@ -47,12 +47,13 @@ const UserRegister = () => {
 				password,
 				age,
 				phone,
-				city,
 				uf,
-			})
-			if (result.type == 'error') {
-				const errorMessage = result.error.message
-				console.warn(errorMessage)
+				city,
+				street
+			});
+			if (result.type == "error") {
+				const errorMessage = result.error.message;
+				console.warn(errorMessage);
 			} else {
 				authSignin(email, password)
 			}
