@@ -35,7 +35,7 @@ const UserRegister = () => {
 		}
 	}
 
-	const register = () => {
+	const register = async () => {
 		if (password !== passwordConfirmation) {
 			console.warn('Senhas não batem')
 			return
@@ -49,11 +49,11 @@ const UserRegister = () => {
 				phone,
 				uf,
 				city,
-				street
-			});
-			if (result.type == "error") {
-				const errorMessage = result.error.message;
-				console.warn(errorMessage);
+				street,
+			})
+			if (result.type == 'error') {
+				const errorMessage = result.error.message
+				console.warn(errorMessage)
 			} else {
 				authSignin(email, password)
 			}
