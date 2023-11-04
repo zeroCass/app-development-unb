@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Button, ScrollView, StyleSheet, Text, View, ActivityIndicator } from 'react-native'
 import GenericInput from '../../components/GenericInput'
 import MainButton from '../../components/MainButton'
 import Checkbox from './components/Checkbox'
 import RadioButton from './components/RadioButton'
-import { AntDesign } from '@expo/vector-icons'
+import PhotoComponent from './components/PhotoComponent'
 import { registerPet } from './services'
 import { AuthContext } from '../../context/Auth'
 import { useContext } from 'react'
@@ -221,33 +221,6 @@ const HelpSection: React.FC<HelpSectionProps> = ({
 	)
 }
 
-const PhotoComponent = () => {
-	return (
-		<View>
-			<Text style={styles.subTitle}>FOTOS DO ANIMAL</Text>
-			<View
-				style={{
-					flex: 1,
-					justifyContent: 'center',
-					alignItems: 'center',
-					width: '100%',
-					height: 128,
-					backgroundColor: '#f1f2f2',
-					marginBottom: 20,
-					borderRadius: 5,
-					shadowColor: '#000',
-					elevation: 5,
-				}}
-			>
-				<AntDesign name='pluscircleo' size={24} color='#757575' />
-				<Text style={{ fontFamily: 'Roboto', color: '#757575', fontSize: 14 }}>
-					adicionar fotos
-				</Text>
-			</View>
-		</View>
-	)
-}
-
 export type AdoptionProps = {
 	onChangeData: any
 }
@@ -346,8 +319,10 @@ const Sponsor: React.FC<SponsorProps> = ({
 
 const PetRegistration = () => {
 	const { user } = useContext(AuthContext);
+	const [loading, setLoading] = useState(false)
 	const [petName, setPetName] = useState('')
 	const [petStory, setPetStory] = useState('')
+	const [imageUri, setImage] = useState('')
 	const [currentPage, setCurrentPage] = useState('Adoção')
 	const [helpIsActive, setHelpIsActive] = useState(false)
 	const [adoptionData, setAdoption] = useState({} as adoptionPreferences)
@@ -367,11 +342,12 @@ const PetRegistration = () => {
 	})
 
 	const handleSendData = async () => {
+		setLoading(true)
 		const result = await registerPet({
 			about: petStory,
 			age_range: commonData.age,
 			name: petName,
-			photos: [],
+			photos: [imageUri],
 			sex: commonData.gender,
 			size: commonData.size,
 			temper: commonData.temperament,
@@ -386,8 +362,10 @@ const PetRegistration = () => {
 			},
 		});
 		if (result.type == "error") {
+			setLoading(false)
 			console.warn(result.error);
 		} else {
+			setLoading(false)
 			console.log('Sucesso!')
 		};
 	}
@@ -401,6 +379,14 @@ const PetRegistration = () => {
 	const toggleHelp = (value: boolean) => {
 		setHelpSectionData({})
 		setHelpIsActive(value)
+	}
+
+	if (loading){
+		return (
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<ActivityIndicator size="large" color="#666" />
+			</View>
+		)
 	}
 
 	return (
@@ -419,7 +405,7 @@ const PetRegistration = () => {
 							onChangeText={(text:string) => setPetName(text)}
 						/>
 					</View>
-					<PhotoComponent />
+					<PhotoComponent onChangeData={(newData: any) => setImage(newData)}/>
 					<CommonComponents onChangeData={(newData: any) => setCommonData(newData)} />
 					{currentPage === 'Adoção' ? (
 						<Adoption onChangeData={(newData: any) => setAdoption(newData)} />
