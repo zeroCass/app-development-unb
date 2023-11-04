@@ -1,8 +1,9 @@
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc, setDoc } from "firebase/firestore"
 import { createContext, useEffect, useState } from 'react'
-import { auth, db } from '../services/firebase'
+import { auth, db, storage } from '../services/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { ref, uploadBytes } from "firebase/storage";
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
 
 type User = {
@@ -88,6 +89,15 @@ const AuthProvider = ({
 				address: userData.street,
 			}
 		)
+
+		const img = await fetch(userData.imageUri);
+		const blob = await img.blob();
+		const userRef = ref(storage, `user/${authResult.user.uid}/profilePicture.png`);
+		try {
+			await uploadBytes(userRef, blob);
+		} catch (error) {
+			console.warn(error)
+		}
 	}
 
 	return <AuthContext.Provider value={{ user, signin, signout, signup, loading }}>{children}</AuthContext.Provider>
