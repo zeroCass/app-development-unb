@@ -1,43 +1,26 @@
-import { AntDesign } from '@expo/vector-icons'
-import React, { useContext, useEffect, useState } from 'react'
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
+import React, { useContext, useState } from 'react'
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { PetRegistrationProps } from 'routes/types'
 import GenericInput from '../../components/GenericInput'
 import MainButton from '../../components/MainButton'
 import { AuthContext } from '../../context/Auth'
 import Checkbox from './components/Checkbox'
 import PhotoComponent from './components/PhotoComponent'
 import RadioButton from './components/RadioButton'
-import { adoptionPreferences } from './interfaces'
+import {
+	CommonData,
+	TemperamentType,
+	adoptionPreferences,
+	followUpVisitsPreferences,
+} from './interfaces'
 import { registerPet } from './services'
 
-const CommonComponents = ({ onChangeData, commonData }: any) => {
-	const [size, setSize] = useState('')
-	const [age, setAge] = useState('')
+type CommonComponentsProps = {
+	commonData: CommonData
+	onChangeData: (attribute: string, value: string | boolean) => void
+}
 
-	// used to update the state on the father
-	// useEffect(() => {
-	// 	onChangeData({
-	// 		temperament,
-	// 		castrated,
-	// 		dewormed,
-	// 		diseases,
-	// 		sick,
-	// 		vaccinated,
-	// 		specie,
-	// 		gender,
-	// 		size,
-	// 		age,
-	// 	})
-	// }, [temperament, castrated, dewormed, diseases, sick, vaccinated, specie, gender, size, age])
-
-	const handleSetTemperament = (selectedTemperament:string) => {
-		if (temperament.includes(selectedTemperament)) {
-			setTemperament(temperament.filter((item) => item !== selectedTemperament))
-		} else {
-			setTemperament([...temperament, selectedTemperament])
-		}
-	}
-
+const CommonComponents = ({ onChangeData, commonData }: CommonComponentsProps) => {
 	return (
 		<>
 			<>
@@ -77,34 +60,67 @@ const CommonComponents = ({ onChangeData, commonData }: any) => {
 			<>
 				<Text style={styles.subTitle}>TEMPERAMENTO</Text>
 				<View style={styles.checkGroup}>
-					<Checkbox text={'Brincalhão'} onPress={() => onChangeData('temperament', 'Brincalhão')} />
-					<Checkbox text={'Tímido'} onPress={() => onChangeData('temperament', 'Tímido')} />
-					<Checkbox text={'Calmo'} onPress={() => onChangeData('temperament', 'Calmo')} />
+					<Checkbox
+						checked={commonData.temperament['Brincalhão']}
+						text={'Brincalhão'}
+						onCheck={() => {
+							onChangeData('temperament', 'Brincalhão')
+						}}
+					/>
+					<Checkbox
+						checked={commonData.temperament['Tímido']}
+						text={'Tímido'}
+						onCheck={() => onChangeData('temperament', 'Tímido')}
+					/>
+					<Checkbox
+						checked={commonData.temperament['Calmo']}
+						text={'Calmo'}
+						onCheck={() => onChangeData('temperament', 'Calmo')}
+					/>
 				</View>
 				<View style={styles.checkGroup}>
-					<Checkbox text={'Guarda'} onPress={() => onChangeData('temperament', 'Guarda')} />
-					<Checkbox text={'Amoroso'} onPress={() => onChangeData('temperament', 'Amoroso')} />
-					<Checkbox text={'Preguiçoso'} onPress={() => onChangeData('temperament', 'Preguiçoso')} />
+					<Checkbox
+						checked={commonData.temperament['Guarda']}
+						text={'Guarda'}
+						onCheck={() => onChangeData('temperament', 'Guarda')}
+					/>
+					<Checkbox
+						checked={commonData.temperament['Amoroso']}
+						text={'Amoroso'}
+						onCheck={() => onChangeData('temperament', 'Amoroso')}
+					/>
+					<Checkbox
+						checked={commonData.temperament['Preguiçoso']}
+						text={'Preguiçoso'}
+						onCheck={() => onChangeData('temperament', 'Preguiçoso')}
+					/>
 				</View>
 			</>
 			<>
 				<Text style={styles.subTitle}>SAÚDE</Text>
 				<View style={styles.checkGroup}>
 					<Checkbox
+						checked={commonData.vaccinated}
 						text={'Vacinado'}
-						onPress={() => onChangeData('vaccinated', !commonData.vaccinated)}
+						onCheck={() => onChangeData('vaccinated', !commonData.vaccinated)}
 					/>
 					<Checkbox
+						checked={commonData.dewormed}
 						text={'Vermifugado'}
-						onPress={() => onChangeData('dewormed', !commonData.dewormed)}
+						onCheck={() => onChangeData('dewormed', !commonData.dewormed)}
 					/>
 				</View>
 				<View style={styles.checkGroup}>
 					<Checkbox
+						checked={commonData.castrated}
 						text={'Castrado'}
-						onPress={() => onChangeData('castrated', commonData.castrated)}
+						onCheck={() => onChangeData('castrated', !commonData.castrated)}
 					/>
-					<Checkbox text={'Doente'} onPress={() => onChangeData('sick', !commonData.sick)} />
+					<Checkbox
+						checked={commonData.sick}
+						text={'Doente'}
+						onCheck={() => onChangeData('sick', !commonData.sick)}
+					/>
 					<GenericInput
 						style={{ marginBottom: 16 }}
 						placeholder={'Doenças'}
@@ -117,119 +133,94 @@ const CommonComponents = ({ onChangeData, commonData }: any) => {
 	)
 }
 
-const PhotoComponent = () => {
-	return (
-		<View>
-			<Text style={styles.subTitle}>FOTOS DO ANIMAL</Text>
-			<View
-				style={{
-					flex: 1,
-					justifyContent: 'center',
-					alignItems: 'center',
-					width: '100%',
-					height: 128,
-					backgroundColor: '#f1f2f2',
-					marginBottom: 20,
-					borderRadius: 5,
-					shadowColor: '#000',
-					elevation: 5,
-				}}
-			>
-				<AntDesign name='pluscircleo' size={24} color='#757575' />
-				<Text style={{ fontFamily: 'Roboto', color: '#757575', fontSize: 14 }}>
-					adicionar fotos
-				</Text>
-			</View>
-		</View>
-	)
+type AdoptionProps = {
+	adoptionData: adoptionPreferences
+	onChangeData: (attribute: string, monthsNumber?: string) => void
+	postAdoptionVisit: boolean
+	setPostAdoptionVisit: (postAdoptionVisi: boolean) => void
 }
 
-type AdoptionParams = {
-	adoptionTerm: boolean
-	housePhotos: boolean
-	testVisit: boolean
-	followUpVisits: {
-		oneMonth: boolean
-		threeMonths: boolean
-		sixMonths: boolean
-	}
-}
-
-export type AdoptionProps = {
-	onChangeData: (object: AdoptionParams) => void
-}
-
-const Adoption = ({ onChangeData }: AdoptionProps) => {
-	const [term, setTerm] = useState(false)
-	const [photos, setPhotos] = useState(false)
-	const [visit, setVisit] = useState(false)
-	const [oneMonth, setOneMonth] = useState(false)
-	const [threeMonths, setThreeMonths] = useState(false)
-	const [sixMonths, setSixMonths] = useState(false)
-	const [postAdoptionVisit, setPostAdoptionVisit] = useState(false)
-
-	useEffect(() => {
-		onChangeData({
-			adoptionTerm: term,
-			housePhotos: photos,
-			testVisit: visit,
-			followUpVisits: {
-				oneMonth: oneMonth,
-				threeMonths: threeMonths,
-				sixMonths: sixMonths,
-			},
-		})
-	}, [term, photos, visit, oneMonth, threeMonths, sixMonths])
-
+const Adoption = ({
+	adoptionData,
+	onChangeData,
+	postAdoptionVisit,
+	setPostAdoptionVisit,
+}: AdoptionProps) => {
 	return (
 		<>
 			<Text style={styles.subTitle}>EXIGÊNCIAS PARA ADOÇÃO</Text>
 			<View style={styles.checkGroupVertical}>
-				<Checkbox text={'Termo de adoção'} onPress={() => setTerm(!term)} />
-				<Checkbox text={'Fotos da casa'} onPress={() => setPhotos(!photos)} />
-				<Checkbox text={'Visita prévia do animal'} onPress={() => setVisit(!visit)} />
 				<Checkbox
+					checked={adoptionData.adoptionTerm}
+					text={'Termo de adoção'}
+					onCheck={() => onChangeData('adoptionTerm')}
+				/>
+				<Checkbox
+					checked={adoptionData.housePhotos}
+					text={'Fotos da casa'}
+					onCheck={() => onChangeData('housePhotos')}
+				/>
+				<Checkbox
+					checked={adoptionData.testVisit}
+					text={'Visita prévia do animal'}
+					onCheck={() => onChangeData('testVisit')}
+				/>
+				<Checkbox
+					checked={postAdoptionVisit}
 					text={'Acompanhamento pós adoção'}
-					onPress={() => setPostAdoptionVisit(!postAdoptionVisit)}
+					onCheck={() => setPostAdoptionVisit(!postAdoptionVisit)}
 				/>
 				<View style={styles.subCheckGroupVertical}>
-					<Checkbox text={'1 mês'} onPress={() => setOneMonth(!oneMonth)} />
-					<Checkbox text={'3 meses'} onPress={() => setThreeMonths(!threeMonths)} />
-					<Checkbox text={'6 meses'} onPress={() => setSixMonths(!sixMonths)} />
+					<Checkbox
+						disabled={!postAdoptionVisit}
+						checked={adoptionData.followUpVisits.oneMonth}
+						text={'1 mês'}
+						onCheck={() => onChangeData('followUpVisits', 'oneMonth')}
+					/>
+					<Checkbox
+						disabled={!postAdoptionVisit}
+						checked={adoptionData.followUpVisits.threeMonths}
+						text={'3 meses'}
+						onCheck={() => onChangeData('followUpVisits', 'threeMonths')}
+					/>
+					<Checkbox
+						disabled={!postAdoptionVisit}
+						checked={adoptionData.followUpVisits.sixMonths}
+						text={'6 meses'}
+						onCheck={() => onChangeData('followUpVisits', 'sixMonths')}
+					/>
 				</View>
 			</View>
 		</>
 	)
 }
 
-export type SponsorProps = {
-	onChangeData: any
-}
-
-type CommonData = {
-	temperament: string[]
-	specie: string
-	gender: string
-	size: string
-	age: string
-	vaccinated: boolean
-	dewormed: boolean
-	castrated: boolean
-	sick: boolean
-	diseases: string
-}
-
-const PetRegistration = () => {
-	console.log('petregister')
+const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 	const { user } = useContext(AuthContext)
+	const [loading, setLoading] = useState(false)
 	const [petName, setPetName] = useState('')
 	const [petStory, setPetStory] = useState('')
 	const [imageUri, setImage] = useState('')
-	const [currentPage, setCurrentPage] = useState('Adoção')
-	const [helpIsActive, setHelpIsActive] = useState(false)
-	const [adoptionData, setAdoption] = useState({} as adoptionPreferences)
+	const [postAdoptionVisit, setPostAdoptionVisit] = useState(false)
+	const [adoptionData, setAdoption] = useState<adoptionPreferences>({
+		adoptionTerm: false,
+		housePhotos: false,
+		testVisit: false,
+		followUpVisits: {
+			oneMonth: false,
+			threeMonths: false,
+			sixMonths: false,
+		},
+	})
 	const [commonData, setCommonData] = useState<CommonData>({
-		temperament: [],
+		temperament: {
+			Brincalhão: false,
+			Tímido: false,
+			Calmo: false,
+			Guarda: false,
+			Amoroso: false,
+			Preguiçoso: false,
+		},
 		specie: '',
 		gender: '',
 		size: '',
@@ -244,11 +235,27 @@ const PetRegistration = () => {
 	const initialState = () => {
 		setPetName('')
 		setPetStory('')
-		setCurrentPage('Adoção')
-		setHelpIsActive(false)
-		setAdoption({} as adoptionPreferences)
+		setImage('')
+		setPostAdoptionVisit(false)
+		setAdoption({
+			adoptionTerm: false,
+			housePhotos: false,
+			testVisit: false,
+			followUpVisits: {
+				oneMonth: false,
+				threeMonths: false,
+				sixMonths: false,
+			},
+		})
 		setCommonData({
-			temperament: [],
+			temperament: {
+				Brincalhão: false,
+				Tímido: false,
+				Calmo: false,
+				Guarda: false,
+				Amoroso: false,
+				Preguiçoso: false,
+			},
 			specie: '',
 			gender: '',
 			size: '',
@@ -261,11 +268,16 @@ const PetRegistration = () => {
 		})
 	}
 
+	const convertToArray = (object: TemperamentType): string[] => {
+		const array = []
+		for (const key in object) {
+			if (object[key as keyof TemperamentType] === true) array.push(key)
+		}
+		return array
+	}
+
 	const handleSendData = async () => {
 		setLoading(true)
-		console.warn('handleSendData')
-		initialState()
-		return
 		const result = await registerPet({
 			about: petStory,
 			age_range: commonData.age,
@@ -273,7 +285,7 @@ const PetRegistration = () => {
 			photos: [imageUri],
 			sex: commonData.gender,
 			size: commonData.size,
-			temper: commonData.temperament,
+			temper: convertToArray(commonData.temperament),
 			owner: user.user_uid,
 			adoptionPreferences: adoptionData,
 			petHealth: {
@@ -284,16 +296,23 @@ const PetRegistration = () => {
 				vaccinated: commonData.vaccinated,
 			},
 		})
+
+		setLoading(false)
 		if (result.type == 'error') {
 			console.warn(result.error)
-			setLoading(false)
+			Alert.alert(
+				'Erro ao cadastrar animal',
+				`${result.error}`,
+				[
+					{
+						text: 'Ok',
+					},
+				],
+				{
+					cancelable: true,
+				}
+			)
 		} else {
-			Alert.alert('Cadastro do Animal', `${petName} cadastrado com sucesso!`, [{ text: 'Ok' }], {
-				cancelable: true,
-			})
-			initialState()
-			console.log('Sucesso!')
-			setLoading(false)
 			// navigation.navigate('Profile') - Usado para navegar
 			Alert.alert(
 				'Cadastro de Animal',
@@ -308,21 +327,35 @@ const PetRegistration = () => {
 					cancelable: false,
 				}
 			)
+			initialState()
 		}
 	}
 
-	const handleSetTemperament = (selectedTemperament: string) => {
-		if (commonData.temperament.includes(selectedTemperament as string)) {
-			return commonData.temperament.filter((item) => item !== selectedTemperament)
-		} else {
-			return [...commonData.temperament, selectedTemperament]
+	const handleAdoptionData = (attribute: string, monthsNumber?: string) => {
+		if (attribute === 'followUpVisits' && monthsNumber) {
+			const oldValue = adoptionData[attribute][monthsNumber as keyof followUpVisitsPreferences]
+			const newValue = {
+				...adoptionData,
+				[attribute]: {
+					...adoptionData[attribute],
+					[monthsNumber]: !oldValue,
+				},
+			}
+			return setAdoption(newValue)
 		}
+		setAdoption((prevState) => ({
+			...prevState,
+			[attribute]: !adoptionData[attribute as keyof adoptionPreferences],
+		}))
 	}
 
-	const handleCommonData = (attribute: string, value: string | boolean | string[]) => {
+	const handleCommonData = (attribute: string, value: string | boolean | []) => {
 		if (attribute === 'temperament') {
-			const newTemperament = handleSetTemperament(value as string) as string[]
-			setCommonData((prevState) => ({ ...prevState, [attribute]: newTemperament }))
+			const newValue = {
+				...commonData.temperament,
+				[value as keyof TemperamentType]: !commonData.temperament[value as keyof TemperamentType],
+			}
+			return setCommonData((prevState) => ({ ...prevState, temperament: newValue }))
 		}
 
 		setCommonData((prevState) => ({ ...prevState, [attribute]: value }))
@@ -341,7 +374,7 @@ const PetRegistration = () => {
 			<ScrollView style={{ flex: 1 }}>
 				<View style={styles.container}>
 					<View style={styles.section}>
-						<Text style={styles.title}>{currentPage}</Text>
+						<Text style={styles.title}>Adoção</Text>
 						<GenericInput
 							style={{ marginBottom: 20 }}
 							placeholder={'Nome do Animal'}
@@ -351,16 +384,24 @@ const PetRegistration = () => {
 							value={petName}
 						/>
 					</View>
-					<PhotoComponent />
-					<CommonComponents onChangeData={(newData: any) => setCommonData(newData)} />
-					{currentPage === 'Adoção' ? (
-						<Adoption onChangeData={(newData: any) => setAdoption(newData)} />
-					) : (
-						<Sponsor onChangeData={(newData: any) => setSponsorData(newData)} />
-					)}
-					{helpIsActive ? (
-						<HelpSection onChangeData={(newData: any) => setHelpSectionData(newData)} />
-					) : null}
+					<PhotoComponent
+						imageUri={imageUri}
+						onChangeData={(imageUri: string) => setImage(imageUri)}
+					/>
+					<CommonComponents
+						commonData={commonData}
+						onChangeData={(attribute: string, value: string | boolean | []) =>
+							handleCommonData(attribute, value)
+						}
+					/>
+					<Adoption
+						adoptionData={adoptionData}
+						onChangeData={(attribute: string, monthNumber?: string) =>
+							handleAdoptionData(attribute, monthNumber)
+						}
+						postAdoptionVisit={postAdoptionVisit}
+						setPostAdoptionVisit={() => setPostAdoptionVisit(!postAdoptionVisit)}
+					/>
 					<View style={styles.section}>
 						<GenericInput
 							style={{ marginBottom: 20 }}
@@ -373,7 +414,7 @@ const PetRegistration = () => {
 					</View>
 					<View style={styles.buttonCenter}>
 						<MainButton
-							text={currentPage === 'Apadrinhar' ? 'Procurar Padrinho' : 'Colocar para Adoção'}
+							text={'Apadrinhar'}
 							styleButton={{ backgroundColor: '#ffd358', marginTop: 4 }}
 							onPress={handleSendData}
 						/>
