@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons'
-import PropTypes from 'prop-types'
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 

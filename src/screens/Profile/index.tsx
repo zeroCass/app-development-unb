@@ -1,20 +1,29 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import MainButton from '../../components/MainButton'
 import { AuthContext } from '../../context/Auth'
 import ProfilePhoto from './components/ProfilePhoto'
 import ShowValue from './components/ShowValue'
+import { storage } from '../../services/firebase'
+import { ref, getDownloadURL } from "firebase/storage";
 
 const Profile = () => {
 	const { user } = useContext(AuthContext)
+	const [urlT, setUrlT] = useState('')
 	const mockHistory = 'Adotou 1 gato'
+
+	getDownloadURL(ref(storage, `user/${user.user_uid}/profilePicture.png`)).then((x) => {
+		setUrlT(x)
+	}).catch((error) => {
+		console.log(error)
+	})
 
 	return (
 		<>
 			<SafeAreaView>
 				<ScrollView>
 					<View style={styles.container}>
-						<ProfilePhoto url='./src'></ProfilePhoto>
+						<ProfilePhoto url={urlT}></ProfilePhoto>
 						<Text style={styles.titleText}>
 							<Text style={styles.innerText}>{user.full_name}</Text>
 						</Text>

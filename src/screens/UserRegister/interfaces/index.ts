@@ -8,4 +8,5 @@ export interface IRegisterUser {
     city: string;
     uf: string;
     street: string;
+    imageUri: string;
 }
