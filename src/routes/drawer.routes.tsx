@@ -1,28 +1,36 @@
-import { createDrawerNavigator } from '@react-navigation/drawer'
+import { DrawerContentComponentProps, createDrawerNavigator } from '@react-navigation/drawer'
 import { useContext } from 'react'
-import { AuthContext } from '../context/Auth'
-
+import { ActivityIndicator, View } from 'react-native'
 import CustomDrawer from '../components/CustomDrawer'
+import { AuthContext } from '../context/Auth'
 import Login from '../screens/Login'
 import PetRegistration from '../screens/PetRegistration'
 import Profile from '../screens/Profile'
 import UserRegister from '../screens/UserRegister'
+
 import AdoptStack from './adoptStack.routes'
+import { RootDrawerParamList } from './types'
 
-import type { DrawerContentComponentProps } from '@react-navigation/drawer'
+const RootDrawer = createDrawerNavigator<RootDrawerParamList>()
 
-const Drawer = createDrawerNavigator()
+const RootRoutes = () => {
+	const { user, loading } = useContext(AuthContext)
 
-const DrawerRoutes = () => {
-	const { user } = useContext(AuthContext)
+	if (loading) {
+		return (
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<ActivityIndicator size='large' color='#666' />
+			</View>
+		)
+	}
 
 	return (
-		<Drawer.Navigator
+		<RootDrawer.Navigator
 			drawerContent={(props: DrawerContentComponentProps) => <CustomDrawer {...props} />}
 		>
 			{!user.signed ? (
-				<Drawer.Group>
-					<Drawer.Screen
+				<RootDrawer.Group>
+					<RootDrawer.Screen
 						name='Login'
 						component={Login}
 						options={{
@@ -31,17 +39,17 @@ const DrawerRoutes = () => {
 							},
 						}}
 					/>
-					<Drawer.Screen
+					<RootDrawer.Screen
 						name='UserRegister'
 						component={UserRegister}
 						options={{
 							title: 'Cadastro Pessoal',
 						}}
 					/>
-				</Drawer.Group>
+				</RootDrawer.Group>
 			) : (
-				<Drawer.Group>
-					<Drawer.Screen
+				<RootDrawer.Group>
+					<RootDrawer.Screen
 						name='Profile'
 						component={Profile}
 						options={{
@@ -51,7 +59,7 @@ const DrawerRoutes = () => {
 							},
 						}}
 					/>
-					<Drawer.Screen
+					<RootDrawer.Screen
 						name='PetRegistration'
 						component={PetRegistration}
 						options={{
@@ -61,7 +69,7 @@ const DrawerRoutes = () => {
 							},
 						}}
 					/>
-					<Drawer.Screen
+					<RootDrawer.Screen
 						name='AdoptStack'
 						component={AdoptStack}
 						options={{
@@ -69,10 +77,10 @@ const DrawerRoutes = () => {
 							headerShown: false,
 						}}
 					/>
-				</Drawer.Group>
+				</RootDrawer.Group>
 			)}
-		</Drawer.Navigator>
+		</RootDrawer.Navigator>
 	)
 }
 
-export default DrawerRoutes
+export default RootRoutes

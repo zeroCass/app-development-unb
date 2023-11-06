@@ -5,10 +5,9 @@ import { useContext, useState } from 'react'
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native'
 import MainButton from '../../components/MainButton'
 import { AuthContext } from '../../context/Auth'
-import { registerUser } from './services'
 
 const UserRegister = () => {
-	const { signin: authSignin } = useContext(AuthContext)
+	const { signup } = useContext(AuthContext)
 	const [fullName, setFullName] = useState('')
 	const [age, setAge] = useState('')
 	const [email, setEmail] = useState('')
@@ -19,7 +18,7 @@ const UserRegister = () => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 	const [passwordConfirmation, setPasswordConfirmation] = useState('')
-	const [image, setImage] = useState('')
+	const [imageUri, setImage] = useState('')
 
 	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
@@ -37,25 +36,24 @@ const UserRegister = () => {
 
 	const register = async () => {
 		if (password !== passwordConfirmation) {
-			console.warn('Senhas não batem')
+			console.warn("Senhas não batem")
 			return
 		} else {
-			const result = await registerUser({
-				fullName,
-				username,
-				email,
-				password,
-				age,
-				phone,
-				uf,
-				city,
-				street
-			});
-			if (result.type == "error") {
-				const errorMessage = result.error.message;
-				console.warn(errorMessage);
-			} else {
-				authSignin(email, password)
+			try{
+				signup({
+					fullName,
+					username,
+					email,
+					password,
+					age: Number(age),
+					phone,
+					city,
+					uf,
+					street,
+					imageUri
+				})
+			} catch (error) {
+				console.warn(error)
 			}
 		}
 	}
@@ -160,15 +158,10 @@ const UserRegister = () => {
 						<Text style={styles.sectionTitle}>FOTO DE PERFIL</Text>
 
 						<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-							{/* <Pressable style={styles.imageButton} onPress={pickImage}>
-								<Ionicons name='add-circle-outline' size={24} color='#757575' style={styles.icon} />
-								<Text style={styles.imageUploadText}>{"Adicionar foto"}</Text>
-							</Pressable>
-							{image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />} */}
 
-							{image ? (
+							{imageUri ? (
 								<>
-									<Image source={{ uri: image }} style={{ width: 200, height: 200 }} />
+									<Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />
 									<Pressable style={styles.imageButton2} onPress={pickImage}>
 										<Ionicons
 											name='add-circle-outline'

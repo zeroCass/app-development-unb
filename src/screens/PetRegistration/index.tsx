@@ -5,6 +5,7 @@ import GenericInput from '../../components/GenericInput'
 import MainButton from '../../components/MainButton'
 import { AuthContext } from '../../context/Auth'
 import Checkbox from './components/Checkbox'
+import PhotoComponent from './components/PhotoComponent'
 import RadioButton from './components/RadioButton'
 import { adoptionPreferences } from './interfaces'
 import { registerPet } from './services'
@@ -28,6 +29,14 @@ const CommonComponents = ({ onChangeData, commonData }: any) => {
 	// 		age,
 	// 	})
 	// }, [temperament, castrated, dewormed, diseases, sick, vaccinated, specie, gender, size, age])
+
+	const handleSetTemperament = (selectedTemperament:string) => {
+		if (temperament.includes(selectedTemperament)) {
+			setTemperament(temperament.filter((item) => item !== selectedTemperament))
+		} else {
+			setTemperament([...temperament, selectedTemperament])
+		}
+	}
 
 	return (
 		<>
@@ -215,6 +224,7 @@ const PetRegistration = () => {
 	const { user } = useContext(AuthContext)
 	const [petName, setPetName] = useState('')
 	const [petStory, setPetStory] = useState('')
+	const [imageUri, setImage] = useState('')
 	const [currentPage, setCurrentPage] = useState('Adoção')
 	const [helpIsActive, setHelpIsActive] = useState(false)
 	const [adoptionData, setAdoption] = useState({} as adoptionPreferences)
@@ -252,6 +262,7 @@ const PetRegistration = () => {
 	}
 
 	const handleSendData = async () => {
+		setLoading(true)
 		console.warn('handleSendData')
 		initialState()
 		return
@@ -259,7 +270,7 @@ const PetRegistration = () => {
 			about: petStory,
 			age_range: commonData.age,
 			name: petName,
-			photos: [],
+			photos: [imageUri],
 			sex: commonData.gender,
 			size: commonData.size,
 			temper: commonData.temperament,
@@ -274,16 +285,29 @@ const PetRegistration = () => {
 			},
 		})
 		if (result.type == 'error') {
-			Alert.alert('Cadastro do Animal', 'Erro ao cadastrar animal', [{ text: 'Ok' }], {
-				cancelable: true,
-			})
 			console.warn(result.error)
+			setLoading(false)
 		} else {
 			Alert.alert('Cadastro do Animal', `${petName} cadastrado com sucesso!`, [{ text: 'Ok' }], {
 				cancelable: true,
 			})
 			initialState()
 			console.log('Sucesso!')
+			setLoading(false)
+			// navigation.navigate('Profile') - Usado para navegar
+			Alert.alert(
+				'Cadastro de Animal',
+				'Cadastro realizado com sucesso!',
+				[
+					{
+						text: 'Ok',
+						onPress: () => navigation.navigate('Profile'),
+					},
+				],
+				{
+					cancelable: false,
+				}
+			)
 		}
 	}
 
@@ -304,6 +328,14 @@ const PetRegistration = () => {
 		setCommonData((prevState) => ({ ...prevState, [attribute]: value }))
 	}
 
+	if (loading) {
+		return (
+			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<ActivityIndicator size='large' color='#666' />
+			</View>
+		)
+	}
+
 	return (
 		<>
 			<ScrollView style={{ flex: 1 }}>
@@ -320,13 +352,15 @@ const PetRegistration = () => {
 						/>
 					</View>
 					<PhotoComponent />
-					<CommonComponents
-						commonData={commonData}
-						onChangeData={(attribute: string, value: string | boolean | string[]) =>
-							handleCommonData(attribute, value)
-						}
-					/>
-					<Adoption onChangeData={(newData: AdoptionParams) => setAdoption(newData)} />
+					<CommonComponents onChangeData={(newData: any) => setCommonData(newData)} />
+					{currentPage === 'Adoção' ? (
+						<Adoption onChangeData={(newData: any) => setAdoption(newData)} />
+					) : (
+						<Sponsor onChangeData={(newData: any) => setSponsorData(newData)} />
+					)}
+					{helpIsActive ? (
+						<HelpSection onChangeData={(newData: any) => setHelpSectionData(newData)} />
+					) : null}
 					<View style={styles.section}>
 						<GenericInput
 							style={{ marginBottom: 20 }}

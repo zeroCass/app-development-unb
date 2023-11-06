@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from 'firebase/auth'
+import { getStorage } from "firebase/storage";
 import { 
     EXPO_PUBLIC_API_KEY,
     EXPO_PUBLIC_AUTH_DOMAIN,
@@ -24,8 +25,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 const db = getFirestore(app)
+const storage = getStorage();
 
 export {
     db,
     auth,
+    storage
 }
