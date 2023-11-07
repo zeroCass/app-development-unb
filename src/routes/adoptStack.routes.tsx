@@ -28,7 +28,7 @@ const AdoptStack = () => {
 			<Stack.Screen
 				name='PetInfo'
 				component={PetInfo}
-				options={({ route }: any) => ({
+				options={({ route }) => ({
 					title: route.params.pet.name ? route.params.pet.name : 'Informações do Pet',
 				})}
 			/>

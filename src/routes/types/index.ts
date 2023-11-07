@@ -3,9 +3,8 @@ import { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/n
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
 type Pet = {
+	id: string
 	name: string
-	gender: string
-	location: string
 }
 
 export type AdoptParamList = {
