@@ -1,27 +1,21 @@
-import { Image, StyleSheet, View, ActivityIndicator } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 
 export type Props = {
 	url: string
 }
 
-const ProfilePhoto: React.FC<Props> = (props: Props) => {
-	console.log(props.url)
+const getImageSource = (url: string) => {
+	if (url === '') return require('../../../assets/images/default-pf.png')
+	if (url !== '') return url
+}
 
-	if (props.url === '') {
-		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-				<ActivityIndicator size="large" color="#666" />
-			</View>
-		)
-	}
+const ProfilePhoto = (props: Props) => {
+	const imageSource = getImageSource(props.url)
 
 	return (
 		<>
 			<View style={styles.container}>
-				<Image
-					style={{ width: 150, height: 150, borderRadius: 100 }}
-					source={{uri: props.url}}
-				/>
+				<Image style={{ width: 150, height: 150, borderRadius: 100 }} source={imageSource} />
 			</View>
 		</>
 	)

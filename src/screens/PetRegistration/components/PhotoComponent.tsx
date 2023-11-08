@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { PhotoComponentProps } from '../interfaces'
 
-const PhotoComponent = ({
-    onChangeData
-}: any) => {
-	const [imageUri, setImage] = useState('')
-
-    const pickImage = async () => {
+const PhotoComponent = ({ onChangeData, imageUri }: PhotoComponentProps) => {
+	const pickImage = async () => {
 		// No permissions request is necessary for launching the image library
 		const result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -18,13 +14,9 @@ const PhotoComponent = ({
 		})
 
 		if (!result.canceled && result.assets[0] !== undefined) {
-			setImage(result.assets[0].uri)
+			onChangeData(result.assets[0].uri)
 		}
 	}
-
-	useEffect(() => {
-		onChangeData(imageUri)
-	}, [imageUri])
 
 	return (
 		<View>
@@ -34,23 +26,13 @@ const PhotoComponent = ({
 					<>
 						<Image source={{ uri: imageUri }} style={{ width: 200, height: 200 }} />
 						<Pressable style={styles.imageButton2} onPress={pickImage}>
-							<Ionicons
-								name='add-circle-outline'
-								size={24}
-								color='#757575'
-								style={styles.icon}
-							/>
+							<Ionicons name='add-circle-outline' size={24} color='#757575' style={styles.icon} />
 							<Text style={styles.imageUploadText}>{'Adicionar foto'}</Text>
 						</Pressable>
 					</>
 				) : (
 					<Pressable style={styles.imageButton} onPress={pickImage}>
-						<Ionicons
-							name='add-circle-outline'
-							size={24}
-							color='#757575'
-							style={styles.icon}
-						/>
+						<Ionicons name='add-circle-outline' size={24} color='#757575' style={styles.icon} />
 						<Text style={styles.imageUploadText}>{'Adicionar foto'}</Text>
 					</Pressable>
 				)}
@@ -66,7 +48,7 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		marginBottom: 16,
 	},
-    imageButton: {
+	imageButton: {
 		width: 128,
 		height: 128,
 		backgroundColor: '#e6e7e7',
@@ -95,7 +77,7 @@ const styles = StyleSheet.create({
 		borderRadius: 2,
 		marginBottom: 48,
 	},
-    icon: {
+	icon: {
 		position: 'absolute',
 		top: 0,
 		right: 24,

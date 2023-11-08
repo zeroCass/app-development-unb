@@ -1,30 +1,27 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput } from 'react-native';
+import React from 'react'
+import { StyleSheet, Text, TextInput } from 'react-native'
 
 export type Props = {
-	label?: string,
-	labelStyle?: any,
-	placeholder: string,
-	textContentType?: any,
-	placeholderTextColor?: string,
-	style?: any,
-	onChangeText: any
+	label?: string
+	labelStyle?: any
+	placeholder: string
+	textContentType?: any
+	placeholderTextColor?: string
+	style?: any
+	onChangeText: (text: string) => void
+	value: string
 }
 
-const GenericInput: React.FC<Props> = ({
+const GenericInput = ({
 	label,
 	labelStyle,
 	placeholder,
-	textContentType='none',
+	textContentType = 'none',
 	placeholderTextColor,
 	style,
-	onChangeText
-}) => {
-	const [input, onChangeInput] = useState('')
-	const handleOnChangeText = (text:string) => {
-		onChangeInput(text)
-		onChangeText(text)
-	}
+	onChangeText,
+	value,
+}: Props) => {
 	return (
 		<>
 			{label ? <Text style={[styles.label, labelStyle]}>{label.toUpperCase()}</Text> : null}
@@ -33,12 +30,12 @@ const GenericInput: React.FC<Props> = ({
 				textContentType={textContentType}
 				placeholder={placeholder}
 				placeholderTextColor={placeholderTextColor || '#bdbdbd'}
-				onChangeText={(text) => handleOnChangeText(text)}
-				value={input}
+				onChangeText={onChangeText}
+				value={value}
 			/>
 		</>
-	);
-};
+	)
+}
 
 const styles = StyleSheet.create({
 	label: {

@@ -1,38 +1,41 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import PropTypes from 'prop-types'
-import { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-const Checkbox = ({
-    text,
-    onPress
-}: any) => {
-	const [status, setStatus] = useState(false)
+type Props = {
+	text: string
+	onCheck: (checkd: boolean) => void
+	checked: boolean
+	disabled?: boolean
+}
 
-	const toggleCheckbox = () => {
-		onPress()
-		setStatus(!status)
-	}
-
+const Checkbox = ({ text, onCheck, checked, disabled = false }: Props) => {
 	return (
-		<TouchableOpacity onPress={toggleCheckbox}>
+		<TouchableOpacity
+			onPress={() => {
+				onCheck(!checked)
+			}}
+			disabled={disabled}
+		>
 			<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 				<View>
-					{status ? (
-						<MaterialCommunityIcons name='checkbox-outline' size={24} color='#757575' />
+					{checked ? (
+						<MaterialCommunityIcons
+							name='checkbox-outline'
+							size={styles.icon.fontSize}
+							color={!disabled ? styles.icon.color : styles.disabled.color}
+						/>
 					) : (
-						<MaterialCommunityIcons name='checkbox-blank-outline' size={24} color='#757575' />
+						<MaterialCommunityIcons
+							name='checkbox-blank-outline'
+							size={styles.icon.fontSize}
+							color={!disabled ? styles.icon.color : styles.disabled.color}
+						/>
 					)}
 				</View>
-				<Text style={{ marginLeft: 8, color: '#757575' }}>{text}</Text>
+				<Text style={[styles.text, disabled ? styles.disabled : {}]}>{text}</Text>
 			</View>
 		</TouchableOpacity>
 	)
-}
-
-Checkbox.propTypes = {
-	text: PropTypes.string.isRequired,
-	onPress: PropTypes.func.isRequired,
 }
 
 const styles = StyleSheet.create({
@@ -44,6 +47,17 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	icon: {
+		color: '#757575',
+		fontSize: 24,
+	},
+	text: {
+		color: '#757575',
+		marginLeft: 8,
+	},
+	disabled: {
+		color: '#DDD',
 	},
 })
 
