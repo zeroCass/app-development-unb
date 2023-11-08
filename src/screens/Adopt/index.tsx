@@ -9,10 +9,11 @@ import {
 	startAfter,
 } from 'firebase/firestore'
 import { useCallback, useRef, useState } from 'react'
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native'
 import { AdoptStackProps } from 'routes/types'
 import { IRegisterPet } from 'screens/PetRegistration/interfaces'
 import { db } from '../../services/firebase'
+import PetCard from './components/PetCard'
 
 export interface PetData extends IRegisterPet {
 	id: string
@@ -86,10 +87,10 @@ const Adopt = ({ navigation }: AdoptStackProps) => {
 	}
 
 	return (
-		<View>
+		<View style={{ padding: 12, backgroundColor: '#fafafa' }}>
 			<FlatList
 				data={petsData}
-				renderItem={({ item }: { item: any }) => (
+				renderItem={({ item }: { item: PetData }) => (
 					<TouchableOpacity
 						onPress={() =>
 							navigation.navigate('PetInfo', {
@@ -100,11 +101,13 @@ const Adopt = ({ navigation }: AdoptStackProps) => {
 							})
 						}
 					>
-						<View style={{ backgroundColor: 'red', margin: 10, padding: 30 }}>
-							<Text style={{ color: '#fff', fontSize: 20 }}>Nome do Pet: {item.name}</Text>
-							<Text>Porte: {item.size}</Text>
-							<Text>Especie: {item.species}</Text>
-						</View>
+						<PetCard
+							name={item.name}
+							age_range={item.age_range}
+							petId={item.id}
+							sex={item.sex}
+							size={item.size}
+						/>
 					</TouchableOpacity>
 				)}
 				keyExtractor={(item) => item.id}
