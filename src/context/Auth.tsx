@@ -77,24 +77,28 @@ const AuthProvider = ({
 
 	const signup = async (userData: IRegisterUser) => {
 		setLoading(true)
-		const newUser = {
-			full_name: userData.fullName,
-			username: userData.username,
-			email: userData.email,
-			age: userData.age,
-			phone: userData.phone,
-			state: userData.uf,
-			city: userData.city,
-			address: userData.street,
+		try {
+			const newUser = {
+				full_name: userData.fullName,
+				username: userData.username,
+				email: userData.email,
+				age: userData.age,
+				phone: userData.phone,
+				state: userData.uf,
+				city: userData.city,
+				address: userData.street,
+			}
+	
+			const authResult = await createUserWithEmailAndPassword(auth, userData.email, userData.password)		
+			setDoc(
+				doc(db, "users", authResult.user.uid), 
+				newUser
+			)
+			setUser({ ...newUser, user_uid: authResult.user.uid, signed: true })
+			await uploadImageToFirebase(userData, authResult.user.uid)
+		} catch (error) {
+			console.warn(error)
 		}
-
-		const authResult = await createUserWithEmailAndPassword(auth, userData.email, userData.password)		
-		setDoc(
-			doc(db, "users", authResult.user.uid), 
-			newUser
-		)
-		setUser({ ...newUser, user_uid: authResult.user.uid, signed: true })
-		await uploadImageToFirebase(userData, authResult.user.uid)
 		setLoading(false)
 	}
 
