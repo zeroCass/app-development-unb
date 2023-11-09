@@ -1,0 +1,49 @@
+# Nome do workflow exibido na página de actions.
+name: EAS Build
+
+# Faz a pipeline ser executada release é publicada.
+on:
+  release:
+    types: [published]
+      
+jobs:
+  build:
+    name: Install and build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build on EAS
+        run: eas build --local --output=./app-build --platform android --profile preview --non-interactive
+      
+      - name: Upload Artifact to Actions
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-android
+          path: app-build
+
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Artifact to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./app-build
+          asset_name: meau.apk
+          asset_content_type: application/vnd.android.package-archive
