@@ -34,6 +34,8 @@ jobs:
       - name: Gets latest created release info
         id: latest_release_info
         uses: jossef/action-latest-release-info@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Upload Artifact to Release
         uses: actions/upload-release-asset@v1
