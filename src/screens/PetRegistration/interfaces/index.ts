@@ -54,3 +54,19 @@ export interface IRegisterPet {
 	helpPreferences?: helpPreferences
 	adoptionPreferences?: adoptionPreferences
 }
+
+export interface IRegisterPet {
+    about: string
+    age_range: string
+    name: string
+    petHealth: petHealth
+    photos: [string]
+    sex: string
+    size: string
+    species: string
+    temper: [string]
+    owner: string 
+    sponsorshipPreferences?: sponsorshipPreferences
+    helpPreferences?: helpPreferences
+    adoptionPreferences?: adoptionPreferences
+}
