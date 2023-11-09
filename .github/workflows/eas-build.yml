@@ -1,0 +1,88 @@
+# Nome do workflow exibido na página de actions.
+name: EAS Build
+
+# Faz a pipeline ser executada release é publicada.
+on:
+  release:
+    types: [published]
+      
+
+jobs:
+  # A pipeline pode (e deveria) ser dividida em diversos jobs para controlar o fluxo, por exemplo, fazendo o upload somente
+  # se todos os testes unitários passarem. Eu não achei que o trabalho extra não valia a raiva que já estava passando.
+  build:
+    # Container a ser utilizado para executar os passos/comandos, com as devidas permissões para poder adicionar ao repositório.
+    name: Install and build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+      # Faz o checkout do projeto
+      - uses: actions/checkout@v3
+      # Instala e configura o nodejs no container
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
+      # Instala o cli do expo/eas e vincula à sua conta do expo a partir de um token de acesso gerado no site do Expo.
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          expo-version: latest
+          # Esse campo deve ser configurado nas variáveis/secrets do repositório no github (acredito que somente o dono do repo tem essas permissões)
+          # Ou coloca ele aí hardcoded. I can't stop you. I'm not your real dad.
+          token: ${{ secrets.EXPO_TOKEN }}
+      # Instala as dependencias para possibilitar o build local
+      - name: 🏗 Setup EAS local builds
+        run: yarn global add eas-cli-local-build-plugin
+      # Instala as dependencias do projeto
+      - name: Install dependencies
+        run: npm ci
+      # Executa o build em sí, especificamente para android. Oparametro "platform" pode ser alterado para ios/all, mas configurações adicionais
+      # no eas.json e na etapa de upload serão necessárias para lidar com os novos artefatos. Boa sorte.
+      - name: Build on EAS
+        run: eas build --local --output=./app-build --platform android --profile preview --non-interactive
+
+      # # Cria a release. Atenção para o campo tag_name. Ele é obrigatório e deve ser único.
+      # # Ele está configurado para utilizar o nome da branch que está sendo mesclada na main.
+      # # Logo, se um novo merge acontecer a partir da MESMA branch, ele vai falhar porque o tag vai ser duplicado.
+      # # É possível utilizar campos mais dinâmicos, para requer melhor preparo do ambiente/variáveis/arquivo.
+      # - name: Create Release
+      #   id: create_release
+      #   uses: actions/create-release@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ github.head_ref }}
+      #     release_name: Release ${{ github.head_ref }}
+      #     body: |
+      #       Android release
+      #     draft: false
+      #     prerelease: false
+
+      # Faz o upload do artefato gerado para a action. Isso é mais para histórico e backup, só é acessível pelo console do projeto.
+      - name: Upload Artifact to Actions
+        uses: actions/upload-artifact@v2
+        with:
+          name: app-android
+          path: app-build
+
+      - name: Gets latest created release info
+        id: latest_release_info
+        uses: jossef/action-latest-release-info@v1.2.2
+
+      # Faz o upload do artefato gerado para a release criada anteriormente.
+      # O campo asset_name é arbitrário, altere para o que acha que melhor descreve o app. Ele pode ser dinâmico a fim de descrever
+      # a versão/tag de origem do apk.
+      - name: Upload Artifact to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.latest_release_info.outputs.upload_url }}
+          asset_path: ./app-build
+          asset_name: meau.apk
+          asset_content_type: application/vnd.android.package-archive
