@@ -282,7 +282,7 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 			about: petStory,
 			age_range: commonData.age,
 			name: petName,
-			photos: [imageUri],
+			photos: [Date.now()],
 			sex: commonData.gender,
 			size: commonData.size,
 			temper: convertToArray(commonData.temperament),
@@ -294,8 +294,8 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 				diseases: commonData.diseases,
 				sick: commonData.sick,
 				vaccinated: commonData.vaccinated,
-			},
-		})
+			}
+		}, imageUri)
 
 		setLoading(false)
 		if (result.type == 'error') {
@@ -414,7 +414,7 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 					</View>
 					<View style={styles.buttonCenter}>
 						<MainButton
-							text={'Apadrinhar'}
+							text={'Registrar'}
 							styleButton={{ backgroundColor: '#ffd358', marginTop: 4 }}
 							onPress={handleSendData}
 						/>
