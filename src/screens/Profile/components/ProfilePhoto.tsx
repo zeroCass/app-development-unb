@@ -9,9 +9,9 @@ const ProfilePhoto = (props: Props) => {
 		<>
 			<View style={styles.container}>
 				{
-				props.url ? 
-					<Image style={{ width: 150, height: 150, borderRadius: 100 }} source={props.url} /> :
-					<ActivityIndicator size="large" color="#666" />
+				props.url.loading ? 
+					<ActivityIndicator size="large" color="#666" /> :
+					<Image style={{ width: 150, height: 150, borderRadius: 100 }} source={props.url.source} />
 				}
 			</View>
 		</>
