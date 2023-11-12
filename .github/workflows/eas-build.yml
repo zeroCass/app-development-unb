@@ -22,14 +22,9 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Set credentials
-        run: |
-          eas secret:create --scope project --name EXPO_PUBLIC_API_KEY --value ${{ secrets.EXPO_PUBLIC_API_KEY }} --type string --force
-          eas secret:create --scope project --name EXPO_PUBLIC_AUTH_DOMAIN --value ${{ secrets.EXPO_PUBLIC_AUTH_DOMAIN }} --type string --force
-          eas secret:create --scope project --name EXPO_PUBLIC_PROJECT_ID --value ${{ secrets.EXPO_PUBLIC_PROJECT_ID }} --type string --force
-          eas secret:create --scope project --name EXPO_PUBLIC_STORAGE_BUCKET --value ${{ secrets.EXPO_PUBLIC_STORAGE_BUCKET }} --type string --force
-          eas secret:create --scope project --name EXPO_PUBLIC_MESSAGING_SENDER_ID --value ${{ secrets.EXPO_PUBLIC_MESSAGING_SENDER_ID }} --type string --force
-          eas secret:create --scope project --name EXPO_PUBLIC_APP_ID --value ${{ secrets.EXPO_PUBLIC_APP_ID }} --type string --force
-          eas secret:create --scope project --name EXPO_PUBLIC_MEASUREMENT_ID --value ${{ secrets.EXPO_PUBLIC_MEASUREMENT_ID }} --type string --force
+        run: python ./github/eas.py "${{ secrets.EXPO_PUBLIC_API_KEY }}" "${{ secrets.EXPO_PUBLIC_AUTH_DOMAIN }}" \
+              "${{ secrets.EXPO_PUBLIC_PROJECT_ID }}" "${{ secrets.EXPO_PUBLIC_STORAGE_BUCKET }}" "${{ secrets.EXPO_PUBLIC_MESSAGING_SENDER_ID }}" \
+              "${{ secrets.EXPO_PUBLIC_APP_ID }}" "${{ secrets.EXPO_PUBLIC_MEASUREMENT_ID }}"
 
       - name: Install dependencies
         run: npm ci
@@ -57,3 +52,12 @@ jobs:
           asset_path: ./app-build
           asset_name: meau.apk
           asset_content_type: application/vnd.android.package-archive
+
+      - name: Upload eas to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./eas.json
+          asset_name: eas.json
