@@ -62,7 +62,7 @@ const AuthProvider = ({
 					setUser({ ...user_data, user_uid: userCredential.user.uid, signed: true })
 				})
 		} catch (error) {
-			console.log(error)
+			console.warn(error)
 		}
 		setLoading(false)
 	}

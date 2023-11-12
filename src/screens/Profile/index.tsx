@@ -9,13 +9,23 @@ import { ref, getDownloadURL } from "firebase/storage";
 
 const Profile = () => {
 	const { user } = useContext(AuthContext)
-	const [urlT, setUrlT] = useState('')
+	const [urlT, setUrlT] = useState({
+		loading: true,
+		source: {uri: ''}
+	})
 	const mockHistory = 'Adotou 1 gato'
 
 	getDownloadURL(ref(storage, `user/${user.user_uid}/profilePicture.png`)).then((x) => {
-		setUrlT(x)
+		setUrlT({
+			loading: false,
+			source: {uri: x}
+		})
 	}).catch((error) => {
 		console.log(error)
+		setUrlT({
+			loading: false,
+			source: require('../../assets/images/default-pf.png')
+		})
 	})
 
 	return (
