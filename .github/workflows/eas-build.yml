@@ -61,3 +61,4 @@ jobs:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./eas.json
           asset_name: eas.json
+          asset_content_type: application/json
