@@ -22,7 +22,7 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Set credentials
-        run: python ./github/eas.py "${{ secrets.EXPO_PUBLIC_API_KEY }}" "${{ secrets.EXPO_PUBLIC_AUTH_DOMAIN }}" \
+        run: python ./.github/eas.py "${{ secrets.EXPO_PUBLIC_API_KEY }}" "${{ secrets.EXPO_PUBLIC_AUTH_DOMAIN }}" \
               "${{ secrets.EXPO_PUBLIC_PROJECT_ID }}" "${{ secrets.EXPO_PUBLIC_STORAGE_BUCKET }}" "${{ secrets.EXPO_PUBLIC_MESSAGING_SENDER_ID }}" \
               "${{ secrets.EXPO_PUBLIC_APP_ID }}" "${{ secrets.EXPO_PUBLIC_MEASUREMENT_ID }}"
 
