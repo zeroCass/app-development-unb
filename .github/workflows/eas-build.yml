@@ -17,6 +17,9 @@ jobs:
           node-version: 18.x
           cache: npm
 
+      - name: Test
+        run: echo ${{ secrets.EXPO_TOKEN }} 
+
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
