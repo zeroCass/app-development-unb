@@ -1,4 +1,3 @@
-# Nome do workflow exibido na página de actions.
 name: EAS Build
 
 # Faz a pipeline ser executada release é publicada.
@@ -16,9 +15,6 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
-
-      - name: Test
-        run: echo ${{ secrets.EXPO_TOKEN }} 
 
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
