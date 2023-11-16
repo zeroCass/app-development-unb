@@ -1,5 +1,14 @@
+import { MaterialIcons } from '@expo/vector-icons'
 import React, { useContext, useState } from 'react'
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+	ActivityIndicator,
+	Alert,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native'
 import { PetRegistrationProps } from 'routes/types'
 import GenericInput from '../../components/GenericInput'
 import MainButton from '../../components/MainButton'
@@ -17,10 +26,26 @@ import { registerPet } from './services'
 
 type CommonComponentsProps = {
 	commonData: CommonData
-	onChangeData: (attribute: string, value: string | boolean) => void
+	onChangeData: (attribute: string, value: string | boolean | string[]) => void
 }
 
 const CommonComponents = ({ onChangeData, commonData }: CommonComponentsProps) => {
+	const [diseaseInput, setDiseaseInput] = useState('')
+
+	const handleAddDisease = () => {
+		if (diseaseInput.trim() !== '') {
+			const diseaseList = [...commonData.diseases, diseaseInput.trim()]
+			onChangeData('diseases', diseaseList)
+			setDiseaseInput('')
+		}
+	}
+
+	const handleRemoveDisease = (index: any) => {
+		const updatedList = [...commonData.diseases]
+		updatedList.splice(index, 1)
+		onChangeData('diseases', updatedList)
+	}
+
 	return (
 		<>
 			<>
@@ -119,15 +144,52 @@ const CommonComponents = ({ onChangeData, commonData }: CommonComponentsProps) =
 					<Checkbox
 						checked={commonData.sick}
 						text={'Doente'}
-						onCheck={() => onChangeData('sick', !commonData.sick)}
-					/>
-					<GenericInput
-						style={{ marginBottom: 16 }}
-						placeholder={'Doenças'}
-						onChangeText={(text: string) => onChangeData('diseases', text)}
-						value={commonData.diseases}
+						onCheck={() => {
+							onChangeData('sick', !commonData.sick)
+							onChangeData('diseases', [])
+						}}
 					/>
 				</View>
+				{commonData.sick && (
+					<View style={{ marginBottom: 20 }}>
+						<GenericInput
+							placeholder='Digite uma doença'
+							value={diseaseInput}
+							onChangeText={(text) => setDiseaseInput(text)}
+						/>
+						<View style={{ flex: 1, alignItems: 'center', margin: 16 }}>
+							<MainButton
+								styleButton={{ backgroundColor: '#ffd358' }}
+								text='Adicionar Doença'
+								onPress={handleAddDisease}
+							/>
+						</View>
+
+						<Text>Lista de Doenças:</Text>
+						{commonData.diseases.map((disease, index) => (
+							<View
+								key={index}
+								style={{
+									flexDirection: 'row',
+									alignItems: 'center',
+									justifyContent: 'space-between',
+									padding: 10,
+									marginBottom: 2,
+									borderBottomWidth: 2,
+									borderColor: '#000',
+								}}
+							>
+								<View>
+									<Text>{disease}</Text>
+								</View>
+								<Pressable onPress={() => handleRemoveDisease(index)}>
+									<MaterialIcons name='delete' size={24} color='red' />
+								</Pressable>
+							</View>
+						))}
+						{/* Save diseaseList to the database or use it as needed */}
+					</View>
+				)}
 			</>
 		</>
 	)
@@ -195,12 +257,19 @@ const Adoption = ({
 	)
 }
 
+type ImagesType = {
+	id: number
+	imageUri: string
+}
+
 const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 	const { user } = useContext(AuthContext)
 	const [loading, setLoading] = useState(false)
 	const [petName, setPetName] = useState('')
+	const [location, setLocation] = useState('')
+	const [willBeAdopted, setWillBeAdopted] = useState(false)
 	const [petStory, setPetStory] = useState('')
-	const [imageUri, setImage] = useState('')
+	const [images, setImages] = useState<ImagesType[]>([])
 	const [postAdoptionVisit, setPostAdoptionVisit] = useState(false)
 	const [adoptionData, setAdoption] = useState<adoptionPreferences>({
 		adoptionTerm: false,
@@ -229,13 +298,14 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 		dewormed: false,
 		castrated: false,
 		sick: false,
-		diseases: '',
+		diseases: [],
 	})
 
 	const initialState = () => {
 		setPetName('')
 		setPetStory('')
-		setImage('')
+		setLocation('')
+		setImages([])
 		setPostAdoptionVisit(false)
 		setAdoption({
 			adoptionTerm: false,
@@ -264,7 +334,7 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 			dewormed: false,
 			castrated: false,
 			sick: false,
-			diseases: '',
+			diseases: [],
 		})
 	}
 
@@ -278,25 +348,29 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 
 	const handleSendData = async () => {
 		setLoading(true)
-		const result = await registerPet({
-			about: petStory,
-			age_range: commonData.age,
-			name: petName,
-			photos: [Date.now()],
-			sex: commonData.gender,
-			size: commonData.size,
-			temper: convertToArray(commonData.temperament),
-			owner: user.user_uid,
-			adoptionPreferences: adoptionData,
-			petHealth: {
-				castrated: commonData.castrated,
-				dewormed: commonData.dewormed,
-				diseases: commonData.diseases,
-				sick: commonData.sick,
-				vaccinated: commonData.vaccinated,
-			}
-		}, imageUri)
-
+		const result = await registerPet(
+			{
+				about: petStory,
+				age_range: commonData.age,
+				name: petName,
+				location,
+				sex: commonData.gender,
+				size: commonData.size,
+				temper: convertToArray(commonData.temperament),
+				species: commonData.specie,
+				owner: user.user_uid,
+				willBeAdopted,
+				adoptionPreferences: adoptionData,
+				petHealth: {
+					castrated: commonData.castrated,
+					dewormed: commonData.dewormed,
+					diseases: commonData.diseases,
+					sick: commonData.sick,
+					vaccinated: commonData.vaccinated,
+				},
+			},
+			images
+		)
 		setLoading(false)
 		if (result.type == 'error') {
 			console.warn(result.error)
@@ -349,7 +423,7 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 		}))
 	}
 
-	const handleCommonData = (attribute: string, value: string | boolean | []) => {
+	const handleCommonData = (attribute: string, value: string | boolean | string[]) => {
 		if (attribute === 'temperament') {
 			const newValue = {
 				...commonData.temperament,
@@ -373,8 +447,7 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 		<>
 			<ScrollView style={{ flex: 1 }}>
 				<View style={styles.container}>
-					<View style={styles.section}>
-						<Text style={styles.title}>Adoção</Text>
+					<View style={[styles.section, { marginTop: 20 }]}>
 						<GenericInput
 							style={{ marginBottom: 20 }}
 							placeholder={'Nome do Animal'}
@@ -383,25 +456,60 @@ const PetRegistration = ({ navigation }: PetRegistrationProps) => {
 							onChangeText={(text: string) => setPetName(text)}
 							value={petName}
 						/>
+						<GenericInput
+							style={{ marginBottom: 20 }}
+							placeholder={'Localização do Animal'}
+							label={'Localização'}
+							labelStyle={{ color: '#f7a800' }}
+							onChangeText={(text: string) => setLocation(text)}
+							value={location}
+						/>
 					</View>
 					<PhotoComponent
-						imageUri={imageUri}
-						onChangeData={(imageUri: string) => setImage(imageUri)}
+						images={images}
+						onAddImage={(images: ImagesType[]) =>
+							setImages((prevState) => [...(prevState as ImagesType[]), ...images])
+						}
+						onRemoveImage={(images: ImagesType[]) => setImages(images)}
 					/>
 					<CommonComponents
 						commonData={commonData}
-						onChangeData={(attribute: string, value: string | boolean | []) =>
+						onChangeData={(attribute: string, value: string | boolean | string[]) =>
 							handleCommonData(attribute, value)
 						}
 					/>
-					<Adoption
-						adoptionData={adoptionData}
-						onChangeData={(attribute: string, monthNumber?: string) =>
-							handleAdoptionData(attribute, monthNumber)
-						}
-						postAdoptionVisit={postAdoptionVisit}
-						setPostAdoptionVisit={() => setPostAdoptionVisit(!postAdoptionVisit)}
-					/>
+					<View style={styles.RadioGroup}>
+						<Text style={styles.title}>Adoção</Text>
+						<Text style={styles.subTitle}>SERÁ COLOADO PARA ADOÇÃO</Text>
+						<RadioButton
+							value={willBeAdopted ? 'Sim' : 'Não'}
+							options={['Sim', 'Não']}
+							onPress={(boolean: string) => {
+								if (boolean === 'Sim') setWillBeAdopted(true)
+								if (boolean === 'Não') setWillBeAdopted(false)
+								setAdoption({
+									adoptionTerm: false,
+									housePhotos: false,
+									testVisit: false,
+									followUpVisits: {
+										oneMonth: false,
+										threeMonths: false,
+										sixMonths: false,
+									},
+								})
+							}}
+						/>
+					</View>
+					{willBeAdopted && (
+						<Adoption
+							adoptionData={adoptionData}
+							onChangeData={(attribute: string, monthNumber?: string) =>
+								handleAdoptionData(attribute, monthNumber)
+							}
+							postAdoptionVisit={postAdoptionVisit}
+							setPostAdoptionVisit={() => setPostAdoptionVisit(!postAdoptionVisit)}
+						/>
+					)}
 					<View style={styles.section}>
 						<GenericInput
 							style={{ marginBottom: 20 }}

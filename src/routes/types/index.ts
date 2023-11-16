@@ -10,6 +10,7 @@ type Pet = {
 export type AdoptParamList = {
 	Adopt: undefined
 	PetInfo: { pet: Pet }
+	MyPets: undefined
 }
 
 export type RootDrawerParamList = {

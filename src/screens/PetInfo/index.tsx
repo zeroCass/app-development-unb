@@ -14,7 +14,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 	const [loading, setLoading] = useState(false)
 	const petParam = route.params.pet
 	const [petInfo, setPetInfo] = useState<PetData>({} as PetData)
-	const [adoptionRequirements, setAdoptionRequirements] = useState<string | undefined>('')
+	const [adoptionRequirements, setAdoptionRequirements] = useState<string | undefined>(undefined)
 
 	// fetchData
 	useFocusEffect(
@@ -50,7 +50,6 @@ const PetInfo = ({ route }: PetInfoProps) => {
 		const tempConcat = temp.join(', ') + ' e ' + lastWord
 		return tempConcat
 	}
-
 	const configRequirements = () => {
 		const array = []
 		if (petInfo.adoptionPreferences?.adoptionTerm) array.push('Termo de ação')
@@ -102,7 +101,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 					<View style={[styles.section_2, { marginTop: 16 }]}>
 						<View>
 							<Text style={styles.subTitle}>LOCALIZAÇÃO</Text>
-							<Text style={styles.fontDefault}>ADICIONAR NO BANCO</Text>
+							<Text style={styles.fontDefault}>{petInfo?.location}</Text>
 						</View>
 					</View>
 					<View style={styles.break}></View>
@@ -126,7 +125,13 @@ const PetInfo = ({ route }: PetInfoProps) => {
 						</View>
 						<View>
 							<Text style={styles.subTitle}>DOENÇAS</Text>
-							<Text style={styles.fontDefault}>TEM QUE SER ARRAY</Text>
+							{petInfo?.petHealth?.diseases?.length === 0 ? (
+								<Text style={styles.fontDefault}>Nenhuma</Text>
+							) : (
+								<Text style={styles.fontDefault}>
+									{arrayToString(petInfo?.petHealth?.diseases)}
+								</Text>
+							)}
 						</View>
 					</View>
 					<View style={styles.break}></View>
@@ -136,13 +141,17 @@ const PetInfo = ({ route }: PetInfoProps) => {
 							<Text style={styles.fontDefault}>{arrayToString(petInfo.temper)}</Text>
 						</View>
 					</View>
-					<View style={styles.break}></View>
-					<View style={styles.section_2}>
-						<View>
+
+					{adoptionRequirements && (
+						<>
+							<View style={styles.break}></View>
 							<Text style={styles.subTitle}>EXIGÊNCIAS DO DOADOR</Text>
-							<Text style={styles.fontDefault}>{adoptionRequirements}</Text>
-						</View>
-					</View>
+							<View style={styles.section_2}>
+								<Text style={styles.fontDefault}>{adoptionRequirements}</Text>
+							</View>
+						</>
+					)}
+
 					<View style={styles.break}></View>
 					<View style={[styles.section_2, { marginBottom: 28 }]}>
 						<View>

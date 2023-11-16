@@ -20,7 +20,7 @@ const PetPhoto = ({ petId }: Props) => {
 	const fetchImage = async () => {
 		setLoading(true)
 		try {
-			const url = await getDownloadURL(ref(storage, `pet/${petId}/profilePicture.png`))
+			const url = await getDownloadURL(ref(storage, `pet/${petId}/image_0.png`))
 			setUrl(url)
 		} catch (error) {
 			console.log('petPhoto error: ', error)

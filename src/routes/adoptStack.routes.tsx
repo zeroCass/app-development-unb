@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { TouchableOpacity } from 'react-native'
 
 import Adopt from '../screens/Adopt'
+import MyPets from '../screens/MyPets'
 import PetInfo from '../screens/PetInfo'
 
 import { AdoptParamList } from './types'
@@ -43,6 +44,22 @@ const AdoptStack = () => {
 							onPress={() => console.log('Faz algo que eu n sei como vai ser feito')}
 						>
 							<Entypo name='share' size={24} color='#434343' />
+						</TouchableOpacity>
+					),
+				})}
+			/>
+			<Stack.Screen
+				name='MyPets'
+				component={MyPets}
+				options={({ navigation }) => ({
+					title: ' Meus Pets',
+					headerStyle: {
+						backgroundColor: '#ffd358',
+					},
+					statusBarColor: '#f7a800',
+					headerLeft: () => (
+						<TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+							<Entypo name='menu' size={24} color='black' />
 						</TouchableOpacity>
 					),
 				})}

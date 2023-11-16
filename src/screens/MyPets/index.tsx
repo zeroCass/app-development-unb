@@ -9,10 +9,11 @@ import {
 	startAfter,
 	where,
 } from 'firebase/firestore'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useContext, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native'
 import { AdoptStackProps } from 'routes/types'
 import { IRegisterPet } from 'screens/PetRegistration/interfaces'
+import { AuthContext } from '../../context/Auth'
 import { db } from '../../services/firebase'
 import PetCard from './components/PetCard'
 
@@ -20,7 +21,8 @@ export interface PetData extends IRegisterPet {
 	id: string
 }
 
-const Adopt = ({ navigation }: AdoptStackProps) => {
+const MyPets = ({ navigation }: AdoptStackProps) => {
+	const { user } = useContext(AuthContext)
 	const itemPerPage = 7
 	const [loading, setLoading] = useState(false)
 	const [loadingMoreContent, setLoadMoreContent] = useState(false)
@@ -54,7 +56,11 @@ const Adopt = ({ navigation }: AdoptStackProps) => {
 		if (loading) return
 		try {
 			setLoading(true)
-			const q = query(collection(db, 'pet'), limit(itemPerPage), where('willBeAdopted', '==', true))
+			const q = query(
+				collection(db, 'pet'),
+				limit(itemPerPage),
+				where('owner', '==', user.user_uid)
+			)
 			const dataArray = await queryDataInDB(q)
 			setPetsData(dataArray)
 			console.log(petsData.length, 'petsData size')
@@ -75,7 +81,7 @@ const Adopt = ({ navigation }: AdoptStackProps) => {
 				collection(db, 'pet'),
 				startAfter(lastDocRef.current),
 				limit(itemPerPage),
-				where('willBeAdopted', '==', true)
+				where('owner', '==', user.user_uid)
 			)
 			const dataArray = await queryDataInDB(q)
 			const newPetsArrys = [...petsData, ...dataArray]
@@ -134,4 +140,4 @@ const FooterComponent = () => {
 	)
 }
 
-export default Adopt
+export default MyPets
