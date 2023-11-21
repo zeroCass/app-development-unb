@@ -74,6 +74,11 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 									label='Informações'
 									style={{ backgroundColor: '#cfe9e5' }}
 								>
+									<SubItem
+										label='Notificações'
+										onPress={() => props.navigation.navigate('Notifications')}
+										underline={true}
+									/>
 									<SubItem label='Dicas' onPress={() => console.log('Dicas')} underline={false} />
 								</Item>
 								<Item
