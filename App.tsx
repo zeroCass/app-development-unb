@@ -72,7 +72,6 @@ async function registerForPushNotificationsAsync() {
 				{text: 'OK', onPress: () => console.log('OK Pressed')},
 			]);
 		}
-	  	console.log(token);
 	} else {
 		Alert.alert('Notifications', 'Must use physical device for Push Notifications', [
 			{text: 'OK', onPress: () => console.log('OK Pressed')},
