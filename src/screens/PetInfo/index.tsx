@@ -6,7 +6,7 @@ import { PetInfoProps } from 'routes/types'
 import { db } from '../../services/firebase'
 import { PetData } from '../Adopt'
 import PetPhoto from './components/PetPhoto'
-
+import { serviceNotifyPetOwner } from './services'
 import { MaterialIcons } from '@expo/vector-icons'
 import MainButton from '../../components/MainButton'
 
@@ -65,6 +65,10 @@ const PetInfo = ({ route }: PetInfoProps) => {
 				array.push('acompanhmento de um mês')
 		}
 		setAdoptionRequirements(arrayToString(array))
+	}
+
+	const registerAdoptionRequest = () => {
+		serviceNotifyPetOwner(petInfo.owner);
 	}
 
 	if (loading) {

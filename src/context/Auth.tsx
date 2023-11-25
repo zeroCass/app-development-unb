@@ -1,10 +1,12 @@
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore"
 import { createContext, useState } from 'react'
 import { auth, db, storage } from '../services/firebase'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { ref, uploadBytes } from "firebase/storage";
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
+import { useContext } from 'react'
+import { NotificationsContext } from './Notifications'
 
 type User = {
 	full_name?: string
@@ -17,6 +19,7 @@ type User = {
 	address?: string
 	user_uid?: string
 	signed: boolean
+	expoToken?: string
 }
 
 type AuthContextType = {
@@ -49,6 +52,7 @@ async function uploadImageToFirebase(userData: IRegisterUser, userUid: string) {
 const AuthProvider = ({
     children
 }: any) => {
+	const { expoPushToken } = useContext(NotificationsContext);
 	const [user, setUser] = useState<User>({ signed: false });
 	const [loading, setLoading] = useState(false);
 
@@ -61,6 +65,9 @@ const AuthProvider = ({
 					const user_data = fetched_data.data()
 					setUser({ ...user_data, user_uid: userCredential.user.uid, signed: true })
 				})
+			await updateDoc(doc(db, "users", userCredential.user.uid), {
+				expoToken: expoPushToken
+			});
 		} catch (error) {
 			console.warn(error)
 		}
@@ -69,6 +76,11 @@ const AuthProvider = ({
 
 	const signout = () => {
 		setLoading(true)
+		if (user.user_uid) {
+			updateDoc(doc(db, "users", user.user_uid), {
+				expoToken: ""
+			});
+		}
 		auth.signOut()
 			.catch((error) => console.warn(error.message))
 		setUser({ signed: false })
@@ -87,6 +99,7 @@ const AuthProvider = ({
 				state: userData.uf,
 				city: userData.city,
 				address: userData.street,
+				expoToken: expoPushToken
 			}
 	
 			const authResult = await createUserWithEmailAndPassword(auth, userData.email, userData.password)		
@@ -102,7 +115,19 @@ const AuthProvider = ({
 		setLoading(false)
 	}
 
-	return <AuthContext.Provider value={{ user, signin, signout, signup, loading }}>{children}</AuthContext.Provider>
+	return (
+		<AuthContext.Provider
+			value={{
+				user,
+				signin,
+				signout,
+				signup,
+				loading 
+			}}
+		>
+			{children}
+		</AuthContext.Provider>
+	)
 }
 
 export default AuthProvider
