@@ -4,6 +4,7 @@ import { ActivityIndicator, View } from 'react-native'
 import CustomDrawer from '../components/CustomDrawer'
 import { AuthContext } from '../context/Auth'
 import Login from '../screens/Login'
+import Notifications from '../screens/Notifications'
 import PetRegistration from '../screens/PetRegistration'
 import Profile from '../screens/Profile'
 import UserRegister from '../screens/UserRegister'
@@ -74,6 +75,14 @@ const RootRoutes = () => {
 						component={AdoptStack}
 						options={{
 							title: 'Adotar',
+							headerShown: false,
+						}}
+					/>
+					<RootDrawer.Screen
+						name='Notifications'
+						component={Notifications}
+						options={{
+							title: 'Notificações',
 							headerShown: false,
 						}}
 					/>
