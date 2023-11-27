@@ -1,7 +1,6 @@
-import { getDownloadURL, ref } from 'firebase/storage'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, View } from 'react-native'
-import { storage } from '../../../services/firebase'
+import { fetchedImageUrl } from '../../../services/images'
 
 type Props = {
 	petId: string | undefined
@@ -14,21 +13,12 @@ const PetPhoto = ({ petId }: Props) => {
 
 	useEffect(() => {
 		if (!petId) return setLoading(true)
-		fetchImage()
+		fetchedImageUrl({
+			storageUrl: `pet/${petId}/image_0.png`,
+			setLoading: (state: boolean) => setLoading(state),
+			setUrl: (url: string) => setUrl(url),
+		})
 	}, [petId])
-
-	const fetchImage = async () => {
-		setLoading(true)
-		try {
-			const url = await getDownloadURL(ref(storage, `pet/${petId}/image_0.png`))
-			setUrl(url)
-		} catch (error) {
-			console.log('petPhoto error: ', error)
-			setUrl('')
-		} finally {
-			setLoading(false)
-		}
-	}
 
 	return (
 		<View style={styles.container}>
