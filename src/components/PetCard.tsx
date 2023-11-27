@@ -1,7 +1,6 @@
-import { getDownloadURL, listAll, ref } from 'firebase/storage'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native'
-import { storage } from '../../../services/firebase'
+import { fetchedImageUrl } from '../services/images'
 
 type Props = {
 	petId: string | undefined
@@ -10,35 +9,23 @@ type Props = {
 	age_range: string | undefined
 	size: string | undefined
 	locaction: string | undefined
+	owner: boolean
+	willBeAdopted: boolean | undefined
 }
 
-const PetCard = ({ petId, sex, age_range, size, name, locaction }: Props) => {
-	const defaultImage = require('../../../assets/images/default-pf.png')
+const PetCard = ({ petId, sex, age_range, size, name, locaction, owner, willBeAdopted }: Props) => {
+	const defaultImage = require('../assets/images/default-pf.png')
 	const [loading, setLoading] = useState(false)
 	const [url, setUrl] = useState<string>('')
 
 	useEffect(() => {
 		if (!petId) return setLoading(true)
-		fetchImage()
+		fetchedImageUrl({
+			storageUrl: `pet/${petId}/image_0.png`,
+			setLoading: (state: boolean) => setLoading(state),
+			setUrl: (url: string) => setUrl(url),
+		})
 	}, [petId])
-
-	const fetchImage = async () => {
-		setLoading(true)
-		try {
-			const images = await listAll(ref(storage, `pet/${petId}`))
-
-			images.items.forEach((itemRef) => {
-				console.warn(itemRef)
-			})
-			const url = await getDownloadURL(ref(storage, `pet/${petId}/image_0.png`))
-			setUrl(url)
-		} catch (error) {
-			console.log('petPhoto error: ', error)
-			setUrl('')
-		} finally {
-			setLoading(false)
-		}
-	}
 
 	if (loading) {
 		return (
@@ -50,7 +37,7 @@ const PetCard = ({ petId, sex, age_range, size, name, locaction }: Props) => {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.header}>
+			<View style={[styles.header, owner && { backgroundColor: '#cfe9e5' }]}>
 				<Text style={styles.title}>{name}</Text>
 			</View>
 			<View style={styles.imgContainer}>
@@ -60,16 +47,35 @@ const PetCard = ({ petId, sex, age_range, size, name, locaction }: Props) => {
 					<Image style={styles.image} source={{ uri: url }} />
 				)}
 			</View>
-			<View style={styles.footer}>
-				<View style={styles.petInfo}>
-					<Text style={styles.text}>{sex?.toUpperCase()}</Text>
-					<Text style={styles.text}>{age_range?.toUpperCase()}</Text>
-					<Text style={styles.text}>{size?.toUpperCase()}</Text>
+			{willBeAdopted && (
+				<View style={styles.footer}>
+					<View style={styles.petInfo}>
+						<Text style={styles.text}>? NOVOS INTERESSADOS</Text>
+					</View>
+					<View style={styles.location}>
+						<Text style={styles.text}>ADOÇÃO</Text>
+					</View>
 				</View>
-				<View style={styles.location}>
-					<Text style={styles.text}>{locaction?.toUpperCase()}</Text>
+			)}
+			{!willBeAdopted && (
+				<View style={styles.footer}>
+					<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+						<Text style={styles.text}>NÃO ESTÁ PARA ADOÇÃO</Text>
+					</View>
 				</View>
-			</View>
+			)}
+			{!owner && (
+				<View style={styles.footer}>
+					<View style={styles.petInfo}>
+						<Text style={styles.text}>{sex?.toUpperCase()}</Text>
+						<Text style={styles.text}>{age_range?.toUpperCase()}</Text>
+						<Text style={styles.text}>{size?.toUpperCase()}</Text>
+					</View>
+					<View style={styles.location}>
+						<Text style={styles.text}>{locaction?.toUpperCase()}</Text>
+					</View>
+				</View>
+			)}
 		</View>
 	)
 }
@@ -94,7 +100,7 @@ const styles = StyleSheet.create({
 		elevation: 3,
 	},
 	header: {
-		flex: 1,
+		height: '10%',
 		paddingLeft: 16,
 		justifyContent: 'center',
 		width: '100%',
