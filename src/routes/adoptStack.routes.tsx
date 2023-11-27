@@ -36,9 +36,9 @@ const AdoptStack = () => {
 				options={({ route }) => ({
 					title: route.params.pet.name ? route.params.pet.name : 'Informações do Pet',
 					headerStyle: {
-						backgroundColor: '#ffd358',
+						backgroundColor: route.params.pet.owner ? '#cfe9e5' : '#ffd358',
 					},
-					statusBarColor: '#f7a800',
+					statusBarColor: route.params.pet.owner ? '#88c9bf' : '#f7a800',
 					headerRight: () => (
 						<TouchableOpacity
 							onPress={() => console.log('Faz algo que eu n sei como vai ser feito')}
@@ -54,9 +54,9 @@ const AdoptStack = () => {
 				options={({ navigation }) => ({
 					title: ' Meus Pets',
 					headerStyle: {
-						backgroundColor: '#ffd358',
+						backgroundColor: '#88c9bf',
 					},
-					statusBarColor: '#f7a800',
+					statusBarColor: '#589b9b',
 					headerLeft: () => (
 						<TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
 							<Entypo name='menu' size={24} color='black' />

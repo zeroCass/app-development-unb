@@ -3,18 +3,23 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useCallback, useEffect, useState } from 'react'
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { PetInfoProps } from 'routes/types'
+import { PetData } from '../../components/PetList'
 import { db } from '../../services/firebase'
-import { PetData } from '../Adopt'
 import PetPhoto from './components/PetPhoto'
 
 import { MaterialIcons } from '@expo/vector-icons'
 import MainButton from '../../components/MainButton'
 
 const PetInfo = ({ route }: PetInfoProps) => {
+	const owner = route.params.pet.owner
 	const [loading, setLoading] = useState(false)
 	const petParam = route.params.pet
 	const [petInfo, setPetInfo] = useState<PetData>({} as PetData)
 	const [adoptionRequirements, setAdoptionRequirements] = useState<string | undefined>(undefined)
+	const subtTitleStyle = {
+		...styles.subTitle,
+		color: owner ? '#589b9b' : '',
+	}
 
 	// fetchData
 	useFocusEffect(
@@ -80,51 +85,52 @@ const PetInfo = ({ route }: PetInfoProps) => {
 				<PetPhoto petId={petInfo.id} />
 			</View>
 			<View style={styles.container}>
-				<FavoriteButton />
+				{owner ? <EditButton /> : <FavoriteButton />}
+
 				<ScrollView>
 					<Text style={styles.title}>{petInfo.name}</Text>
 					<View style={styles.section_3}>
 						<View>
-							<Text style={styles.subTitle}>SEXO</Text>
+							<Text style={subtTitleStyle}>SEXO</Text>
 							<Text style={styles.fontDefault}>{petInfo.sex}</Text>
 						</View>
 						<View>
-							<Text style={styles.subTitle}>PORTE</Text>
+							<Text style={subtTitleStyle}>PORTE</Text>
 							<Text style={styles.fontDefault}>{petInfo.size}</Text>
 						</View>
 						<View>
-							<Text style={styles.subTitle}>IDADE</Text>
+							<Text style={subtTitleStyle}>IDADE</Text>
 							<Text style={styles.fontDefault}>{petInfo.age_range}</Text>
 						</View>
 					</View>
 
 					<View style={[styles.section_2, { marginTop: 16 }]}>
 						<View>
-							<Text style={styles.subTitle}>LOCALIZAÇÃO</Text>
+							<Text style={subtTitleStyle}>LOCALIZAÇÃO</Text>
 							<Text style={styles.fontDefault}>{petInfo?.location}</Text>
 						</View>
 					</View>
 					<View style={styles.break}></View>
 					<View style={[styles.section_2]}>
 						<View>
-							<Text style={styles.subTitle}>CASTRADO</Text>
+							<Text style={subtTitleStyle}>CASTRADO</Text>
 							<Text style={styles.fontDefault}>{petInfo.petHealth?.castrated ? 'Sim' : 'Não'}</Text>
 						</View>
 						<View>
-							<Text style={styles.subTitle}>VERMIFUGADO</Text>
+							<Text style={subtTitleStyle}>VERMIFUGADO</Text>
 							<Text style={styles.fontDefault}>{petInfo.petHealth?.dewormed ? 'Sim' : 'Não'}</Text>
 						</View>
 					</View>
 
 					<View style={[styles.section_2, { marginTop: 16 }]}>
 						<View>
-							<Text style={styles.subTitle}>VACINADO</Text>
+							<Text style={subtTitleStyle}>VACINADO</Text>
 							<Text style={styles.fontDefault}>
 								{petInfo.petHealth?.vaccinated ? 'Sim' : 'Não'}
 							</Text>
 						</View>
 						<View>
-							<Text style={styles.subTitle}>DOENÇAS</Text>
+							<Text style={subtTitleStyle}>DOENÇAS</Text>
 							{petInfo?.petHealth?.diseases?.length === 0 ? (
 								<Text style={styles.fontDefault}>Nenhuma</Text>
 							) : (
@@ -137,7 +143,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 					<View style={styles.break}></View>
 					<View style={styles.section_2}>
 						<View>
-							<Text style={styles.subTitle}>TEMPERAMENTO</Text>
+							<Text style={subtTitleStyle}>TEMPERAMENTO</Text>
 							<Text style={styles.fontDefault}>{arrayToString(petInfo.temper)}</Text>
 						</View>
 					</View>
@@ -145,7 +151,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 					{adoptionRequirements && (
 						<>
 							<View style={styles.break}></View>
-							<Text style={styles.subTitle}>EXIGÊNCIAS DO DOADOR</Text>
+							<Text style={subtTitleStyle}>EXIGÊNCIAS DO DOADOR</Text>
 							<View style={styles.section_2}>
 								<Text style={styles.fontDefault}>{adoptionRequirements}</Text>
 							</View>
@@ -155,18 +161,41 @@ const PetInfo = ({ route }: PetInfoProps) => {
 					<View style={styles.break}></View>
 					<View style={[styles.section_2, { marginBottom: 28 }]}>
 						<View>
-							<Text style={styles.subTitle}>MAIS SOBRE {petInfo?.name?.toUpperCase()}</Text>
+							<Text style={subtTitleStyle}>MAIS SOBRE {petInfo?.name?.toUpperCase()}</Text>
 							<Text style={styles.fontDefault}>{petInfo.about}</Text>
 						</View>
 					</View>
-					<View style={styles.mainButton}>
-						<MainButton
-							text={'PRETENDO ADOTAR'}
-							styleButton={{ backgroundColor: '#fdcf58' }}
-							styleText={{ color: '#434343' }}
-							onPress={() => console.log('Pretendo adotar botão')}
-						/>
-					</View>
+					{!owner ? (
+						<View style={styles.mainButton}>
+							<MainButton
+								text={'PRETENDO ADOTAR'}
+								styleButton={{ backgroundColor: '#fdcf58' }}
+								styleText={{ color: '#434343' }}
+								onPress={() => console.log('Pretendo adotar botão')}
+							/>
+						</View>
+					) : (
+						<View
+							style={{
+								flex: 1,
+								flexDirection: 'row',
+								alignContent: 'space-around',
+							}}
+						>
+							<MainButton
+								text={'VER INTERESSADOS'}
+								styleButton={{ backgroundColor: '#88c9bf', with: '50%' }}
+								styleText={{ color: '#434343' }}
+								onPress={() => console.log('VER INTERESSADOS')}
+							/>
+							<MainButton
+								text={'REMOVER PET'}
+								styleButton={{ backgroundColor: '#88c9bf', with: '50%' }}
+								styleText={{ color: '#434343' }}
+								onPress={() => console.log('REMOVER PET')}
+							/>
+						</View>
+					)}
 				</ScrollView>
 			</View>
 		</View>
@@ -177,6 +206,14 @@ const FavoriteButton = () => {
 	return (
 		<View style={styles.favoriteButton}>
 			<MaterialIcons name='favorite-border' size={24} color='#434343' />
+		</View>
+	)
+}
+
+const EditButton = () => {
+	return (
+		<View style={styles.favoriteButton}>
+			<MaterialIcons name='edit' size={24} color='#434343' />
 		</View>
 	)
 }
