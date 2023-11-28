@@ -15,7 +15,7 @@ export type TUser = {
 	city?: string
 	state?: string
 	address?: string
-	user_uid?: string
+	user_uid: string
 	signed: boolean
 	expoToken?: string
 }
@@ -29,7 +29,7 @@ type AuthContextType = {
 }
 
 export const AuthContext = createContext<AuthContextType>({
-	user: { signed: false },
+	user: { signed: false, user_uid: '' },
 	signin: () => {},
 	signout: () => {},
 	signup: () => {},
@@ -49,7 +49,7 @@ async function uploadImageToFirebase(userData: IRegisterUser, userUid: string) {
 
 const AuthProvider = ({ children }: any) => {
 	const { expoPushToken } = useContext(NotificationsContext)
-	const [user, setUser] = useState<TUser>({ signed: false })
+	const [user, setUser] = useState<TUser>({ signed: false, user_uid: '' })
 	const [loading, setLoading] = useState(false)
 
 	const signin = async (email: string, password: string) => {
@@ -77,7 +77,7 @@ const AuthProvider = ({ children }: any) => {
 			})
 		}
 		auth.signOut().catch((error) => console.warn(error.message))
-		setUser({ signed: false })
+		setUser({ signed: false, user_uid: '' })
 		setLoading(false)
 	}
 

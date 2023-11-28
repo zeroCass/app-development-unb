@@ -5,11 +5,13 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 type Pet = {
 	id: string
 	name: string
+	owner?: boolean
 }
 
 export type AdoptParamList = {
 	Adopt: undefined
 	PetInfo: { pet: Pet }
+	MyPets: undefined
 }
 
 export type RootDrawerParamList = {

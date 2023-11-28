@@ -47,6 +47,15 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 									<SubItem
 										label='Meu Perfil'
 										onPress={() => props.navigation.navigate('Profile')}
+										underline={true}
+									/>
+									<SubItem
+										label='Meus Pets'
+										onPress={() =>
+											props.navigation.navigate('AdoptStack', {
+												screen: 'MyPets',
+											})
+										}
 										underline={false}
 									/>
 								</Item>
