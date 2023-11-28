@@ -1,16 +1,14 @@
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, updateDoc, getDoc, setDoc } from "firebase/firestore"
-import { createContext, useState } from 'react'
-import { auth, db, storage } from '../services/firebase'
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, uploadBytes } from "firebase/storage";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
+import { ref, uploadBytes } from 'firebase/storage'
+import { createContext, useContext, useState } from 'react'
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
-import { useContext } from 'react'
+import { auth, db, storage } from '../services/firebase'
 import { NotificationsContext } from './Notifications'
 
-type User = {
+export type TUser = {
 	full_name?: string
-	username?: string 
+	username?: string
 	age?: number
 	email?: string
 	phone?: string
@@ -23,51 +21,48 @@ type User = {
 }
 
 type AuthContextType = {
-	user: User,
-	signin: (email: string, password: string) => void,
-	signout: () => void,
-	signup: (userData: IRegisterUser) => void,
+	user: TUser
+	signin: (email: string, password: string) => void
+	signout: () => void
+	signup: (userData: IRegisterUser) => void
 	loading: boolean
 }
 
 export const AuthContext = createContext<AuthContextType>({
-	user: {signed: false},
+	user: { signed: false },
 	signin: () => {},
 	signout: () => {},
 	signup: () => {},
-	loading: true
+	loading: true,
 })
 
 async function uploadImageToFirebase(userData: IRegisterUser, userUid: string) {
-	const img = await fetch(userData.imageUri);
-	const blob = await img.blob();
-	const userRef = ref(storage, `user/${userUid}/profilePicture.png`);
+	const img = await fetch(userData.imageUri)
+	const blob = await img.blob()
+	const userRef = ref(storage, `user/${userUid}/profilePicture.png`)
 	try {
-		await uploadBytes(userRef, blob);
+		await uploadBytes(userRef, blob)
 	} catch (error) {
 		console.warn(error)
 	}
 }
 
-const AuthProvider = ({
-    children
-}: any) => {
-	const { expoPushToken } = useContext(NotificationsContext);
-	const [user, setUser] = useState<User>({ signed: false });
-	const [loading, setLoading] = useState(false);
+const AuthProvider = ({ children }: any) => {
+	const { expoPushToken } = useContext(NotificationsContext)
+	const [user, setUser] = useState<TUser>({ signed: false })
+	const [loading, setLoading] = useState(false)
 
 	const signin = async (email: string, password: string) => {
 		setLoading(true)
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password)
-			await getDoc(doc(db, "users", userCredential.user.uid))
-				.then(fetched_data => {
-					const user_data = fetched_data.data()
-					setUser({ ...user_data, user_uid: userCredential.user.uid, signed: true })
-				})
-			await updateDoc(doc(db, "users", userCredential.user.uid), {
-				expoToken: expoPushToken
-			});
+			await getDoc(doc(db, 'users', userCredential.user.uid)).then((fetched_data) => {
+				const user_data = fetched_data.data()
+				setUser({ ...user_data, user_uid: userCredential.user.uid, signed: true })
+			})
+			await updateDoc(doc(db, 'users', userCredential.user.uid), {
+				expoToken: expoPushToken,
+			})
 		} catch (error) {
 			console.warn(error)
 		}
@@ -77,12 +72,11 @@ const AuthProvider = ({
 	const signout = () => {
 		setLoading(true)
 		if (user.user_uid) {
-			updateDoc(doc(db, "users", user.user_uid), {
-				expoToken: ""
-			});
+			updateDoc(doc(db, 'users', user.user_uid), {
+				expoToken: '',
+			})
 		}
-		auth.signOut()
-			.catch((error) => console.warn(error.message))
+		auth.signOut().catch((error) => console.warn(error.message))
 		setUser({ signed: false })
 		setLoading(false)
 	}
@@ -99,14 +93,15 @@ const AuthProvider = ({
 				state: userData.uf,
 				city: userData.city,
 				address: userData.street,
-				expoToken: expoPushToken
+				expoToken: expoPushToken,
 			}
-	
-			const authResult = await createUserWithEmailAndPassword(auth, userData.email, userData.password)		
-			setDoc(
-				doc(db, "users", authResult.user.uid), 
-				newUser
+
+			const authResult = await createUserWithEmailAndPassword(
+				auth,
+				userData.email,
+				userData.password
 			)
+			setDoc(doc(db, 'users', authResult.user.uid), newUser)
 			setUser({ ...newUser, user_uid: authResult.user.uid, signed: true })
 			await uploadImageToFirebase(userData, authResult.user.uid)
 		} catch (error) {
@@ -122,7 +117,7 @@ const AuthProvider = ({
 				signin,
 				signout,
 				signup,
-				loading 
+				loading,
 			}}
 		>
 			{children}
