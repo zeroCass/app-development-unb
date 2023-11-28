@@ -18,7 +18,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 	const [adoptionRequirements, setAdoptionRequirements] = useState<string | undefined>(undefined)
 	const subtTitleStyle = {
 		...styles.subTitle,
-		color: owner ? '#589b9b' : '',
+		color: owner ? '#589b9b' : '#f7a800',
 	}
 
 	// fetchData
