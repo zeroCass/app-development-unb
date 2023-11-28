@@ -179,18 +179,18 @@ const PetInfo = ({ route }: PetInfoProps) => {
 							style={{
 								flex: 1,
 								flexDirection: 'row',
-								alignContent: 'space-around',
+								justifyContent: 'space-around',
 							}}
 						>
 							<MainButton
 								text={'VER INTERESSADOS'}
-								styleButton={{ backgroundColor: '#88c9bf', with: '50%' }}
+								styleButton={{ backgroundColor: '#88c9bf', width: '40%' }}
 								styleText={{ color: '#434343' }}
 								onPress={() => console.log('VER INTERESSADOS')}
 							/>
 							<MainButton
 								text={'REMOVER PET'}
-								styleButton={{ backgroundColor: '#88c9bf', with: '50%' }}
+								styleButton={{ backgroundColor: '#88c9bf', width: '40%' }}
 								styleText={{ color: '#434343' }}
 								onPress={() => console.log('REMOVER PET')}
 							/>

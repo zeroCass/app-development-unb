@@ -46,7 +46,6 @@ const PetPhoto = ({ petId }: Props) => {
 const Carousel = ({ urls }: { urls: string[] }) => {
 	const [index, setIndex] = useState(0)
 	const handleOnViewableItemsChanged = useRef(({ viewableItems }: any) => {
-		console.log('viewableItems', viewableItems)
 		setIndex(viewableItems[0].index)
 	}).current
 
