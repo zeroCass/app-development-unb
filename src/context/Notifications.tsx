@@ -5,10 +5,24 @@ import { createContext, useEffect, useRef, useState } from 'react'
 import { Alert, Platform } from 'react-native'
 import 'react-native-gesture-handler'
 
+export type NotificationsMessageType = {
+	id: string
+	from: string
+	to: string
+	title: string
+	body: string
+	data: any
+}
+
 type NotificationsContextType = {
 	expoPushToken: string
 	notification: Notifications.Notification | null
-	sendPushNotification: (expoPushToken: string) => void
+	sendPushNotification: ({ to, from }: NotificationSendMessageType) => void
+}
+
+export type NotificationSendMessageType = {
+	to: string
+	from: string
 }
 
 export const NotificationsContext = createContext<NotificationsContextType>({
@@ -26,16 +40,17 @@ Notifications.setNotificationHandler({
 })
 
 // Can use this function below or use Expo's Push Notification Tool from: https://expo.dev/notifications
-async function sendPushNotification(expoPushToken: string) {
+async function sendPushNotification({ to, from }: NotificationSendMessageType) {
+	console.log('to - from: ', to, from)
 	const message = {
-		to: expoPushToken,
+		to,
 		sound: 'default',
-		title: 'Original Title',
-		body: 'And here is the body!',
-		data: { someData: 'goes here' },
+		title: 'Original Title 2',
+		body: 'And here is the body 2!',
+		data: { someData: 'goes here 2' },
 	}
 
-	await fetch('https://exp.host/--/api/v2/push/send', {
+	const res = await fetch('https://exp.host/--/api/v2/push/send', {
 		method: 'POST',
 		headers: {
 			Accept: 'application/json',
