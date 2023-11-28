@@ -10,6 +10,7 @@ interface fetchImagesProps {
 	entityFolder: string
 	entityID: string
 	setLoading: (state: boolean) => void
+	setUrls: (url: string[]) => void
 }
 
 interface fethedUrl extends fetchImageProps {
@@ -17,7 +18,7 @@ interface fethedUrl extends fetchImageProps {
 }
 
 interface fethedUrls extends fetchImagesProps {
-	setUrl: (url: string[]) => void
+	setUrls: (url: string[]) => void
 }
 
 export const fetchImage = async ({ storageUrl, setLoading }: fetchImageProps): Promise<string> => {
@@ -38,21 +39,23 @@ export const fetchImages = async ({
 	entityFolder,
 	entityID,
 	setLoading,
-}: fetchImagesProps): Promise<string[]> => {
+	setUrls,
+}: fetchImagesProps) => {
 	const imagesUrl: string[] = []
 	setLoading(true)
 	try {
 		const images = await listAll(ref(storage, `${entityFolder}/${entityID}`))
-		images.items.forEach((itemRef) => {
-			imagesUrl.push(itemRef.fullPath)
-		})
+		for (let object of images.items) {
+			const url = await getDownloadURL(ref(storage, object.fullPath))
+			// console.log('url:', url)
+			imagesUrl.push(url)
+		}
+		setUrls(imagesUrl)
 	} catch (error) {
 		console.log('fetchImage error: ', error)
 	} finally {
 		setLoading(false)
 	}
-
-	return imagesUrl
 }
 
 export const fetchedImageUrl = async ({ setUrl, setLoading, storageUrl }: fethedUrl) => {
@@ -64,15 +67,15 @@ export const fetchedImageUrl = async ({ setUrl, setLoading, storageUrl }: fethed
 }
 
 export const fetchedImagesUrl = async ({
-	setUrl,
+	setUrls,
 	setLoading,
 	entityFolder,
 	entityID,
 }: fethedUrls) => {
-	const fetchedUrl = await fetchImages({
+	await fetchImages({
 		entityFolder,
 		entityID,
 		setLoading,
+		setUrls,
 	})
-	setUrl(fetchedUrl)
 }
