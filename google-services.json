@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "258620706046",
+    "firebase_url": "https://app-development-unb-default-rtdb.firebaseio.com",
+    "project_id": "app-development-unb",
+    "storage_bucket": "app-development-unb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258620706046:android:4a49ccefaf3090f804a9af",
+        "android_client_info": {
+          "package_name": "com.x0tok.project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJXrF2epA16AXZk0CXGKlTFYaKhxFuacc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -20,6 +20,7 @@ export type RootDrawerParamList = {
 	Profile: undefined
 	PetRegistration: undefined
 	AdoptStack: NavigatorScreenParams<AdoptParamList>
+	Notifications: undefined
 }
 
 export type PetRegistrationProps = DrawerScreenProps<RootDrawerParamList, 'PetRegistration'>
