@@ -1,17 +1,23 @@
+import { MaterialIcons } from '@expo/vector-icons'
 import { useFocusEffect } from '@react-navigation/native'
 import { doc, getDoc } from 'firebase/firestore'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { PetInfoProps } from 'routes/types'
+import MainButton from '../../components/MainButton'
+import { NotificationsContext } from '../../context/Notifications'
 import { db } from '../../services/firebase'
 import { PetData } from '../Adopt'
 import PetPhoto from './components/PetPhoto'
+import { serviceNotifyPetOwner } from './services'
 
-import { MaterialIcons } from '@expo/vector-icons'
-import MainButton from '../../components/MainButton'
+import { AuthContext, TUser } from '../../context/Auth'
 
 const PetInfo = ({ route }: PetInfoProps) => {
+	const { user } = useContext(AuthContext)
+	const { expoPushToken, sendPushNotification } = useContext(NotificationsContext)
 	const [loading, setLoading] = useState(false)
+	const [owner, setOwner] = useState<TUser>({} as TUser)
 	const petParam = route.params.pet
 	const [petInfo, setPetInfo] = useState<PetData>({} as PetData)
 	const [adoptionRequirements, setAdoptionRequirements] = useState<string | undefined>('')
@@ -34,7 +40,15 @@ const PetInfo = ({ route }: PetInfoProps) => {
 		try {
 			const data = await getDoc(doc(db, 'pet', petParam.id))
 			const petData = { id: data.id, ...data.data() } as PetData
+			console.log('owner id: ', petData.owner)
 			setPetInfo(petData)
+
+			//fetch owner
+			const ownerFetched = await getDoc(doc(db, 'users', petData.owner))
+			const ownerData = { ...ownerFetched.data() } as TUser
+			setOwner(ownerData)
+			console.log('owner', ownerData)
+
 			console.log('pet temperamento: ', petInfo.temper)
 		} catch (error) {
 			console.warn('petFetch data error: ', error)
@@ -42,6 +56,10 @@ const PetInfo = ({ route }: PetInfoProps) => {
 			setLoading(false)
 		}
 	}
+
+	// const handleSendAdoptionNotification = () => {
+	// 	sendPushNotification({ to: owner.expoToken || '', from: expoPushToken })
+	// }
 
 	const arrayToString = (temp: string[] | undefined): string | undefined => {
 		if (!temp || temp.length < 1) return
@@ -65,6 +83,15 @@ const PetInfo = ({ route }: PetInfoProps) => {
 				array.push('acompanhmento de um mês')
 		}
 		setAdoptionRequirements(arrayToString(array))
+	}
+
+	const registerAdoptionRequest = async () => {
+		try {
+			const res = await serviceNotifyPetOwner(petInfo.owner, expoPushToken, user, petInfo.name)
+			console.log('res: ', res)
+		} catch (error) {
+			console.error(error)
+		}
 	}
 
 	if (loading) {
@@ -155,7 +182,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 							text={'PRETENDO ADOTAR'}
 							styleButton={{ backgroundColor: '#fdcf58' }}
 							styleText={{ color: '#434343' }}
-							onPress={() => console.log('Pretendo adotar botão')}
+							onPress={() => registerAdoptionRequest()}
 						/>
 					</View>
 				</ScrollView>

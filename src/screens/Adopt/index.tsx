@@ -17,6 +17,7 @@ import PetCard from './components/PetCard'
 
 export interface PetData extends IRegisterPet {
 	id: string
+	owner: string
 }
 
 const Adopt = ({ navigation }: AdoptStackProps) => {
