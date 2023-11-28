@@ -6,10 +6,10 @@ import NotificationsProvider from './src/context/Notifications'
 export default function App() {
 
 	return (
-		<AuthProvider>
-			<NotificationsProvider>
+		<NotificationsProvider>
+			<AuthProvider>
 				<Routes />
-			</NotificationsProvider>
-		</AuthProvider>
+			</AuthProvider>
+		</NotificationsProvider>
 	)
 }

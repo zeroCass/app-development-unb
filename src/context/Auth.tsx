@@ -1,11 +1,12 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { ref, uploadBytes } from 'firebase/storage'
-import { createContext, useState } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
 import { auth, db, storage } from '../services/firebase'
+import { NotificationsContext } from './Notifications'
 
-type User = {
+export type TUser = {
 	full_name?: string
 	username?: string
 	age?: number
@@ -16,10 +17,11 @@ type User = {
 	address?: string
 	user_uid: string
 	signed: boolean
+	expoToken?: string
 }
 
 type AuthContextType = {
-	user: User
+	user: TUser
 	signin: (email: string, password: string) => void
 	signout: () => void
 	signup: (userData: IRegisterUser) => void
@@ -27,7 +29,7 @@ type AuthContextType = {
 }
 
 export const AuthContext = createContext<AuthContextType>({
-	user: { signed: false, user_uid: '' },
+	user: { signed: false },
 	signin: () => {},
 	signout: () => {},
 	signup: () => {},
@@ -46,7 +48,8 @@ async function uploadImageToFirebase(userData: IRegisterUser, userUid: string) {
 }
 
 const AuthProvider = ({ children }: any) => {
-	const [user, setUser] = useState<User>({ signed: false, user_uid: '' })
+	const { expoPushToken } = useContext(NotificationsContext)
+	const [user, setUser] = useState<TUser>({ signed: false })
 	const [loading, setLoading] = useState(false)
 
 	const signin = async (email: string, password: string) => {
@@ -57,6 +60,9 @@ const AuthProvider = ({ children }: any) => {
 				const user_data = fetched_data.data()
 				setUser({ ...user_data, user_uid: userCredential.user.uid, signed: true })
 			})
+			await updateDoc(doc(db, 'users', userCredential.user.uid), {
+				expoToken: expoPushToken,
+			})
 		} catch (error) {
 			console.warn(error)
 		}
@@ -65,8 +71,13 @@ const AuthProvider = ({ children }: any) => {
 
 	const signout = () => {
 		setLoading(true)
+		if (user.user_uid) {
+			updateDoc(doc(db, 'users', user.user_uid), {
+				expoToken: '',
+			})
+		}
 		auth.signOut().catch((error) => console.warn(error.message))
-		setUser({ signed: false, user_uid: '' })
+		setUser({ signed: false })
 		setLoading(false)
 	}
 
@@ -82,6 +93,7 @@ const AuthProvider = ({ children }: any) => {
 				state: userData.uf,
 				city: userData.city,
 				address: userData.street,
+				expoToken: expoPushToken,
 			}
 
 			const authResult = await createUserWithEmailAndPassword(
@@ -99,7 +111,15 @@ const AuthProvider = ({ children }: any) => {
 	}
 
 	return (
-		<AuthContext.Provider value={{ user, signin, signout, signup, loading }}>
+		<AuthContext.Provider
+			value={{
+				user,
+				signin,
+				signout,
+				signup,
+				loading,
+			}}
+		>
 			{children}
 		</AuthContext.Provider>
 	)
