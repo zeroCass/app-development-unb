@@ -4,17 +4,19 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { PetInfoProps } from 'routes/types'
+import MainButton from '../../components/MainButton'
 import { PetData } from '../../components/PetList'
+import { AuthContext } from '../../context/Auth'
+import { NotificationsContext } from '../../context/Notifications'
 import { db } from '../../services/firebase'
 import PetPhoto from './components/PetPhoto'
 import { serviceNotifyPetOwner } from './services'
 
-import { AuthContext, TUser } from '../../context/Auth'
-
 const PetInfo = ({ route }: PetInfoProps) => {
+	const { user } = useContext(AuthContext)
+	const { expoPushToken, sendPushNotification } = useContext(NotificationsContext)
 	const owner = route.params.pet.owner
 	const [loading, setLoading] = useState(false)
-	const [owner, setOwner] = useState<TUser>({} as TUser)
 	const petParam = route.params.pet
 	const [petInfo, setPetInfo] = useState<PetData>({} as PetData)
 	const [adoptionRequirements, setAdoptionRequirements] = useState<string | undefined>(undefined)
@@ -43,13 +45,6 @@ const PetInfo = ({ route }: PetInfoProps) => {
 			const petData = { id: data.id, ...data.data() } as PetData
 			console.log('owner id: ', petData.owner)
 			setPetInfo(petData)
-
-			//fetch owner
-			const ownerFetched = await getDoc(doc(db, 'users', petData.owner))
-			const ownerData = { ...ownerFetched.data() } as TUser
-			setOwner(ownerData)
-			console.log('owner', ownerData)
-
 			console.log('pet temperamento: ', petInfo.temper)
 		} catch (error) {
 			console.warn('petFetch data error: ', error)
@@ -194,7 +189,7 @@ const PetInfo = ({ route }: PetInfoProps) => {
 								text={'PRETENDO ADOTAR'}
 								styleButton={{ backgroundColor: '#fdcf58' }}
 								styleText={{ color: '#434343' }}
-								onPress={() => console.log('Pretendo adotar botão')}
+								onPress={() => registerAdoptionRequest()}
 							/>
 						</View>
 					) : (

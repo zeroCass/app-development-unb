@@ -19,6 +19,9 @@ export const serviceNotifyPetOwner = async (
 	const data = await getDoc(doc(db, 'users', owner))
 	const userData = { id: data.id, ...data.data() } as UserData
 
+	console.log('userData: ', userData)
+	console.log('to - from: ', myExpoToken, userData.expoToken)
+
 	try {
 		const message = {
 			to: userData.expoToken,
@@ -42,6 +45,7 @@ export const serviceNotifyPetOwner = async (
 
 		// Extract the ID from the response
 		const { data } = await res.json()
+		console.log(data)
 		if (data.status === 'error') return { type: 'error', error: 'Falha ao enviar mensagem' }
 
 		// add notification to database
