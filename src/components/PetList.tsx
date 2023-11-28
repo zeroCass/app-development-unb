@@ -53,7 +53,7 @@ const PetList = ({ ownerList }: PetListType) => {
 		querySnapshot.forEach((doc) => {
 			const data = doc.data()
 			dataArray.push({ id: doc.id, ...data })
-			console.log(doc.id)
+			// console.log(doc.id)
 		})
 
 		return dataArray
@@ -82,7 +82,7 @@ const PetList = ({ ownerList }: PetListType) => {
 			}
 			const dataArray = await queryDataInDB(queryMounted)
 			setPetsData(dataArray)
-			console.log(petsData.length, 'petsData size')
+			// console.log(petsData.length, 'petsData size')
 		} catch (error) {
 			console.warn(error)
 		} finally {
@@ -118,9 +118,9 @@ const PetList = ({ ownerList }: PetListType) => {
 			const dataArray = await queryDataInDB(queryMounted)
 			const newPetsArrys = [...petsData, ...dataArray]
 			setPetsData(newPetsArrys)
-			console.log(dataArray.length, 'newPets size')
+			// console.log(dataArray.length, 'newPets size')
 		} catch (error) {
-			console.log()
+			console.log(error)
 		} finally {
 			setLoadMoreContent(false)
 		}
