@@ -1,26 +1,36 @@
-import PropTypes from 'prop-types'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export type Props = {
-	text: string,
-	styleButton?: any,
-	styleText?: any,
-	iconComponent?: any,
-	onPress?: any 
+	text: string
+	styleButton?: any
+	styleText?: any
+	iconComponent?: any
+	onPress?: any
+	disabled?: boolean
 }
 
 const MainButton: React.FC<Props> = ({
-    text,
-    styleButton,
-    styleText,
-    iconComponent,
-    onPress
+	text,
+	styleButton,
+	styleText,
+	iconComponent,
+	onPress,
+	disabled,
 }) => {
+	const handleOnPress = () => {
+		if (!disabled) onPress()
+	}
 
 	return (
-		<TouchableOpacity style={[styles.button, styleButton]} onPress={onPress}>
+		<TouchableOpacity
+			style={[styles.button, styleButton, disabled && styles.disabledButton]}
+			onPress={handleOnPress}
+			disabled={disabled}
+		>
 			{iconComponent && <View style={styles.iconContainer}>{iconComponent}</View>}
-			<Text style={[styles.buttonText, styleText]}>{text.toUpperCase()}</Text>
+			<Text style={[styles.buttonText, styleText, disabled && styles.disabledText]}>
+				{text.toUpperCase()}
+			</Text>
 		</TouchableOpacity>
 	)
 }
@@ -41,6 +51,12 @@ const styles = StyleSheet.create({
 	buttonText: {
 		color: '#434343', // Default text color
 		fontSize: 12,
+	},
+	disabledButton: {
+		backgroundColor: '#ccc',
+	},
+	disabledText: {
+		fontStyle: 'italic',
 	},
 	iconContainer: {},
 })
