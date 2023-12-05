@@ -83,7 +83,6 @@ const RootRoutes = () => {
 						component={Notifications}
 						options={{
 							title: 'Notificações',
-							headerShown: false,
 						}}
 					/>
 				</RootDrawer.Group>
