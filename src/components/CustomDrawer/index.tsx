@@ -88,6 +88,11 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 										onPress={() => props.navigation.navigate('Notifications')}
 										underline={true}
 									/>
+									<SubItem
+										label='Chat'
+										onPress={() => props.navigation.navigate('Chat')}
+										underline={true}
+									/>
 									<SubItem label='Dicas' onPress={() => console.log('Dicas')} underline={false} />
 								</Item>
 								<Item
