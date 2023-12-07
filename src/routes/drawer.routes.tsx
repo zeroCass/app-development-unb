@@ -3,9 +3,9 @@ import { useContext } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import CustomDrawer from '../components/CustomDrawer'
 import { AuthContext } from '../context/Auth'
+import Chat from '../screens/Chat'
 import Login from '../screens/Login'
 import Notifications from '../screens/Notifications'
-import Chat from '../screens/Chat'
 import PetRegistration from '../screens/PetRegistration'
 import Profile from '../screens/Profile'
 import UserRegister from '../screens/UserRegister'
@@ -87,14 +87,14 @@ const RootRoutes = () => {
 							headerShown: false,
 						}}
 					/>
-					{/* <RootDrawer.Screen
+					<RootDrawer.Screen
 						name='Chat'
 						component={Chat}
 						options={{
 							title: 'Chat',
 							headerShown: false,
 						}}
-					/> */}
+					/>
 				</RootDrawer.Group>
 			)}
 		</RootDrawer.Navigator>
