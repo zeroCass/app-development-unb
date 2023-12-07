@@ -1,37 +1,41 @@
-import {
-	Query,
-	QueryDocumentSnapshot,
-	collection,
-	getDocs,
-	limit,
-	query,
-	startAfter,
-	where,
-} from 'firebase/firestore'
+import { useCallback, useContext, useEffect, useState } from 'react'
+import { GiftedChat, QuickReplies, User } from 'react-native-gifted-chat'
+import { ChatProps } from 'routes/types'
+import { AuthContext } from '../../context/Auth'
 
-import { db } from '../../services/firebase'
+// type chatDataType = {
+// 	id: string
+// 	from: string
+// 	to: string
+// 	bodyText: string
+// 	data: any
+// }
 
-import { StyleSheet, View } from 'react-native'
-import React, { useEffect, useCallback, useState, useLayoutEffect } from 'react'
-import { GiftedChat } from 'react-native-gifted-chat'
-
-type chatDataType = {
-	id: string
-	from: string
-	to: string
-	bodyText: string
-	data: any
+export interface IMessage {
+	_id: string | number
+	text: string
+	createdAt: Date | number
+	user: User
+	image?: string
+	video?: string
+	audio?: string
+	system?: boolean
+	sent?: boolean
+	received?: boolean
+	pending?: boolean
+	quickReplies?: QuickReplies
 }
 
-const Chat = ({ navigation }) => {
-	const [messages, setMessages] = useState([])
+const Chat = ({ navigation }: ChatProps) => {
+	const [messages, setMessages] = useState<IMessage[]>([])
+	const { user } = useContext(AuthContext)
 
 	// Verificar o setMessages
 	useEffect(() => {
 		setMessages([
 			{
-				_id: 1, 
-				text: 'Hello developer',
+				_id: 1,
+				text: `Olá, ${user.full_name}`,
 				createdAt: new Date(),
 				user: {
 					_id: 2,
@@ -41,18 +45,17 @@ const Chat = ({ navigation }) => {
 			},
 		])
 	}, [])
-	const onSend = useCallback((messages = []) => {
+	const onSend = useCallback((messages: IMessage[]) => {
 		setMessages((previousMessages) => GiftedChat.append(previousMessages, messages))
 	}, [])
 	return (
 		<GiftedChat
 			messages={messages}
 			showAvatarForEveryMessage={true}
-			onSend={(messages) => onSend(messages)}
+			onSend={(messages: IMessage[]) => onSend(messages)}
 			user={{
-				_id: auth?.currentUser?.email,
-				name: auth?.currentUser?.displayName,
-				avatar: auth?.currentUser?.photoURL,
+				_id: user.user_uid,
+				name: user.full_name,
 			}}
 		/>
 	)
