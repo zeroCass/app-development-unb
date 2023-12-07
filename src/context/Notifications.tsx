@@ -120,7 +120,7 @@ const NotificationsProvider = ({ children }: any) => {
 		})
 
 		responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-			console.log(response)
+			// console.log('cliquei: ', response)
 		})
 
 		return () => {

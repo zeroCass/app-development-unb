@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { useFocusEffect } from '@react-navigation/native'
 import { doc, getDoc } from 'firebase/firestore'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { PetInfoProps } from 'routes/types'
 import MainButton from '../../components/MainButton'
 import { PetData } from '../../components/PetList'
@@ -12,9 +12,9 @@ import { db } from '../../services/firebase'
 import PetPhoto from './components/PetPhoto'
 import { serviceNotifyPetOwner } from './services'
 
-const PetInfo = ({ route }: PetInfoProps) => {
+const PetInfo = ({ route, navigation }: PetInfoProps) => {
 	const { user } = useContext(AuthContext)
-	const { expoPushToken, sendPushNotification } = useContext(NotificationsContext)
+	const { expoPushToken } = useContext(NotificationsContext)
 	const owner = route.params.pet.owner
 	const [loading, setLoading] = useState(false)
 	const petParam = route.params.pet
@@ -53,10 +53,6 @@ const PetInfo = ({ route }: PetInfoProps) => {
 		}
 	}
 
-	// const handleSendAdoptionNotification = () => {
-	// 	sendPushNotification({ to: owner.expoToken || '', from: expoPushToken })
-	// }
-
 	const arrayToString = (temp: string[] | undefined): string | undefined => {
 		if (!temp || temp.length < 1) return
 		if (temp.length === 1) return temp[0]
@@ -81,11 +77,39 @@ const PetInfo = ({ route }: PetInfoProps) => {
 	}
 
 	const registerAdoptionRequest = async () => {
-		try {
-			const res = await serviceNotifyPetOwner(petInfo.owner, expoPushToken, user, petInfo.name)
-			console.log('res: ', res)
-		} catch (error) {
-			console.error(error)
+		const result = await serviceNotifyPetOwner(petInfo.owner, expoPushToken, user, petInfo)
+		if (result.type === 'found') {
+			Alert.alert(
+				'Envio de notificação',
+				`Erro ao enviar notificação para o dono do animal\n${result.text}`,
+				[
+					{
+						text: 'Ok',
+					},
+				],
+				{
+					cancelable: true,
+				}
+			)
+		}
+
+		if (result.type === 'success') {
+			Alert.alert(
+				'Envio de notificação',
+				'Notificação enviada com sucesso!',
+				[
+					{
+						text: 'Ok',
+						onPress: () =>
+							navigation.navigate('AdoptStack', {
+								screen: 'Adopt',
+							}),
+					},
+				],
+				{
+					cancelable: false,
+				}
+			)
 		}
 	}
 
