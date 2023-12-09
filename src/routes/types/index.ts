@@ -14,6 +14,11 @@ export type AdoptParamList = {
 	MyPets: undefined
 }
 
+export type ChatParamList = {
+	Chat: undefined
+	ChatInfo: { chat: any }
+}
+
 export type RootDrawerParamList = {
 	Login: undefined
 	UserRegister: undefined
@@ -21,11 +26,17 @@ export type RootDrawerParamList = {
 	PetRegistration: undefined
 	AdoptStack: NavigatorScreenParams<AdoptParamList>
 	Notifications: undefined
-	Chat: undefined
+	ChatStack: NavigatorScreenParams<ChatParamList>
 }
 
 export type PetRegistrationProps = DrawerScreenProps<RootDrawerParamList, 'PetRegistration'>
-export type ChatProps = DrawerScreenProps<RootDrawerParamList, 'Chat'>
+
+export type ChatStackProps = NativeStackScreenProps<ChatParamList>
+export type ChatInfoProps = CompositeScreenProps<
+	NativeStackScreenProps<ChatParamList, 'ChatInfo'>,
+	DrawerScreenProps<RootDrawerParamList>
+>
+
 export type AdoptStackProps = NativeStackScreenProps<AdoptParamList>
 export type PetInfoProps = CompositeScreenProps<
 	NativeStackScreenProps<AdoptParamList, 'PetInfo'>,
