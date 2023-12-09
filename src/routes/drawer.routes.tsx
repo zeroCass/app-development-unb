@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import CustomDrawer from '../components/CustomDrawer'
 import { AuthContext } from '../context/Auth'
+import ChatList from '../screens/Chat'
 import Login from '../screens/Login'
 import Notifications from '../screens/Notifications'
 import PetRegistration from '../screens/PetRegistration'
@@ -11,6 +12,7 @@ import UserRegister from '../screens/UserRegister'
 
 import AdoptStack from './adoptStack.routes'
 import { RootDrawerParamList } from './types'
+import ChatStack from './chatStack.routes'
 
 const RootDrawer = createDrawerNavigator<RootDrawerParamList>()
 
@@ -83,6 +85,14 @@ const RootRoutes = () => {
 						component={Notifications}
 						options={{
 							title: 'Notificações',
+						}}
+					/>
+					<RootDrawer.Screen
+						name='ChatStack'
+						component={ChatStack}
+						options={{
+							title: 'Chat',
+							headerShown: false,
 						}}
 					/>
 				</RootDrawer.Group>
