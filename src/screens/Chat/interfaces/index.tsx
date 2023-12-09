@@ -6,4 +6,6 @@ export interface ChatData {
     id: string
     participants: string[]
     messages: IMessage[]
+    otherUserUID: string
+    otherUserUsername: string
 }

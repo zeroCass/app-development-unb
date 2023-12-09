@@ -14,9 +14,10 @@ import {
 } from 'firebase/firestore'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { db } from '../../../services/firebase'
-import { ScrollView, SafeAreaView, ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native'
+import {ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native'
 import { ChatParamList } from 'routes/types'
 import ChatCard from '../components/ChatCard'
+import { doc, getDoc } from 'firebase/firestore'
 
 const ChatList = () => {
     const chatsPerPage = 7
@@ -66,10 +67,12 @@ const ChatList = () => {
 		lastDocRef.current = querySnapshot.docs[querySnapshot.docs.length - 1]
 		
         const dataArray: any[] = []
-		querySnapshot.forEach((doc) => {
-			const data = doc.data()
-			dataArray.push({ id: doc.id, ...data })
-		})
+		for (const chatdoc of querySnapshot.docs) {
+			const data = chatdoc.data()
+			let otherUser = data.participants.filter((participant:string) => participant !== user.user_uid)[0]
+			const otherUserData = await getDoc(doc(db, 'users', otherUser))
+			dataArray.push({ id: chatdoc.id, ...data, otherUserUID: otherUserData.id, otherUserUsername: otherUserData.data()?.username })
+		}
 
 		return dataArray
 	}
@@ -116,8 +119,9 @@ const ChatList = () => {
 						}
 					>
 						<ChatCard
-							participants={item.participants}
 							messages={item.messages}
+							otherUserUID={item.otherUserUID}
+							otherUserUsername={item.otherUserUsername}
 						/>
 					</TouchableOpacity>
 				)}

@@ -5,49 +5,26 @@ import { fetchedImageUrl } from '../../../services/images'
 import {
     IMessage
 } from 'react-native-gifted-chat'
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '../../../services/firebase'
 
 type Props = {
-	participants: string[] | undefined
 	messages: IMessage[]
+	otherUserUID: string
+	otherUserUsername: string
 }
 
-export type TUser = {
-	full_name?: string
-	username?: string
-	age?: number
-	email?: string
-	phone?: string
-	city?: string
-	state?: string
-	address?: string
-	user_uid?: string
-	expoToken?: string
-}
-
-const ChatCard = ({ participants, messages }: Props) => {
+const ChatCard = ({ messages, otherUserUID, otherUserUsername }: Props) => {
     const {user} = useContext(AuthContext)
-    let uuidToFetch = participants?.filter((participant) => participant !== user.user_uid)[0]
 	const defaultImage = require('../../../assets/images/default-pf.png')
 	const [loading, setLoading] = useState(false)
-	const [userData, setUserData] = useState<TUser>({})
 	const [url, setUrl] = useState<string>('')
-	
-	if (uuidToFetch) {
-		getDoc(doc(db, 'users', uuidToFetch)).then((fetched_data) => {
-			setUserData({...fetched_data.data()})
-		})
-	}
 
 	useEffect(() => {
-		if (!uuidToFetch) return setLoading(true)
         fetchedImageUrl({
-			storageUrl: `user/${uuidToFetch}/profilePicture.png`,
+			storageUrl: `user/${otherUserUID}/profilePicture.png`,
 			setLoading: (state: boolean) => setLoading(state),
 			setUrl: (url: string) => setUrl(url),
 		})
-	}, [uuidToFetch])
+	}, [])
 
 	const lastMessage = messages[0]
 
@@ -69,7 +46,7 @@ const ChatCard = ({ participants, messages }: Props) => {
 				)}
 			</View>
 			<View style={styles.infoSection}>
-				<Text>{userData.full_name}</Text>
+				<Text>{otherUserUsername}</Text>
                 <View style={styles.lastMessageSection}>
                     <Text style={styles.lastMessageText}>
 						{ lastMessage?.user.name !== user.username ? lastMessage?.user.name : "Você"}: {lastMessage?.text}

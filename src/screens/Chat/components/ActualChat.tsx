@@ -12,20 +12,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ChatInfoProps } from 'routes/types'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../../../context/Auth'
-import { Timestamp, doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../../../services/firebase'
-import Routes from 'routes'
-
-// const mainUser = {
-//     _id: 1,
-//     name: 'Developer',
-// }
-
-// const otherUser = {
-//     _id: 2,
-//     name: 'React Native',
-//     avatar: 'https://facebook.github.io/react/img/logo_og.png',
-// }
 
 interface IState {
     messages: any[]

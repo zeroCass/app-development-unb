@@ -31,8 +31,8 @@ const ChatStack = () => {
 			<Stack.Screen
 				name='ActualChat'
 				component={ActualChat}
-				options={({ navigation }) => ({
-					title: 'Mensagem direta',
+				options={({ route }) => ({
+					title: route.params.chat.otherUserUsername,
 					headerStyle: {
 						backgroundColor: '#ffd358',
 					},
