@@ -28,24 +28,26 @@ export type TUser = {
 
 const ChatCard = ({ participants, messages }: Props) => {
     const {user} = useContext(AuthContext)
-    let user_data: TUser | undefined
     let uuidToFetch = participants?.filter((participant) => participant !== user.user_uid)[0]
 	const defaultImage = require('../../../assets/images/default-pf.png')
 	const [loading, setLoading] = useState(false)
+	const [userData, setUserData] = useState<TUser>({})
 	const [url, setUrl] = useState<string>('')
+	
+	if (uuidToFetch) {
+		getDoc(doc(db, 'users', uuidToFetch)).then((fetched_data) => {
+			setUserData({...fetched_data.data()})
+		})
+	}
 
 	useEffect(() => {
 		if (!uuidToFetch) return setLoading(true)
-		getDoc(doc(db, 'users', uuidToFetch)).then((fetched_data) => {
-            user_data = {...fetched_data.data()}
-            console.log("DADOS DO GETDOC NO CHATCARD", fetched_data.data())
-        })
         fetchedImageUrl({
 			storageUrl: `user/${uuidToFetch}/profilePicture.png`,
 			setLoading: (state: boolean) => setLoading(state),
 			setUrl: (url: string) => setUrl(url),
 		})
-	}, [uuidToFetch, user_data])
+	}, [uuidToFetch])
 
 	if (loading) {
 		return (
@@ -58,7 +60,7 @@ const ChatCard = ({ participants, messages }: Props) => {
 	return (
 		<View style={styles.container}>
 			<View style={[styles.header]}>
-				<Text style={styles.title}>{user_data?.full_name}</Text>
+				<Text style={styles.title}>{userData.full_name}</Text>
 			</View>
 			<View style={styles.imgContainer}>
 				{url === '' ? (
