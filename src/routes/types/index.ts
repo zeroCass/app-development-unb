@@ -24,6 +24,7 @@ export type RootDrawerParamList = {
 }
 
 export type PetRegistrationProps = DrawerScreenProps<RootDrawerParamList, 'PetRegistration'>
+export type RootDrawerProps = DrawerScreenProps<RootDrawerParamList>
 export type AdoptStackProps = NativeStackScreenProps<AdoptParamList>
 export type PetInfoProps = CompositeScreenProps<
 	NativeStackScreenProps<AdoptParamList, 'PetInfo'>,

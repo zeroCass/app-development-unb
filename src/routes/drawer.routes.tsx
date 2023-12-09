@@ -1,4 +1,5 @@
 import { DrawerContentComponentProps, createDrawerNavigator } from '@react-navigation/drawer'
+
 import { useContext } from 'react'
 import { ActivityIndicator, View } from 'react-native'
 import CustomDrawer from '../components/CustomDrawer'

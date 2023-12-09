@@ -1,12 +1,7 @@
-import { NavigationContainer } from '@react-navigation/native'
 import RootRoutes from './drawer.routes'
 
 const Routes = () => {
-	return (
-		<NavigationContainer>
-			<RootRoutes />
-		</NavigationContainer>
-	)
+	return <RootRoutes />
 }
 
 export default Routes

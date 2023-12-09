@@ -1,3 +1,4 @@
+// import { useLinkTo } from '@react-navigation/native'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
@@ -110,7 +111,8 @@ const NotificationsProvider = ({ children }: any) => {
 	const [expoPushToken, setExpoPushToken] = useState('')
 	const [notification, setNotification] = useState(null as Notifications.Notification | null)
 	const notificationListener = useRef({} as Notifications.Subscription)
-	const responseListener = useRef({} as Notifications.Subscription)
+	// const responseListener = useRef({} as Notifications.Subscription)
+	// const linkTo = useLinkTo()
 
 	useEffect(() => {
 		registerForPushNotificationsAsync().then((token) => setExpoPushToken(token || ''))
@@ -119,13 +121,14 @@ const NotificationsProvider = ({ children }: any) => {
 			setNotification(notification)
 		})
 
-		responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
-			// console.log('cliquei: ', response)
-		})
+		// responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+		// 	console.log('cliquei: ', response)
+		// 	linkTo('/notifications')
+		// })
 
 		return () => {
 			Notifications.removeNotificationSubscription(notificationListener.current)
-			Notifications.removeNotificationSubscription(responseListener.current)
+			// Notifications.removeNotificationSubscription(responseListener.current)
 		}
 	}, [])
 
