@@ -10,6 +10,7 @@ import {
 	limit,
 	query,
 	startAfter,
+	where,
 } from 'firebase/firestore'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { db } from '../../../services/firebase'
@@ -41,7 +42,8 @@ const ChatList = () => {
 
             queryMounted = query(
                 collection(db, 'chat'),
-                limit(chatsPerPage)
+                limit(chatsPerPage),
+				where("participants", "array-contains", user.user_uid)
             )
 
 			const dataArray = await queryDataInDB(queryMounted)
@@ -84,6 +86,7 @@ const ChatList = () => {
                 collection(db, 'chat'),
                 startAfter(lastDocRef.current),
                 limit(chatsPerPage),
+				where("participants", "array-contains", user.user_uid)
             )
 
 			const dataArray = await queryDataInDB(queryMounted)
@@ -108,7 +111,7 @@ const ChatList = () => {
 					<TouchableOpacity
 						onPress={() =>
 							navigation.navigate('ActualChat', {
-								chat: item,
+								chat: {item},
 							})
 						}
 					>
