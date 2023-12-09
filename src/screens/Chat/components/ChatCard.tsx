@@ -49,6 +49,8 @@ const ChatCard = ({ participants, messages }: Props) => {
 		})
 	}, [uuidToFetch])
 
+	const lastMessage = messages?.slice(-1)[0]
+
 	if (loading) {
 		return (
 			<View style={styles.loadingContainer}>
@@ -58,20 +60,20 @@ const ChatCard = ({ participants, messages }: Props) => {
 	}
 
 	return (
-		<View style={styles.container}>
-			<View style={[styles.header]}>
-				<Text style={styles.title}>{userData.full_name}</Text>
-			</View>
-			<View style={styles.imgContainer}>
+		<View style={styles.card}>
+			<View>
 				{url === '' ? (
 					<Image style={styles.image} source={defaultImage} />
 				) : (
-					<Image style={styles.image} source={{ uri: url }} />
+					<Image style={styles.image} source={{ uri: url} } />
 				)}
 			</View>
-            <View style={styles.footer}>
-                <View style={styles.petInfo}>
-                    <Text style={styles.text}>{messages?.slice(-1)[0]?.text}</Text>
+			<View style={styles.infoSection}>
+				<Text>{userData.full_name}</Text>
+                <View style={styles.lastMessageSection}>
+                    <Text style={styles.lastMessageText}>
+						{ lastMessage?.user.name !== user.username ? lastMessage?.user.name : "Você"}: {lastMessage?.text}
+					</Text>
                 </View>
             </View>
 		</View>
@@ -85,61 +87,31 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
-	container: {
-		backgroundColor: '#fff',
-		height: 344,
-		width: '100%',
-		marginBottom: 16,
-		borderRadius: 10,
-		overflow: 'hidden',
-		shadowColor: '#000000',
-		shadowOpacity: 5,
-		shadowRadius: 10,
-		elevation: 3,
-	},
-	header: {
-		height: '10%',
-		paddingLeft: 16,
-		justifyContent: 'center',
-		width: '100%',
-		backgroundColor: '#fee29b',
-		// borderTopRightRadius: 10,
-		// borderTopLeftRadius: 10,
-	},
-	imgContainer: {
-		height: '70%',
-		width: '100%',
-		overflow: 'hidden',
-	},
 	image: {
-		flex: 1,
-		width: '100%',
-		resizeMode: 'cover',
+		width: 75,
+		height: 75,
+		borderRadius: 100,
 	},
-	footer: {
-		height: '20%',
-		width: '100%',
-	},
-	title: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		color: '#434343',
-	},
-	text: {
-		fontSize: 12,
-		color: '#434343',
-	},
-	petInfo: {
-		padding: 5,
+	card: {
+		backgroundColor: '#fff',
+		borderRadius: 10,
+		shadowColor: '#000',
+		elevation: 5,
 		flex: 1,
 		flexDirection: 'row',
-		justifyContent: 'space-around',
+		padding: 10,
+		margin: 10,
 	},
-	location: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
+	infoSection: {
+		marginLeft: 20,
 	},
+	lastMessageSection: {
+		marginTop: 10,
+	},
+	lastMessageText: {
+		color: 'grey',
+		opacity: 0.8,
+	}
 })
 
 export default ChatCard

@@ -45,6 +45,11 @@ const ChatList = () => {
             )
 
 			const dataArray = await queryDataInDB(queryMounted)
+			dataArray.forEach((chat: any) => {
+				chat.messages.forEach((message: any) => {
+					message.createdAt = message.createdAt.toDate().toString()
+				});
+			});
 			setChatsData(dataArray)
 		} catch (error) {
 			console.warn(error)
@@ -82,8 +87,8 @@ const ChatList = () => {
             )
 
 			const dataArray = await queryDataInDB(queryMounted)
-			const newCahtsArray = [...chatsData, ...dataArray]
-			setChatsData(newCahtsArray)
+			const newChatsArray = [...chatsData, ...dataArray]
+			setChatsData(newChatsArray)
 		} catch (error) {
 			console.log(error)
 		} finally {
@@ -102,7 +107,7 @@ const ChatList = () => {
 				renderItem={({ item }: { item: ChatData }) => (
 					<TouchableOpacity
 						onPress={() =>
-							navigation.navigate('ChatInfo', {
+							navigation.navigate('ActualChat', {
 								chat: item,
 							})
 						}

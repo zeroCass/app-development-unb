@@ -2,10 +2,10 @@ import { Entypo } from '@expo/vector-icons'
 import { DrawerActions } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { TouchableOpacity } from 'react-native'
-
-import Chat from '../screens/Chat'
-
 import { ChatParamList } from './types'
+import Chat from '../screens/Chat'
+import ActualChat from '../screens/Chat/components/ActualChat'
+
 
 const Stack = createNativeStackNavigator<ChatParamList>()
 
@@ -28,26 +28,17 @@ const ChatStack = () => {
 					),
 				})}
 			/>
-
-            {/* Vai ser a screen do chat mesmo */}
-			{/* <Stack.Screen
-				name='PetInfo'
-				component={PetInfo}
-				options={({ route }) => ({
-					title: route.params.pet.name ? route.params.pet.name : 'Informações do Pet',
+			<Stack.Screen
+				name='ActualChat'
+				component={ActualChat}
+				options={({ navigation }) => ({
+					title: 'Mensagem direta',
 					headerStyle: {
-						backgroundColor: route.params.pet.owner ? '#cfe9e5' : '#ffd358',
+						backgroundColor: '#ffd358',
 					},
-					statusBarColor: route.params.pet.owner ? '#88c9bf' : '#f7a800',
-					headerRight: () => (
-						<TouchableOpacity
-							onPress={() => console.log('Faz algo que eu n sei como vai ser feito')}
-						>
-							<Entypo name='share' size={24} color='#434343' />
-						</TouchableOpacity>
-					),
+					statusBarColor: '#f7a800',
 				})}
-			/> */}
+			/>
 		</Stack.Navigator>
 	)
 }

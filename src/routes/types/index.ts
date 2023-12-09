@@ -16,7 +16,7 @@ export type AdoptParamList = {
 
 export type ChatParamList = {
 	Chat: undefined
-	ChatInfo: { chat: any }
+	ActualChat: { chat: any }
 }
 
 export type RootDrawerParamList = {
@@ -33,7 +33,7 @@ export type PetRegistrationProps = DrawerScreenProps<RootDrawerParamList, 'PetRe
 
 export type ChatStackProps = NativeStackScreenProps<ChatParamList>
 export type ChatInfoProps = CompositeScreenProps<
-	NativeStackScreenProps<ChatParamList, 'ChatInfo'>,
+	NativeStackScreenProps<ChatParamList, 'ActualChat'>,
 	DrawerScreenProps<RootDrawerParamList>
 >
 
