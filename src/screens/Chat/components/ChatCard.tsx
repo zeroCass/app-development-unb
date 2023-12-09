@@ -10,7 +10,7 @@ import { db } from '../../../services/firebase'
 
 type Props = {
 	participants: string[] | undefined
-	messages: IMessage[] | undefined
+	messages: IMessage[]
 }
 
 export type TUser = {
@@ -49,7 +49,7 @@ const ChatCard = ({ participants, messages }: Props) => {
 		})
 	}, [uuidToFetch])
 
-	const lastMessage = messages?.slice(-1)[0]
+	const lastMessage = messages[0]
 
 	if (loading) {
 		return (
