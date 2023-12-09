@@ -73,7 +73,7 @@ type TSendNotification = {
 	}
 }
 const sendNotification = async (message: TSendNotification): Promise<any> => {
-	const res = await fetch('https://exp.host/--/api/v2/push/send', {
+	const response = await fetch('https://exp.host/--/api/v2/push/send', {
 		method: 'POST',
 		headers: {
 			Accept: 'application/json',
@@ -84,8 +84,8 @@ const sendNotification = async (message: TSendNotification): Promise<any> => {
 	})
 
 	// Extract the ID from the response
-	const { data } = await res.json()
-	return data
+	const responseData = await response.json()
+	return responseData
 }
 
 export const serviceNotifyPetOwner = async (
@@ -112,11 +112,15 @@ export const serviceNotifyPetOwner = async (
 			data: { someData: `${user.full_name} deseja adotar seu pet de nome ${pet.name}` },
 		}
 
-		const data = await sendNotification(message)
+		const response = await sendNotification(message)
+		console.log('response: ', response)
+
 		// Extract the ID from the response
-		console.log(data)
-		if (!data || data?.status === 'error')
-			return { type: 'error', error: 'Falha ao enviar mensagem' }
+
+		if (!response.data && response.errors) {
+			console.log('sendNotification error: ', response.errors[0].message)
+			return { type: 'error', error: String(response.errors[0].message) }
+		}
 
 		// add notification to database
 		const notification = {

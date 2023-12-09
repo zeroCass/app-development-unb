@@ -6,6 +6,7 @@ import {
 	collection,
 	getDocs,
 	limit,
+	orderBy,
 	query,
 	startAfter,
 	where,
@@ -72,7 +73,8 @@ const Notifications = () => {
 			const queryMounted: Query = query(
 				collection(db, 'notifications'),
 				limit(itemsPerPage),
-				where('recieverID', '==', user.user_uid)
+				where('recieverID', '==', user.user_uid),
+				orderBy('date', 'desc')
 			)
 
 			const dataArray = await queryDataInDB(queryMounted)
@@ -92,9 +94,11 @@ const Notifications = () => {
 			setLoadMoreContent(true)
 			const queryMounted: Query = query(
 				collection(db, 'notifications'),
-				startAfter(lastDocRef.current),
+
 				limit(itemsPerPage),
-				where('recieverID', '==', user.user_uid)
+				where('recieverID', '==', user.user_uid),
+				orderBy('date', 'desc'),
+				startAfter(lastDocRef.current)
 			)
 			const dataArray = await queryDataInDB(queryMounted)
 			const newNotificationsArray = [...notificationsData, ...dataArray]

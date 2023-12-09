@@ -111,6 +111,21 @@ const PetInfo = ({ route, navigation }: PetInfoProps) => {
 				}
 			)
 		}
+
+		if (result.type === 'error') {
+			Alert.alert(
+				'Erro ao enviar notificação',
+				`${result.error}`,
+				[
+					{
+						text: 'Ok',
+					},
+				],
+				{
+					cancelable: true,
+				}
+			)
+		}
 	}
 
 	if (loading) {
