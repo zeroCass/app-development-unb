@@ -1,4 +1,15 @@
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore'
+import {
+	Query,
+	Timestamp,
+	addDoc,
+	collection,
+	doc,
+	getDoc,
+	getDocs,
+	query,
+	where,
+} from 'firebase/firestore'
+import { PetData } from '../../../components/PetList'
 import { TUser } from '../../../context/Auth'
 import { db } from '../../../services/firebase'
 import { UserData } from '../interfaces'
@@ -7,58 +18,124 @@ export type NotifyPetOwnerType = {
 	owner: string
 	myExpoToken: string
 	user: TUser
-	petName: string
+	pet: PetData
+}
+
+type NotificationExistsReturnType = {
+	result: 'notFound' | 'found' | 'error'
+	text?: 'Notificação já enviada' | 'O dono do animal recusou o seu pedido de adoção'
+}
+
+export type TserviceNotifyPetOwnerReturn = {
+	type: 'success' | 'error' | 'found'
+	error?: string
+	text?: 'Notificação já enviada' | 'O dono do animal recusou o seu pedido de adoção'
+}
+
+const notifictionExists = async (
+	recieverID: string,
+	senderID: string,
+	petID: string
+): Promise<NotificationExistsReturnType> => {
+	try {
+		const queryMounted: Query = query(
+			collection(db, 'notifications'),
+			where('recieverID', '==', recieverID),
+			where('senderID', '==', senderID),
+			where('petID', '==', petID)
+		)
+		const notification = await getDocs(queryMounted)
+		if (notification.size === 0) {
+			return { result: 'notFound' }
+		}
+		if (notification.size !== 0) {
+			const data = notification.docs[0]?.data()
+			const text = data?.disagrement
+				? 'O dono do animal recusou o seu pedido de adoção'
+				: 'Notificação já enviada'
+			return { result: 'found', text }
+		}
+	} catch (error) {
+		console.warn(error)
+		return { result: 'error' }
+	}
+
+	return { result: 'error' }
+}
+
+type TSendNotification = {
+	to: string
+	sound: string
+	title: string
+	body: string
+	data: {
+		someData: string
+	}
+}
+const sendNotification = async (message: TSendNotification): Promise<any> => {
+	const res = await fetch('https://exp.host/--/api/v2/push/send', {
+		method: 'POST',
+		headers: {
+			Accept: 'application/json',
+			'Accept-encoding': 'gzip, deflate',
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify(message),
+	})
+
+	// Extract the ID from the response
+	const { data } = await res.json()
+	return data
 }
 
 export const serviceNotifyPetOwner = async (
 	owner: string,
 	myExpoToken: string,
 	user: TUser,
-	petName: string
-) => {
+	pet: PetData
+): Promise<TserviceNotifyPetOwnerReturn> => {
 	const data = await getDoc(doc(db, 'users', owner))
-	const userData = { id: data.id, ...data.data() } as UserData
-
-	console.log('userData: ', userData)
-	console.log('to - from: ', myExpoToken, userData.expoToken)
+	const ownerData = { user_uid: data.id, ...data.data() } as UserData
 
 	try {
+		const exists = await notifictionExists(ownerData.user_uid, user.user_uid, pet.id)
+		if (exists.result === 'found') {
+			return { type: 'found', text: exists.text }
+		}
+
+		// send notification
 		const message = {
-			to: userData.expoToken,
+			to: ownerData.expoToken,
 			sound: 'default',
 			title: 'Adoção',
 			body: `${user.full_name} quer adotar seu pet!`,
-			data: { someData: `${user.full_name} deseja adotar seu pet de nome ${petName}` },
+			data: { someData: `${user.full_name} deseja adotar seu pet de nome ${pet.name}` },
 		}
 
-		console.warn('message: ', message)
-
-		const res = await fetch('https://exp.host/--/api/v2/push/send', {
-			method: 'POST',
-			headers: {
-				Accept: 'application/json',
-				'Accept-encoding': 'gzip, deflate',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(message),
-		})
-
+		const data = await sendNotification(message)
 		// Extract the ID from the response
-		const { data } = await res.json()
 		console.log(data)
-		if (data.status === 'error') return { type: 'error', error: 'Falha ao enviar mensagem' }
+		if (!data || data?.status === 'error')
+			return { type: 'error', error: 'Falha ao enviar mensagem' }
 
 		// add notification to database
 		const notification = {
-			to: userData.expoToken,
-			from: myExpoToken,
-			title: message.title,
-			body: message.body,
-			data: message.data,
+			message: {
+				to: ownerData.expoToken,
+				from: myExpoToken,
+				title: message.title,
+				body: message.body,
+				data: message?.data || {},
+			},
+			petID: pet.id,
+			recieverID: ownerData.user_uid,
+			senderID: user.user_uid,
+			agrement: false,
+			disagrement: false,
 			viewed: false,
+			date: Timestamp.fromDate(new Date()),
 		}
 		await addDoc(collection(db, 'notifications'), notification)
-
 		return { type: 'success' }
 	} catch (erro) {
 		return { type: 'error', error: String(erro) }

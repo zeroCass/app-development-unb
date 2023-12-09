@@ -78,3 +78,9 @@ export const fetchedImagesUrl = async ({
 		setUrls,
 	})
 }
+
+import {
+	default as defaultPetImage,
+	default as defaultUserImage,
+} from '../assets/images/default-pf.png'
+export { defaultPetImage, defaultUserImage }

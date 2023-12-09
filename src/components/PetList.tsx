@@ -123,6 +123,11 @@ const PetList = ({ ownerList }: PetListType) => {
 		}
 	}
 
+	const isMyPet = (pet: PetData) => {
+		if (pet.owner === user.user_uid) return true
+		return false
+	}
+
 	if (loading) {
 		return <ActivityIndicator size='large' />
 	}
@@ -138,13 +143,13 @@ const PetList = ({ ownerList }: PetListType) => {
 								pet: {
 									id: item.id,
 									name: item.name,
-									owner: ownerList,
+									owner: isMyPet(item),
 								},
 							})
 						}
 					>
 						<PetCard
-							owner={ownerList}
+							owner={isMyPet(item)}
 							name={item.name}
 							age_range={item.age_range}
 							petId={item.id}
