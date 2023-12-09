@@ -47,7 +47,6 @@ export const fetchImages = async ({
 		const images = await listAll(ref(storage, `${entityFolder}/${entityID}`))
 		for (let object of images.items) {
 			const url = await getDownloadURL(ref(storage, object.fullPath))
-			// console.log('url:', url)
 			imagesUrl.push(url)
 		}
 		setUrls(imagesUrl)

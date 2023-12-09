@@ -47,7 +47,6 @@ const Notifications = () => {
 		querySnapshot.forEach((doc) => {
 			const data = doc.data()
 			dataArray.push({ id: doc.id, ...data })
-			// console.log(doc.id)
 		})
 
 		return dataArray

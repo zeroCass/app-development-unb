@@ -111,7 +111,7 @@ const ChatList = () => {
 					<TouchableOpacity
 						onPress={() =>
 							navigation.navigate('ActualChat', {
-								chat: {item},
+								chat: item,
 							})
 						}
 					>
