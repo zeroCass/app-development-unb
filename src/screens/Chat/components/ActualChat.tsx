@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons'
-import React, { useCallback, useEffect, useReducer } from 'react'
+import React, { useCallback, useEffect, useReducer, useLayoutEffect } from 'react'
 import { Linking, Platform, StyleSheet, Text, View } from 'react-native'
 import {
     GiftedChat,
@@ -7,13 +7,15 @@ import {
     Send,
     SendProps,
     SystemMessage,
+    User,
 } from 'react-native-gifted-chat'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ChatInfoProps } from 'routes/types'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../../../context/Auth'
-import { doc, updateDoc, getDoc, Timestamp, collection, query, where, getDocs } from 'firebase/firestore'
-import { db } from '../../../services/firebase'
+import { doc, updateDoc, Timestamp, collection, query, where, getDocs, onSnapshot } from 'firebase/firestore'
+import { db, storage } from '../../../services/firebase'
+import { getDownloadURL, ref } from 'firebase/storage'
 
 
 interface IState {
@@ -74,12 +76,13 @@ const ActualChat = ({ route }: ChatInfoProps) => {
     const { user } = useContext(AuthContext)
     const [messages, setMessages] = useState<IMessage[]>([])
     const [chatHistoryID, setChatHistory] = useState<string>('')
+    const [mainUser, setMainUser] = useState<User>({} as User)
 
     useEffect(() => {
         const getChatHistory = async () => {
             const q = query(collection(db, "chatHistory"), where("chat", "==", route.params.chat.id));
             const querySnapshot = await getDocs(q);
-            for (const doc of querySnapshot.docs){
+            for (const doc of querySnapshot.docs) {
                 const messagesHist = doc.data().messages
                 messagesHist.forEach((message: any) => {
                     message.createdAt = new Timestamp(
@@ -92,22 +95,43 @@ const ActualChat = ({ route }: ChatInfoProps) => {
             };
         };
 
-        getChatHistory(); // run it, run it
+        const getUsers = async () => {
+            if (route.params.chat.lastMessage.user.name == user.username) {
+                setMainUser(route.params.chat.lastMessage.user)
+            } else {
+                const avatar = await getDownloadURL(ref(storage, `user/${user.user_uid}/profilePicture.png`))
+                setMainUser({
+                    _id: route.params.chat.lastMessage.user._id == 1 ? 2 : 1,
+                    name: user.username,
+                    avatar: avatar,
+                })
+            }
+        }
+
+        getChatHistory();
+        getUsers();
 
         return () => {
             // this now gets called when the component unmounts
         };
     }, []);
 
-    const otherUser = {
-        _id: 2,
-        name: route.params.chat.otherUserUsername,
-        avatar: `gs://app-development-unb.appspot.com/user/${route.params.chat.otherUserUID}/profilePicture.png`,
-    }
-    const mainUser = {
-        _id: 1,
-        name: user.username,
-    }
+    useLayoutEffect(() => {
+        const q = query(collection(db, "chatHistory"), where("chat", "==", route.params.chat.id));
+
+        const unsubscribe = onSnapshot(q, querySnapshot => {
+            console.log('querySnapshot unsusbscribe');
+            setMessages(
+                querySnapshot.docs.map(doc => ({
+                    _id: doc.data()._id,
+                    createdAt: doc.data().createdAt.toDate(),
+                    text: doc.data().text,
+                    user: doc.data().user
+                }))
+            );
+        });
+        return unsubscribe;
+    }, []);
 
     const [state, dispatch] = useReducer(reducer, {
         messages: messages,
@@ -164,7 +188,7 @@ const ActualChat = ({ route }: ChatInfoProps) => {
                     createdAt,
                     _id: Math.round(Math.random() * 1000000),
                     text: replies[0].title,
-                    user,
+                    mainUser,
                 },
             ])
         } else if (replies.length > 1) {
@@ -173,7 +197,7 @@ const ActualChat = ({ route }: ChatInfoProps) => {
                     createdAt,
                     _id: Math.round(Math.random() * 1000000),
                     text: replies.map(reply => reply.title).join(', '),
-                    user,
+                    mainUser,
                 },
             ])
         } else {
@@ -197,7 +221,7 @@ const ActualChat = ({ route }: ChatInfoProps) => {
             const createdAt = new Date()
             const messagesToUpload = messages.map(message => ({
                 ...message,
-                user,
+                mainUser,
                 createdAt,
                 _id: Math.round(Math.random() * 1000000),
             }))
