@@ -1,5 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons'
-import React, { useCallback, useReducer } from 'react'
+import React, { useCallback, useEffect, useReducer } from 'react'
 import { Linking, Platform, StyleSheet, Text, View } from 'react-native'
 import {
     GiftedChat,
@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ChatInfoProps } from 'routes/types'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../../../context/Auth'
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, updateDoc, Timestamp } from 'firebase/firestore'
 import { db } from '../../../services/firebase'
 
 interface IState {
@@ -84,18 +84,22 @@ export type TUser = {
 
 const ActualChat = ({ route }: ChatInfoProps) => {
     const { user } = useContext(AuthContext)
-    const uuidToFetch = route.params.chat.participants.filter((participant: string) => participant !== user.user_uid)[0]
-    const [otherUserData, setUserData] = useState<TUser>({})
-    if (uuidToFetch) {
-        getDoc(doc(db, 'users', uuidToFetch)).then((fetched_data) => {
-            setUserData({...fetched_data.data()})
-		})
-	}
-    
+    const [messages, setMessages] = useState<IMessage[]>(route.params.chat.messages)
+
+    useEffect(() => {
+		let dateMessages = messages.slice();
+        dateMessages.forEach((message: any) => {
+            message.createdAt = new Timestamp(
+                message.createdAt.seconds, message.createdAt.nanoseconds
+            ).toDate()
+        });
+        setMessages(dateMessages)
+	}, [])
+
     const otherUser = {
         _id: 2,
-        name: otherUserData.username,
-        avatar: `gs://app-development-unb.appspot.com/user/${uuidToFetch}/profilePicture.png`,
+        name: route.params.chat.otherUserUsername,
+        avatar: `gs://app-development-unb.appspot.com/user/${route.params.chat.otherUserUID}/profilePicture.png`,
     }
     const mainUser = {
         _id: 1,
@@ -103,7 +107,7 @@ const ActualChat = ({ route }: ChatInfoProps) => {
     }
 
     const [state, dispatch] = useReducer(reducer, {
-        messages: route.params.chat.messages,
+        messages: messages,
         step: 0,
         loadEarlier: true,
         isLoadingEarlier: false,
