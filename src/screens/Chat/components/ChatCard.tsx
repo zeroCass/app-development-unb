@@ -7,12 +7,12 @@ import {
 } from 'react-native-gifted-chat'
 
 type Props = {
-	messages: IMessage[]
+	message: IMessage
 	otherUserUID: string
 	otherUserUsername: string
 }
 
-const ChatCard = ({ messages, otherUserUID, otherUserUsername }: Props) => {
+const ChatCard = ({ message, otherUserUID, otherUserUsername }: Props) => {
     const {user} = useContext(AuthContext)
 	const defaultImage = require('../../../assets/images/default-pf.png')
 	const [loading, setLoading] = useState(false)
@@ -25,8 +25,6 @@ const ChatCard = ({ messages, otherUserUID, otherUserUsername }: Props) => {
 			setUrl: (url: string) => setUrl(url),
 		})
 	}, [])
-
-	const lastMessage = messages[0]
 
 	if (loading) {
 		return (
@@ -49,7 +47,7 @@ const ChatCard = ({ messages, otherUserUID, otherUserUsername }: Props) => {
 				<Text>{otherUserUsername}</Text>
                 <View style={styles.lastMessageSection}>
                     <Text style={styles.lastMessageText}>
-						{ lastMessage?.user.name !== user.username ? lastMessage?.user.name : "Você"}: {lastMessage?.text}
+						{ message.user.name !== user.username ? message.user.name : "Você"}: {message.text}
 					</Text>
                 </View>
             </View>

@@ -5,7 +5,7 @@ import {
 export interface ChatData {
     id: string
     participants: string[]
-    messages: IMessage[]
+    lastMessage: IMessage
     otherUserUID: string
     otherUserUsername: string
 }

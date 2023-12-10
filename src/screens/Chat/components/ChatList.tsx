@@ -112,7 +112,7 @@ const ChatList = () => {
 						}
 					>
 						<ChatCard
-							messages={item.messages}
+							message={item.lastMessage}
 							otherUserUID={item.otherUserUID}
 							otherUserUsername={item.otherUserUsername}
 						/>

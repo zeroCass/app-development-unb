@@ -12,8 +12,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ChatInfoProps } from 'routes/types'
 import { useContext, useState } from 'react'
 import { AuthContext } from '../../../context/Auth'
-import { doc, updateDoc, Timestamp } from 'firebase/firestore'
+import { doc, updateDoc, getDoc, Timestamp, collection, query, where, getDocs } from 'firebase/firestore'
 import { db } from '../../../services/firebase'
+
 
 interface IState {
     messages: any[]
@@ -69,32 +70,34 @@ function reducer(state: IState, action: StateAction) {
     }
 }
 
-export type TUser = {
-	full_name?: string
-	username?: string
-	age?: number
-	email?: string
-	phone?: string
-	city?: string
-	state?: string
-	address?: string
-	user_uid?: string
-	expoToken?: string
-}
-
 const ActualChat = ({ route }: ChatInfoProps) => {
     const { user } = useContext(AuthContext)
-    const [messages, setMessages] = useState<IMessage[]>(route.params.chat.messages)
+    const [messages, setMessages] = useState<IMessage[]>([])
+    const [chatHistoryID, setChatHistory] = useState<string>('')
 
     useEffect(() => {
-		let dateMessages = messages.slice();
-        dateMessages.forEach((message: any) => {
-            message.createdAt = new Timestamp(
-                message.createdAt.seconds, message.createdAt.nanoseconds
-            ).toDate()
-        });
-        setMessages(dateMessages)
-	}, [])
+        const getChatHistory = async () => {
+            const q = query(collection(db, "chatHistory"), where("chat", "==", route.params.chat.id));
+            const querySnapshot = await getDocs(q);
+            for (const doc of querySnapshot.docs){
+                const messagesHist = doc.data().messages
+                messagesHist.forEach((message: any) => {
+                    message.createdAt = new Timestamp(
+                        message.createdAt.seconds, message.createdAt.nanoseconds
+                    ).toDate()
+                });
+                setChatHistory(doc.id)
+                setMessages(messagesHist)
+                dispatch({ type: ActionKind.LOAD_EARLIER_MESSAGES, payload: messagesHist })
+            };
+        };
+
+        getChatHistory(); // run it, run it
+
+        return () => {
+            // this now gets called when the component unmounts
+        };
+    }, []);
 
     const otherUser = {
         _id: 2,
@@ -122,9 +125,12 @@ const ActualChat = ({ route }: ChatInfoProps) => {
                 sentMessages,
                 Platform.OS !== 'web',
             )
+            updateDoc(doc(db, 'chatHistory', chatHistoryID), {
+                messages: newMessages,
+            })
             updateDoc(doc(db, 'chat', route.params.chat.id), {
-				messages: newMessages,
-			})
+                lastMessage: newMessages[0],
+            })
             dispatch({ type: ActionKind.SEND_MESSAGE, payload: newMessages })
         }, [dispatch, state.messages],
     )
@@ -134,7 +140,7 @@ const ActualChat = ({ route }: ChatInfoProps) => {
         dispatch({ type: ActionKind.LOAD_EARLIER_START })
         const newMessages = GiftedChat.prepend(
             state.messages,
-            route.params.chat.messages,
+            messages,
             Platform.OS !== 'web',
         )
         dispatch({ type: ActionKind.LOAD_EARLIER_MESSAGES, payload: newMessages })
