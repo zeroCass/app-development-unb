@@ -14,38 +14,38 @@ import {
 } from 'firebase/firestore'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import { db } from '../../../services/firebase'
-import {ActivityIndicator, FlatList, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, FlatList, TouchableOpacity, View, StyleSheet } from 'react-native'
 import { ChatParamList } from 'routes/types'
 import ChatCard from '../components/ChatCard'
 import { doc, getDoc } from 'firebase/firestore'
 
 const ChatList = () => {
-    const chatsPerPage = 7
-    const {user} = useContext(AuthContext)
-    const [loading, setLoading] = useState(false)
-    const [loadingMoreContent, setLoadMoreContent] = useState(false)
-    const [chatsData, setChatsData] = useState<ChatData[]>([])
-    const lastDocRef = useRef<QueryDocumentSnapshot>()
-    const navigation = useNavigation<StackNavigationProp<ChatParamList>>()
+	const chatsPerPage = 7
+	const { user } = useContext(AuthContext)
+	const [loading, setLoading] = useState(false)
+	const [loadingMoreContent, setLoadMoreContent] = useState(false)
+	const [chatsData, setChatsData] = useState<ChatData[]>([])
+	const lastDocRef = useRef<QueryDocumentSnapshot>()
+	const navigation = useNavigation<StackNavigationProp<ChatParamList>>()
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchInitialData()
-            return () => setChatsData([])
-        }, [])
-    )
+	useFocusEffect(
+		useCallback(() => {
+			fetchInitialData()
+			return () => setChatsData([])
+		}, [])
+	)
 
-    const fetchInitialData = async () => {
+	const fetchInitialData = async () => {
 		if (loading) return
 		try {
 			setLoading(true)
 			let queryMounted: Query
 
-            queryMounted = query(
-                collection(db, 'chat'),
-                limit(chatsPerPage),
+			queryMounted = query(
+				collection(db, 'chat'),
+				limit(chatsPerPage),
 				where("participants", "array-contains", user.user_uid)
-            )
+			)
 
 			const dataArray = await queryDataInDB(queryMounted)
 			setChatsData(dataArray)
@@ -56,15 +56,15 @@ const ChatList = () => {
 		}
 	}
 
-    const queryDataInDB = async (queryMounted: Query): Promise<ChatData[]> => {
+	const queryDataInDB = async (queryMounted: Query): Promise<ChatData[]> => {
 		const querySnapshot = await getDocs(queryMounted)
 		// last visible document
 		lastDocRef.current = querySnapshot.docs[querySnapshot.docs.length - 1]
-		
-        const dataArray: any[] = []
+
+		const dataArray: any[] = []
 		for (const chatdoc of querySnapshot.docs) {
 			const data = chatdoc.data()
-			let otherUser = data.participants.filter((participant:string) => participant !== user.user_uid)[0]
+			let otherUser = data.participants.filter((participant: string) => participant !== user.user_uid)[0]
 			const otherUserData = await getDoc(doc(db, 'users', otherUser))
 			dataArray.push({ id: chatdoc.id, ...data, otherUserUID: otherUserData.id, otherUserUsername: otherUserData.data()?.username })
 		}
@@ -72,7 +72,7 @@ const ChatList = () => {
 		return dataArray
 	}
 
-    const fetchMoreData = async () => {
+	const fetchMoreData = async () => {
 		if (loadingMoreContent) return
 		if (!lastDocRef.current) return
 
@@ -80,12 +80,12 @@ const ChatList = () => {
 			setLoadMoreContent(true)
 			let queryMounted: Query
 
-            queryMounted = query(
-                collection(db, 'chat'),
-                startAfter(lastDocRef.current),
-                limit(chatsPerPage),
+			queryMounted = query(
+				collection(db, 'chat'),
+				startAfter(lastDocRef.current),
+				limit(chatsPerPage),
 				where("participants", "array-contains", user.user_uid)
-            )
+			)
 
 			const dataArray = await queryDataInDB(queryMounted)
 			const newChatsArray = [...chatsData, ...dataArray]
@@ -97,18 +97,18 @@ const ChatList = () => {
 		}
 	}
 
-    if (loading) {
-		return <ActivityIndicator size='large' />
+	if (loading) {
+		return <ActivityIndicator style={styles.container} size='large' />
 	}
 
-    return (
+	return (
 		<View style={{ padding: 12, backgroundColor: '#fafafa', flex: 1 }}>
 			<FlatList
 				data={chatsData}
 				renderItem={({ item }: { item: ChatData }) => (
 					<TouchableOpacity
 						onPress={() =>
-							navigation.navigate('ActualChat', {chat: item})
+							navigation.navigate('ActualChat', { chat: item })
 						}
 					>
 						<ChatCard
@@ -124,7 +124,7 @@ const ChatList = () => {
 				ListFooterComponent={loadingMoreContent ? <FooterComponent /> : null}
 			/>
 		</View>
-    )
+	)
 }
 
 const FooterComponent = () => {
@@ -134,5 +134,12 @@ const FooterComponent = () => {
 		</View>
 	)
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+	},
+})
 
 export default ChatList
