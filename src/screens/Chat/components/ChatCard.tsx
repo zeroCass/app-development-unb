@@ -3,23 +3,24 @@ import { useEffect, useState, useContext } from 'react'
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native'
 import { fetchedImageUrl } from '../../../services/images'
 import {
-    IMessage
+	IMessage
 } from 'react-native-gifted-chat'
+import { Timestamp } from 'firebase/firestore'
 
 type Props = {
-	message: IMessage
+	message: any
 	otherUserUID: string
 	otherUserUsername: string
 }
 
 const ChatCard = ({ message, otherUserUID, otherUserUsername }: Props) => {
-    const {user} = useContext(AuthContext)
+	const { user } = useContext(AuthContext)
 	const defaultImage = require('../../../assets/images/default-pf.png')
 	const [loading, setLoading] = useState(false)
 	const [url, setUrl] = useState<string>('')
 
 	useEffect(() => {
-        fetchedImageUrl({
+		fetchedImageUrl({
 			storageUrl: `user/${otherUserUID}/profilePicture.png`,
 			setLoading: (state: boolean) => setLoading(state),
 			setUrl: (url: string) => setUrl(url),
@@ -34,23 +35,30 @@ const ChatCard = ({ message, otherUserUID, otherUserUsername }: Props) => {
 		)
 	}
 
+	const date = new Timestamp(
+		message.createdAt.seconds, message.createdAt.nanoseconds
+	).toDate()
+
 	return (
 		<View style={styles.card}>
 			<View>
 				{url === '' ? (
 					<Image style={styles.image} source={defaultImage} />
 				) : (
-					<Image style={styles.image} source={{ uri: url} } />
+					<Image style={styles.image} source={{ uri: url }} />
 				)}
 			</View>
 			<View style={styles.infoSection}>
 				<Text>{otherUserUsername}</Text>
-                <View style={styles.lastMessageSection}>
-                    <Text style={styles.lastMessageText}>
-						{ message.user.name !== user.username ? message.user.name : "Você"}: {message.text}
+				<View style={styles.lastMessageSection}>
+					<Text style={styles.lastMessageText}>
+						{message.user.name !== user.username ? message.user.name : "Você"}: {message.text}
 					</Text>
-                </View>
-            </View>
+					<Text style={styles.lastMessageText}>
+						{date.getHours()}:{date.getMinutes()}
+					</Text>
+				</View>
+			</View>
 		</View>
 	)
 }
@@ -79,9 +87,15 @@ const styles = StyleSheet.create({
 	},
 	infoSection: {
 		marginLeft: 20,
+		flexShrink: 1,
 	},
 	lastMessageSection: {
 		marginTop: 10,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		flex: 1,
+		flexShrink: 1,
+		width: '100%',
 	},
 	lastMessageText: {
 		color: 'grey',
