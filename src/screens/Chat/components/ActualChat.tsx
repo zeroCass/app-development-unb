@@ -78,20 +78,20 @@ const ActualChat = ({ route }: ChatInfoProps) => {
     const [chatHistoryID, setChatHistory] = useState<string>('')
     const [mainUser, setMainUser] = useState<User>({} as User)
 
+    const [state, dispatch] = useReducer(reducer, {
+        messages: messages,
+        step: 0,
+        loadEarlier: true,
+        isLoadingEarlier: false,
+        isTyping: false,
+    })
+
     useEffect(() => {
         const getChatHistory = async () => {
             const q = query(collection(db, "chatHistory"), where("chat", "==", route.params.chat.id));
             const querySnapshot = await getDocs(q);
             for (const doc of querySnapshot.docs) {
-                const messagesHist = doc.data().messages
-                messagesHist.forEach((message: any) => {
-                    message.createdAt = new Timestamp(
-                        message.createdAt.seconds, message.createdAt.nanoseconds
-                    ).toDate()
-                });
                 setChatHistory(doc.id)
-                setMessages(messagesHist)
-                dispatch({ type: ActionKind.LOAD_EARLIER_MESSAGES, payload: messagesHist })
             };
         };
 
@@ -117,29 +117,25 @@ const ActualChat = ({ route }: ChatInfoProps) => {
     }, []);
 
     useLayoutEffect(() => {
-        const q = query(collection(db, "chatHistory"), where("chat", "==", route.params.chat.id));
 
-        const unsubscribe = onSnapshot(q, querySnapshot => {
-            console.log('querySnapshot unsusbscribe');
-            setMessages(
-                querySnapshot.docs.map(doc => ({
-                    _id: doc.data()._id,
-                    createdAt: doc.data().createdAt.toDate(),
-                    text: doc.data().text,
-                    user: doc.data().user
-                }))
-            );
-        });
-        return unsubscribe;
-    }, []);
+        const getMessages = async () => {
+            const q = query(collection(db, "chatHistory"), where("chat", "==", route.params.chat.id));
+            const querySnapshot = await getDocs(q);
+            for (const doc of querySnapshot.docs) {
+                const messagesHist = doc.data().messages
+                messagesHist.forEach((message: any) => {
+                    message.createdAt = new Timestamp(
+                        message.createdAt.seconds, message.createdAt.nanoseconds
+                    ).toDate()
+                });
+                setMessages(messagesHist)
+                dispatch({ type: ActionKind.LOAD_EARLIER_MESSAGES, payload: messagesHist })
+            };
+        }
 
-    const [state, dispatch] = useReducer(reducer, {
-        messages: messages,
-        step: 0,
-        loadEarlier: true,
-        isLoadingEarlier: false,
-        isTyping: false,
-    })
+        getMessages();
+        return () => {};
+    }, [dispatch, state.messages]);
 
     const onSend = useCallback(
         (messages: any[]) => {
@@ -159,17 +155,6 @@ const ActualChat = ({ route }: ChatInfoProps) => {
         }, [dispatch, state.messages],
     )
 
-    const onLoadEarlier = useCallback(() => {
-        console.log('loading')
-        dispatch({ type: ActionKind.LOAD_EARLIER_START })
-        const newMessages = GiftedChat.prepend(
-            state.messages,
-            messages,
-            Platform.OS !== 'web',
-        )
-        dispatch({ type: ActionKind.LOAD_EARLIER_MESSAGES, payload: newMessages })
-    }, [dispatch, state.messages])
-
     const parsePatterns = useCallback((_linkStyle: any) => {
         return [
             {
@@ -178,35 +163,6 @@ const ActualChat = ({ route }: ChatInfoProps) => {
                 onPress: () => Linking.openURL('http://gifted.chat'),
             },
         ]
-    }, [])
-
-    const onQuickReply = useCallback((replies: any[]) => {
-        const createdAt = new Date()
-        if (replies.length === 1) {
-            onSend([
-                {
-                    createdAt,
-                    _id: Math.round(Math.random() * 1000000),
-                    text: replies[0].title,
-                    mainUser,
-                },
-            ])
-        } else if (replies.length > 1) {
-            onSend([
-                {
-                    createdAt,
-                    _id: Math.round(Math.random() * 1000000),
-                    text: replies.map(reply => reply.title).join(', '),
-                    mainUser,
-                },
-            ])
-        } else {
-            console.warn('replies param is not set correctly')
-        }
-    }, [])
-
-    const renderQuickReplySend = useCallback(() => {
-        return <Text>{' custom send =>'}</Text>
     }, [])
 
     const setIsTyping = useCallback(
@@ -260,17 +216,14 @@ const ActualChat = ({ route }: ChatInfoProps) => {
                     messages={state.messages}
                     onSend={onSend}
                     loadEarlier={state.loadEarlier}
-                    onLoadEarlier={onLoadEarlier}
                     isLoadingEarlier={state.isLoadingEarlier}
                     parsePatterns={parsePatterns}
                     user={mainUser}
                     scrollToBottom
-                    onQuickReply={onQuickReply}
                     quickReplyStyle={{ borderRadius: 2 }}
                     quickReplyTextStyle={{
                         fontWeight: '200',
                     }}
-                    renderQuickReplySend={renderQuickReplySend}
                     renderSystemMessage={renderSystemMessage}
                     renderSend={renderSend}
                     keyboardShouldPersistTaps='never'

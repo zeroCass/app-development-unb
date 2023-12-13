@@ -35,32 +35,55 @@ const ChatCard = ({ message, otherUserUID, otherUserUsername }: Props) => {
 		)
 	}
 
-	const date = new Timestamp(
-		message.createdAt.seconds, message.createdAt.nanoseconds
-	).toDate()
-
-	return (
-		<View style={styles.card}>
-			<View>
-				{url === '' ? (
-					<Image style={styles.image} source={defaultImage} />
-				) : (
-					<Image style={styles.image} source={{ uri: url }} />
-				)}
-			</View>
-			<View style={styles.infoSection}>
-				<Text>{otherUserUsername}</Text>
-				<View style={styles.lastMessageSection}>
-					<Text style={styles.lastMessageText}>
-						{message.user.name !== user.username ? message.user.name : "Você"}: {message.text}
-					</Text>
-					<Text style={styles.lastMessageText}>
-						{date.getHours()}:{date.getMinutes()}
-					</Text>
+	try{
+		const date = new Timestamp(
+			message.createdAt.seconds, message.createdAt.nanoseconds
+		).toDate()
+	
+		return (
+			<View style={styles.card}>
+				<View>
+					{url === '' ? (
+						<Image style={styles.image} source={defaultImage} />
+					) : (
+						<Image style={styles.image} source={{ uri: url }} />
+					)}
+				</View>
+				<View style={styles.infoSection}>
+					<Text>{otherUserUsername}</Text>
+					<View style={styles.lastMessageSection}>
+						<Text style={styles.lastMessageText}>
+							{message.user.name !== user.username ? message.user.name : "Você"}: {message.text}
+						</Text>
+						<Text style={styles.lastMessageText}>
+							{date.getHours()}:{date.getMinutes()}
+						</Text>
+					</View>
 				</View>
 			</View>
-		</View>
-	)
+		)
+	} catch (err) {
+		return (
+			<View style={styles.card}>
+				<View>
+					{url === '' ? (
+						<Image style={styles.image} source={defaultImage} />
+					) : (
+						<Image style={styles.image} source={{ uri: url }} />
+					)}
+				</View>
+				<View style={styles.infoSection}>
+					<Text>{otherUserUsername}</Text>
+					<View style={styles.lastMessageSection}>
+						<Text style={styles.lastMessageText}>
+							Carregando
+						</Text>
+					</View>
+				</View>
+			</View>
+		)
+	}
+
 }
 
 const styles = StyleSheet.create({
