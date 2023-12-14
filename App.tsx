@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
+import * as ExpoLinking from 'expo-linking'
 import * as Notifications from 'expo-notifications'
 import * as TaskManager from 'expo-task-manager'
 import { useEffect, useRef, useState } from 'react'
@@ -75,6 +76,8 @@ async function registerForPushNotificationsAsync() {
 	return token.data
 }
 
+const prefix = ExpoLinking.createURL('/')
+
 export default function App() {
 	const [expoPushToken, setExpoPushToken] = useState<any>('')
 	const [notification, setNotification] = useState<any>(false)
@@ -102,6 +105,12 @@ export default function App() {
 	return (
 		<NavigationContainer
 			linking={{
+				prefixes: [prefix],
+				config: {
+					screens: {
+						Notifications: 'notification',
+					},
+				},
 				async getInitialURL() {
 					const url = await Linking.getInitialURL()
 					if (url != null) {
@@ -117,7 +126,7 @@ export default function App() {
 
 					const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
 						const url = response.notification.request.content.data.url
-						console.log('subscription response: ', response)
+						console.log('subscription response: ', response.notification.request.content.data.url)
 						// Any custom logic to see whether the URL needs to be handled
 						//...
 
