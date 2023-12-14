@@ -2,8 +2,9 @@ import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
 import React, { Dispatch, ReactNode, createContext, useEffect, useReducer, useRef } from 'react'
-import { Alert, Platform, Text } from 'react-native'
+import { Alert, Platform } from 'react-native'
 import 'react-native-gesture-handler'
+import { openLinkURL } from '../routes/navigationRef'
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -141,6 +142,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 				// If the user is signed in, navigate to the Notification screen
 				console.log('Notificação clicada, usuario logado, entao navegndo para notification screen')
 				dispatch({ type: 'NOTIFICATION_PEDING', payload: { pending: true, response: response } })
+				openLinkURL('notifications')
 			} else {
 				// If the user is not signed in, set a flag in the state to navigate after signing in
 				console.log('Notificação clicada, usario DESLOGADO')
@@ -168,14 +170,15 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
 				type: 'NOTIFICATION_PEDING',
 				payload: { pending: false, response: state.notificationPending.response },
 			})
+			openLinkURL('notifications')
 		}
 	}, [dispatch, state.notificationPending, state.userSignedIn])
 
 	return (
 		<AppContext.Provider value={{ state, dispatch }}>
-			<Text>{state.expoNotificationToken}</Text>
+			{/* <Text>{state.expoNotificationToken}</Text>
 			<Text>Pending: {state.notificationPending.pending ? 'True' : 'False'}</Text>
-			<Text>User: {state.userSignedIn ? 'True' : 'False'}</Text>
+			<Text>User: {state.userSignedIn ? 'True' : 'False'}</Text> */}
 			{children}
 		</AppContext.Provider>
 	)

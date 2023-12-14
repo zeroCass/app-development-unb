@@ -1,10 +1,10 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { ref, uploadBytes } from 'firebase/storage'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
 import { auth, db, storage } from '../services/firebase'
-import { AppContext } from './Global'
+import { AppContext, AppContextType } from './Global'
 
 export type TUser = {
 	full_name?: string
@@ -49,7 +49,7 @@ async function uploadImageToFirebase(userData: IRegisterUser, userUid: string) {
 
 const AuthProvider = ({ children }: any) => {
 	// const { expoPushToken } = useContext(NotificationsContext)
-	const { dispatch } = useContext(AppContext)
+	const { state, dispatch } = useContext<AppContextType>(AppContext)
 	const [user, setUser] = useState<TUser>({ signed: false, user_uid: '' })
 	const [loading, setLoading] = useState(false)
 	// const { notificationPending, setNotificationPending } = useNotifications(
@@ -69,6 +69,18 @@ const AuthProvider = ({ children }: any) => {
 		})
 		return subscribe
 	}, [])
+
+	// update database expoToken
+	useEffect(() => {
+		const updateExpoToken = async () => {
+			if (state.expoNotificationToken && user.user_uid) {
+				await updateDoc(doc(db, 'users', user.user_uid), {
+					expoToken: state.expoNotificationToken,
+				})
+			}
+		}
+		updateExpoToken()
+	}, [state.expoNotificationToken, user.user_uid])
 
 	const getUserFromDB = async (user_uid: string) => {
 		try {
@@ -100,9 +112,9 @@ const AuthProvider = ({ children }: any) => {
 	const signout = () => {
 		setLoading(true)
 		if (user.user_uid) {
-			// updateDoc(doc(db, 'users', user.user_uid), {
-			// 	expoToken: '',
-			// })
+			updateDoc(doc(db, 'users', user.user_uid), {
+				expoToken: '',
+			})
 		}
 		auth.signOut().catch((error) => console.warn(error.message))
 		setUser({ signed: false, user_uid: '' })
