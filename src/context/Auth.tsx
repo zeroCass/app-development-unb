@@ -3,7 +3,9 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { ref, uploadBytes } from 'firebase/storage'
 import { createContext, useEffect, useState } from 'react'
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
+import { navigate } from '../routes/navigationRef'
 import { auth, db, storage } from '../services/firebase'
+import useNotifications from '../utils/useNavigation'
 
 export type TUser = {
 	full_name?: string
@@ -50,6 +52,10 @@ const AuthProvider = ({ children }: any) => {
 	// const { expoPushToken } = useContext(NotificationsContext)
 	const [user, setUser] = useState<TUser>({ signed: false, user_uid: '' })
 	const [loading, setLoading] = useState(false)
+	const { notificationPending, setNotificationPending } = useNotifications(
+		user.signed,
+		user.user_uid
+	)
 
 	useEffect(() => {
 		const subscribe = auth.onAuthStateChanged(async (userAuth) => {
@@ -64,12 +70,21 @@ const AuthProvider = ({ children }: any) => {
 		return subscribe
 	}, [])
 
+	useEffect(() => {
+		if (notificationPending) {
+			console.log('notification peding auth')
+			navigate('Notifications', {}, 'auth')
+			setNotificationPending(false)
+		}
+	}, [notificationPending])
+
 	const getUserFromDB = async (user_uid: string) => {
 		try {
 			await getDoc(doc(db, 'users', user_uid)).then((fetched_data) => {
 				const user_data = fetched_data.data()
 				setUser({ ...user_data, user_uid: user_uid, signed: true })
 			})
+			// handleNotificationPending()
 			// await updateDoc(doc(db, 'users', user_uid), {
 			// 	expoToken: expoPushToken,
 			// })

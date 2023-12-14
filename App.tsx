@@ -106,50 +106,50 @@ export default function App() {
 		}
 	}, [])
 
+	const linking = {
+		prefixes: [prefix],
+		config: {
+			screens: {
+				Notifications: 'notifications',
+			},
+		},
+		async getInitialURL() {
+			const url = await Linking.getInitialURL()
+			if (url != null) {
+				console.log('url is valid: ', url)
+				return url
+			}
+
+			const response = await Notifications.getLastNotificationResponseAsync()
+			console.log('response url: ', response?.notification.request.content.data.url)
+			return response?.notification.request.content.data.url
+		},
+		subscribe(listener) {
+			console.log('url updated: ', listener)
+			const onReceiveURL = ({ url }: { url: string }) => listener(url)
+			const eventListenerSubscription = Linking.addEventListener('url', onReceiveURL)
+
+			const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+				const url = response.notification.request.content.data.url
+				console.log('subscription response: ', response.notification.request.content.data.url)
+				// Any custom logic to see whether the URL needs to be handled
+				//...
+
+				// Let React Navigation handle the URL
+				// listener(url)
+				setForegroundLink(true)
+				listener(`${prefix}notifications`)
+			})
+			return () => {
+				// Clean up the event listeners
+				eventListenerSubscription.remove()
+				subscription.remove()
+			}
+		},
+	}
+
 	return (
-		<NavigationContainer
-			linking={{
-				prefixes: [prefix],
-				config: {
-					screens: {
-						Notifications: 'notifications',
-					},
-				},
-				async getInitialURL() {
-					const url = await Linking.getInitialURL()
-					if (url != null) {
-						console.log('url is valid: ', url)
-						return url
-					}
-
-					const response = await Notifications.getLastNotificationResponseAsync()
-					console.log('response url: ', response?.notification.request.content.data.url)
-					return response?.notification.request.content.data.url
-				},
-				subscribe(listener) {
-					console.log('url updated: ', listener)
-					const onReceiveURL = ({ url }: { url: string }) => listener(url)
-					const eventListenerSubscription = Linking.addEventListener('url', onReceiveURL)
-
-					const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
-						const url = response.notification.request.content.data.url
-						console.log('subscription response: ', response.notification.request.content.data.url)
-						// Any custom logic to see whether the URL needs to be handled
-						//...
-
-						// Let React Navigation handle the URL
-						// listener(url)
-						setForegroundLink(true)
-						listener(`${prefix}notifications`)
-					})
-					return () => {
-						// Clean up the event listeners
-						eventListenerSubscription.remove()
-						subscription.remove()
-					}
-				},
-			}}
-		>
+		<NavigationContainer>
 			{foreground && <Text>FOREGROUND</Text>}
 			{foregroundLink && <Text>FOREGROUND link</Text>}
 			<AuthProvider>
