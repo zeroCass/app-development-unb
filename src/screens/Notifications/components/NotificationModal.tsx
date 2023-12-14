@@ -162,34 +162,35 @@ const NotificationModal = ({ isOpen, setIsOpen, notification, pet }: TNotificati
 					cancelable: true,
 				}
 			)
-		}
-
-		const avatar = await getDownloadURL(ref(storage, `user/${user.user_uid}/profilePicture.png`))
-		const message = {
-			_id: Math.round(Math.random() * 1000000),
-			createdAt: new Date(),
-			sent: true,
-			received: true,
-			text: "Quero adotar o " + pet.name + "!",
-			user: {
-				_id: 1,
-				avatar: avatar,
-				name: user.username,
+		} else {
+			const avatar = await getDownloadURL(ref(storage, `user/${user.user_uid}/profilePicture.png`))
+			const message = {
+				_id: Math.round(Math.random() * 1000000),
+				createdAt: new Date(),
+				sent: true,
+				received: true,
+				text: "Quero adotar o " + pet.name + "!",
+				user: {
+					_id: 1,
+					avatar: avatar,
+					name: user.username,
+				}
 			}
-		}
-		const newChat = {
-			lastMessage: message,
-			participants: [user.user_uid, pet.owner],
+			const newChat = {
+				lastMessage: message,
+				participants: [user.user_uid, pet.owner],
+			}
+	
+			const chatId = await addDoc(collection(db, 'chat'), newChat)
+	
+			const chatHist = {
+				chat: chatId.id,
+				messages: [message],
+			}
+	
+			await addDoc(collection(db, 'chatHistory'), chatHist)
 		}
 
-		const chatId = await addDoc(collection(db, 'chat'), newChat)
-
-		const chatHist = {
-			chat: chatId.id,
-			messages: [message],
-		}
-
-		await addDoc(collection(db, 'chatHistory'), chatHist)
 
 		setLoading(false)
 		setIsOpen(false)
