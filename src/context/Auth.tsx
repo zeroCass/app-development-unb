@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { ref, uploadBytes } from 'firebase/storage'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
 import { auth, db, storage } from '../services/firebase'
 import { NotificationsContext } from './Notifications'
@@ -52,17 +52,47 @@ const AuthProvider = ({ children }: any) => {
 	const [user, setUser] = useState<TUser>({ signed: false, user_uid: '' })
 	const [loading, setLoading] = useState(false)
 
+	useEffect(() => {
+		const subscribe = auth.onAuthStateChanged(async (userAuth) => {
+			if (userAuth) {
+				setLoading(true)
+				await getUserFromDB(userAuth.uid)
+				setLoading(false)
+			} else {
+				signout()
+			}
+		})
+		return subscribe
+	}, [])
+
+	// update database expoToken
+	useEffect(() => {
+		const updateExpoToken = async () => {
+			if (expoPushToken && user.user_uid) {
+				await updateDoc(doc(db, 'users', user.user_uid), {
+					expoToken: expoPushToken,
+				})
+			}
+		}
+		updateExpoToken()
+	}, [expoPushToken, user.user_uid])
+
+	const getUserFromDB = async (user_uid: string) => {
+		try {
+			await getDoc(doc(db, 'users', user_uid)).then((fetched_data) => {
+				const user_data = fetched_data.data()
+				setUser({ ...user_data, user_uid: user_uid, signed: true })
+			})
+		} catch (error) {
+			console.warn(error)
+		}
+	}
+
 	const signin = async (email: string, password: string) => {
 		setLoading(true)
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password)
-			await getDoc(doc(db, 'users', userCredential.user.uid)).then((fetched_data) => {
-				const user_data = fetched_data.data()
-				setUser({ ...user_data, user_uid: userCredential.user.uid, signed: true })
-			})
-			await updateDoc(doc(db, 'users', userCredential.user.uid), {
-				expoToken: expoPushToken,
-			})
+			await getUserFromDB(userCredential.user.uid)
 		} catch (error) {
 			console.warn(error)
 		}
@@ -102,8 +132,8 @@ const AuthProvider = ({ children }: any) => {
 				userData.password
 			)
 			setDoc(doc(db, 'users', authResult.user.uid), newUser)
-			setUser({ ...newUser, user_uid: authResult.user.uid, signed: true })
 			await uploadImageToFirebase(userData, authResult.user.uid)
+			await getUserFromDB(authResult.user.uid)
 		} catch (error) {
 			console.warn(error)
 		}
