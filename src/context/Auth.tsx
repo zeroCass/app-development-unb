@@ -1,11 +1,10 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { ref, uploadBytes } from 'firebase/storage'
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { IRegisterUser } from 'screens/UserRegister/interfaces'
-import { navigate } from '../routes/navigationRef'
 import { auth, db, storage } from '../services/firebase'
-import useNotifications from '../utils/useNavigation'
+import { AppContext } from './Global'
 
 export type TUser = {
 	full_name?: string
@@ -50,12 +49,13 @@ async function uploadImageToFirebase(userData: IRegisterUser, userUid: string) {
 
 const AuthProvider = ({ children }: any) => {
 	// const { expoPushToken } = useContext(NotificationsContext)
+	const { dispatch } = useContext(AppContext)
 	const [user, setUser] = useState<TUser>({ signed: false, user_uid: '' })
 	const [loading, setLoading] = useState(false)
-	const { notificationPending, setNotificationPending } = useNotifications(
-		user.signed,
-		user.user_uid
-	)
+	// const { notificationPending, setNotificationPending } = useNotifications(
+	// 	user.signed,
+	// 	user.user_uid
+	// )
 
 	useEffect(() => {
 		const subscribe = auth.onAuthStateChanged(async (userAuth) => {
@@ -70,14 +70,6 @@ const AuthProvider = ({ children }: any) => {
 		return subscribe
 	}, [])
 
-	useEffect(() => {
-		if (notificationPending) {
-			console.log('notification peding auth')
-			navigate('Notifications', {}, 'auth')
-			setNotificationPending(false)
-		}
-	}, [notificationPending])
-
 	const getUserFromDB = async (user_uid: string) => {
 		try {
 			await getDoc(doc(db, 'users', user_uid)).then((fetched_data) => {
@@ -88,6 +80,7 @@ const AuthProvider = ({ children }: any) => {
 			// await updateDoc(doc(db, 'users', user_uid), {
 			// 	expoToken: expoPushToken,
 			// })
+			dispatch({ type: 'SET_USER_SIGNED_IN', payload: true })
 		} catch (error) {
 			console.warn(error)
 		}
@@ -113,6 +106,7 @@ const AuthProvider = ({ children }: any) => {
 		}
 		auth.signOut().catch((error) => console.warn(error.message))
 		setUser({ signed: false, user_uid: '' })
+		dispatch({ type: 'SET_USER_SIGNED_IN', payload: false })
 		setLoading(false)
 	}
 
