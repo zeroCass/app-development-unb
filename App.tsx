@@ -5,7 +5,7 @@ import * as ExpoLinking from 'expo-linking'
 import * as Notifications from 'expo-notifications'
 import * as TaskManager from 'expo-task-manager'
 import { useEffect, useRef, useState } from 'react'
-import { Linking } from 'react-native'
+import { Linking, Text } from 'react-native'
 
 import { Platform } from 'react-native'
 import 'react-native-gesture-handler'
@@ -77,10 +77,13 @@ async function registerForPushNotificationsAsync() {
 }
 
 const prefix = ExpoLinking.createURL('/')
+console.log(prefix)
 
 export default function App() {
 	const [expoPushToken, setExpoPushToken] = useState<any>('')
 	const [notification, setNotification] = useState<any>(false)
+	const [foreground, setForeground] = useState(false)
+	const [foregroundLink, setForegroundLink] = useState(false)
 	const notificationListener = useRef<any>()
 	const responseListener = useRef<any>()
 
@@ -94,6 +97,7 @@ export default function App() {
 
 		responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
 			console.log('cliquei', response)
+			setForeground(true)
 		})
 
 		return () => {
@@ -108,19 +112,22 @@ export default function App() {
 				prefixes: [prefix],
 				config: {
 					screens: {
-						Notifications: 'notification',
+						Notifications: 'notifications',
 					},
 				},
 				async getInitialURL() {
 					const url = await Linking.getInitialURL()
 					if (url != null) {
+						console.log('url is valid: ', url)
 						return url
 					}
 
 					const response = await Notifications.getLastNotificationResponseAsync()
+					console.log('response url: ', response?.notification.request.content.data.url)
 					return response?.notification.request.content.data.url
 				},
 				subscribe(listener) {
+					console.log('url updated: ', listener)
 					const onReceiveURL = ({ url }: { url: string }) => listener(url)
 					const eventListenerSubscription = Linking.addEventListener('url', onReceiveURL)
 
@@ -131,7 +138,9 @@ export default function App() {
 						//...
 
 						// Let React Navigation handle the URL
-						listener(url)
+						// listener(url)
+						setForegroundLink(true)
+						listener(`${prefix}notifications`)
 					})
 					return () => {
 						// Clean up the event listeners
@@ -141,6 +150,8 @@ export default function App() {
 				},
 			}}
 		>
+			{foreground && <Text>FOREGROUND</Text>}
+			{foregroundLink && <Text>FOREGROUND link</Text>}
 			<AuthProvider>
 				<Routes />
 			</AuthProvider>
