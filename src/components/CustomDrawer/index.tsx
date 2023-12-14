@@ -3,8 +3,8 @@ import {
 	DrawerContentScrollView,
 	DrawerItem,
 } from '@react-navigation/drawer'
-import { useContext } from 'react'
-import { Image, ScrollView, StyleSheet, View } from 'react-native'
+import { useContext, useEffect, useState } from 'react'
+import { ActivityIndicator, Image, ScrollView, StyleSheet, View } from 'react-native'
 import { AuthContext } from '../../context/Auth'
 
 import Item from './components/Item'
@@ -13,10 +13,22 @@ import SubItem from './components/SubItem'
 
 import { MaterialIcons } from '@expo/vector-icons'
 import MeauLOGO from '../../assets/images/Meau_marca.png'
+import { defaultUserImage, fetchedImageUrl } from '../../services/images'
 
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 	const { user, signout } = useContext(AuthContext)
+	const [loading, setLoading] = useState(false)
+	const [url, setUrl] = useState<string>('')
 	const userName = user.full_name
+
+	useEffect(() => {
+		fetchedImageUrl({
+			storageUrl: `user/${user.user_uid}/profilePicture.png`,
+			setLoading: (state: boolean) => setLoading(state),
+			setUrl: (url: string) => setUrl(url),
+		})
+	}, [user])
+
 	return (
 		<View style={styles.container}>
 			<DrawerContentScrollView
@@ -24,10 +36,17 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
 				{...props}
 			>
 				<View style={styles.logo}>
-					{!user.signed ? (
-						<Image style={styles.logoImage} source={MeauLOGO} />
-					) : (
-						<View style={styles.avatar}></View>
+					{loading && <ActivityIndicator />}
+					{!user.signed && <Image style={styles.logoImage} source={MeauLOGO} />}
+					{user.signed && !loading && url !== '' && (
+						<View style={styles.userPhotoContainer}>
+							<Image style={styles.image} source={{ uri: url }} />
+						</View>
+					)}
+					{user.signed && !loading && url === '' && (
+						<View style={styles.userPhotoContainer}>
+							<Image style={styles.image} source={defaultUserImage} />
+						</View>
 					)}
 				</View>
 				<View style={styles.content}>
@@ -140,6 +159,17 @@ const styles = StyleSheet.create({
 		height: 80,
 		borderRadius: 50,
 		backgroundColor: '#b3b1b1',
+	},
+	image: {
+		flex: 1,
+		width: 120,
+		borderRadius: 60,
+		resizeMode: 'cover',
+	},
+	userPhotoContainer: {
+		margin: 10,
+		width: '100%',
+		height: 120,
 	},
 	content: {
 		flex: 8,
