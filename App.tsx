@@ -2,12 +2,23 @@ import { NavigationContainer } from '@react-navigation/native'
 import Constants from 'expo-constants'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
+import * as TaskManager from 'expo-task-manager'
 import { useEffect, useRef, useState } from 'react'
+import { Linking } from 'react-native'
 
 import { Platform } from 'react-native'
 import 'react-native-gesture-handler'
 import AuthProvider from './src/context/Auth'
 import Routes from './src/routes'
+
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK'
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+	console.log('Received a notification in the background: ', data, error, executionInfo)
+	// Do something with the notification data
+})
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK)
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -89,7 +100,38 @@ export default function App() {
 	}, [])
 
 	return (
-		<NavigationContainer>
+		<NavigationContainer
+			linking={{
+				async getInitialURL() {
+					const url = await Linking.getInitialURL()
+					if (url != null) {
+						return url
+					}
+
+					const response = await Notifications.getLastNotificationResponseAsync()
+					return response?.notification.request.content.data.url
+				},
+				subscribe(listener) {
+					const onReceiveURL = ({ url }: { url: string }) => listener(url)
+					const eventListenerSubscription = Linking.addEventListener('url', onReceiveURL)
+
+					const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+						const url = response.notification.request.content.data.url
+						console.log('subscription response: ', response)
+						// Any custom logic to see whether the URL needs to be handled
+						//...
+
+						// Let React Navigation handle the URL
+						listener(url)
+					})
+					return () => {
+						// Clean up the event listeners
+						eventListenerSubscription.remove()
+						subscription.remove()
+					}
+				},
+			}}
+		>
 			<AuthProvider>
 				<Routes />
 			</AuthProvider>
